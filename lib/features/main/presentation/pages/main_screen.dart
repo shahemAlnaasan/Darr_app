@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:exchange_darr/features/home/presentation/pages/home_screen.dart';
+import 'package:exchange_darr/features/prices/presentation/pages/best_prices_screen.dart';
 import 'package:exchange_darr/generated/assets.gen.dart';
 import 'package:exchange_darr/generated/locale_keys.g.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class _MainScreenContent extends StatefulWidget {
 
 class _MainScreenContentState extends State<_MainScreenContent> {
   int _selectedIndex = 0;
-  final List<int> _tabHistory = [0]; // Start with home
+  final List<int> _tabHistory = [0];
 
   final _navigatorKeys = {
     0: GlobalKey<NavigatorState>(),
@@ -32,7 +33,7 @@ class _MainScreenContentState extends State<_MainScreenContent> {
     2: GlobalKey<NavigatorState>(),
   };
 
-  final List<Widget> _rootScreens = [const HomeScreen(), const HomeScreen(), const HomeScreen()];
+  final List<Widget> _rootScreens = [const HomeScreen(), const BestPricesScreen(), const HomeScreen()];
 
   void _onTabTapped(int index) {
     if (_selectedIndex == index) {
@@ -97,13 +98,13 @@ class _MainScreenContentState extends State<_MainScreenContent> {
         notchMargin: 16,
         padding: const EdgeInsets.only(bottom: 2, top: 1),
         height: 75,
-        color: context.background,
+        color: context.surfaceContainer,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: List.generate(3, (index) {
             final icons = [
               Assets.images.navbar.home.path,
-              Assets.images.navbar.home.path,
+              Assets.images.bestPrice.path,
               Assets.images.navbar.home.path,
             ];
             return Expanded(
@@ -126,16 +127,12 @@ class _MainScreenContentState extends State<_MainScreenContent> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(icon, scale: 5.5, color: context.secondary),
+            Image.asset(icon, scale: 5.5, color: context.primaryColor),
             const SizedBox(height: 1),
             AppText.bodyMedium(
-              [
-                LocaleKeys.navbar_home.tr(),
-                LocaleKeys.navbar_calculator.tr(),
-                LocaleKeys.navbar_how_are_we.tr(),
-              ][index],
+              [LocaleKeys.navbar_home.tr(), "افضل الاسعار", LocaleKeys.navbar_how_are_we.tr()][index],
               style: context.textTheme.labelMedium!.copyWith(
-                color: context.secondary,
+                color: context.primaryColor,
                 fontWeight: FontWeight.w900,
                 fontSize: 15,
               ),
@@ -146,7 +143,7 @@ class _MainScreenContentState extends State<_MainScreenContent> {
               width: 5,
               height: 5,
               decoration: BoxDecoration(
-                color: isSelected ? context.secondary : Colors.transparent,
+                color: isSelected ? context.primaryColor : Colors.transparent,
                 shape: BoxShape.circle,
               ),
             ),

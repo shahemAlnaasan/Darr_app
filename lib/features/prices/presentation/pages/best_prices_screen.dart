@@ -12,8 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class BestPricesScreen extends StatelessWidget {
+  const BestPricesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,6 @@ class HomeScreen extends StatelessWidget {
             physics: AlwaysScrollableScrollPhysics(),
             child: Column(
               spacing: 10,
-
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(height: 10),

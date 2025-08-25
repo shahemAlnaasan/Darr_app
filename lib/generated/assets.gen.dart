@@ -14,8 +14,15 @@ import 'package:flutter/widgets.dart';
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
+  /// File path: assets/images/best_price.png
+  AssetGenImage get bestPrice =>
+      const AssetGenImage('assets/images/best_price.png');
+
   /// Directory path: assets/images/navbar
   $AssetsImagesNavbarGen get navbar => const $AssetsImagesNavbarGen();
+
+  /// List of all assets
+  List<AssetGenImage> get values => [bestPrice];
 }
 
 class $AssetsTranslationsGen {

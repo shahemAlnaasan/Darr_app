@@ -50,8 +50,16 @@ class _SosDropdownState extends State<SosDropdown> with SingleTickerProviderStat
           duration: const Duration(milliseconds: 1000),
           curve: Curves.fastLinearToSlowEaseIn,
           child: ConstrainedBox(
-            constraints: isExpanded ? const BoxConstraints() : const BoxConstraints(maxHeight: 0),
-            child: Padding(padding: const EdgeInsets.only(top: 10.0), child: widget.childrens),
+            constraints: isExpanded ? const BoxConstraints(maxHeight: 400) : const BoxConstraints(maxHeight: 0),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  // boxShadow: const [BoxShadow(color: Color(0x20000000), blurRadius: 5, offset: Offset(0, 4))],
+                ),
+                child: SingleChildScrollView(child: widget.childrens),
+              ),
+            ),
           ),
         ),
       ],

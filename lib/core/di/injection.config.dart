@@ -12,6 +12,15 @@
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 
+import '../../features/home/presentation/bloc/home_bloc.dart' as _i202;
+import '../../features/prices/data/data_sources/prices_remote_data_source.dart'
+    as _i129;
+import '../../features/prices/data/repositories/prices_repository_imp.dart'
+    as _i426;
+import '../../features/prices/domain/repositories/prices_repository.dart'
+    as _i535;
+import '../../features/prices/domain/use_cases/avg_prices_usecase.dart'
+    as _i419;
 import '../datasources/hive_helper.dart' as _i330;
 import '../network/http_client.dart' as _i1069;
 
@@ -24,6 +33,22 @@ extension GetItInjectableX on _i174.GetIt {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     gh.lazySingleton<_i330.HiveHelper>(() => _i330.HiveHelper());
     gh.lazySingleton<_i1069.HTTPClient>(() => _i1069.DioClient());
+    gh.factory<_i129.PricesRemoteDataSource>(
+      () => _i129.PricesRemoteDataSource(httpClient: gh<_i1069.HTTPClient>()),
+    );
+    gh.factory<_i535.PricesRepository>(
+      () => _i426.PricesRepositoryImp(
+        pricesRemoteDataSource: gh<_i129.PricesRemoteDataSource>(),
+      ),
+    );
+    gh.factory<_i419.AvgPricesUsecase>(
+      () => _i419.AvgPricesUsecase(
+        pricesRepository: gh<_i535.PricesRepository>(),
+      ),
+    );
+    gh.factory<_i202.HomeBloc>(
+      () => _i202.HomeBloc(avgPricesUsecase: gh<_i419.AvgPricesUsecase>()),
+    );
     return this;
   }
 }

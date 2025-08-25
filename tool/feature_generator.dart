@@ -145,8 +145,8 @@ void _addFunction(
   final repoFile = File('$basePath/domain/repositories/${featureName}_repository.dart');
   if (!repoFile.existsSync()) {
     repoFile.writeAsStringSync('''
-abstract class ${_pascal(featureName)}Repository {
-  DataResponse<${className}Response> $functionName({required ${className}Params params});
+abstract class ${_pascal(camelFeature)}Repository {
+  DataResponse<${className}Response> $camelFunc({required ${className}Params params});
 }
 ''');
   } else {
@@ -176,7 +176,7 @@ class ${className}Usecase {
   ${className}Usecase({required this.${camelFeature}Repository});
 
   DataResponse<${className}Response> call({required ${className}Params params}) {
-    return ${camelFeature}Repository.$functionName(params: params);
+    return ${camelFeature}Repository.$camelFunc(params: params);
   }
 }
 
@@ -210,8 +210,8 @@ class ${_pascal(featureName)}RepositoryImp implements ${_pascal(featureName)}Rep
   ${_pascal(featureName)}RepositoryImp({required this.${camelFeature}RemoteDataSource});
 
   @override
-  DataResponse<${className}Response> $functionName({required ${className}Params params}) {
-    return ${camelFeature}RemoteDataSource.$functionName(params: params);
+  DataResponse<${className}Response> $camelFunc({required ${className}Params params}) {
+    return ${camelFeature}RemoteDataSource.$camelFunc(params: params);
   }
 }
 ''');
@@ -244,9 +244,9 @@ class ${_pascal(featureName)}RemoteDataSource with ApiHandler {
 
   ${_pascal(featureName)}RemoteDataSource({required this.httpClient});
 
-  Future<Either<Failure, ${className}Response>> $functionName({required ${className}Params params}) async {
+  Future<Either<Failure, ${className}Response>> $camelFunc({required ${className}Params params}) async {
     return handleApiCall(
-      apiCall: () => httpClient.post(AppEndPoint.${functionName}, data: params.getBody()),
+      apiCall: () => httpClient.post(AppEndPoint.$camelFunc, data: params.getBody()),
       fromJson: (json) => ${className}Response.fromJson(json),
     );
   }
@@ -318,50 +318,50 @@ $toJson
 }
 
 /// ---------------- BLOC UPDATE ----------------
-void _updateBloc(String basePath, String featureName, String functionName, String className) {
-  final blocPath = '$basePath/presentation/bloc';
-  final blocFile = File('$blocPath/${featureName}_bloc.dart');
+// void _updateBloc(String basePath, String featureName, String functionName, String className) {
+//   final blocPath = '$basePath/presentation/bloc';
+//   final blocFile = File('$blocPath/${featureName}_bloc.dart');
 
-  if (!blocFile.existsSync()) return;
+//   if (!blocFile.existsSync()) return;
 
-  var blocContent = blocFile.readAsStringSync();
-  final blocClassName = '${_pascal(featureName)}Bloc';
+//   var blocContent = blocFile.readAsStringSync();
+//   final blocClassName = '${_pascal(featureName)}Bloc';
 
-  // 1) Add usecase field if missing
-  if (!blocContent.contains('final ${className}Usecase ${functionName}Usecase;')) {
-    blocContent = blocContent.replaceAllMapped(
-      RegExp(r'(class ' + blocClassName + r' extends Bloc<.*> {)'),
-      (m) => '${m[1]}\n  final ${className}Usecase ${functionName}Usecase;',
-    );
-  }
+//   // 1) Add usecase field if missing
+//   if (!blocContent.contains('final ${className}Usecase ${functionName}Usecase;')) {
+//     blocContent = blocContent.replaceAllMapped(
+//       RegExp(r'(class ' + blocClassName + r' extends Bloc<.*> {)'),
+//       (m) => '${m[1]}\n  final ${className}Usecase ${functionName}Usecase;',
+//     );
+//   }
 
-  // 2) Add constructor injection + on<Event> registration
-  if (!blocContent.contains('on<Get${className}Event>(_onGet${className}Event);')) {
-    blocContent = blocContent.replaceAllMapped(
-      RegExp(r'(' + blocClassName + r'\([^)]*\)\s*:\s*super\(.*\)\s*{)'),
-      (m) => '${m[1]}\n    on<Get${className}Event>(_onGet${className}Event);',
-    );
-  }
+//   // 2) Add constructor injection + on<Event> registration
+//   if (!blocContent.contains('on<Get${className}Event>(_onGet${className}Event);')) {
+//     blocContent = blocContent.replaceAllMapped(
+//       RegExp(r'(' + blocClassName + r'\([^)]*\)\s*:\s*super\(.*\)\s*{)'),
+//       (m) => '${m[1]}\n    on<Get${className}Event>(_onGet${className}Event);',
+//     );
+//   }
 
-  // 3) Add event handler method before final class closing brace
-  if (!blocContent.contains('_onGet${className}Event')) {
-    blocContent = blocContent.replaceFirstMapped(
-      RegExp(r'(}\s*)$'), // last closing brace of the class
-      (m) =>
-          '  Future<void> _onGet${className}Event(Get${className}Event event, Emitter<${_pascal(featureName)}State> emit) async {\n'
-          '    emit(state.copyWith(${functionName}Status: Status.loading));\n'
-          '    final result = await ${functionName}Usecase(params: event.params);\n'
-          '    result.fold(\n'
-          '      (failure) => emit(state.copyWith(${functionName}Status: Status.failure, ${functionName}Error: failure.message)),\n'
-          '      (response) => emit(state.copyWith(${functionName}Status: Status.success, ${functionName}Response: response)),\n'
-          '    );\n'
-          '  }\n'
-          '\n${m[1]}',
-    );
-  }
+//   // 3) Add event handler method before final class closing brace
+//   if (!blocContent.contains('_onGet${className}Event')) {
+//     blocContent = blocContent.replaceFirstMapped(
+//       RegExp(r'(}\s*)$'), // last closing brace of the class
+//       (m) =>
+//           '  Future<void> _onGet${className}Event(Get${className}Event event, Emitter<${_pascal(featureName)}State> emit) async {\n'
+//           '    emit(state.copyWith(${functionName}Status: Status.loading));\n'
+//           '    final result = await ${functionName}Usecase(params: event.params);\n'
+//           '    result.fold(\n'
+//           '      (failure) => emit(state.copyWith(${functionName}Status: Status.failure, ${functionName}Error: failure.message)),\n'
+//           '      (response) => emit(state.copyWith(${functionName}Status: Status.success, ${functionName}Response: response)),\n'
+//           '    );\n'
+//           '  }\n'
+//           '\n${m[1]}',
+//     );
+//   }
 
-  blocFile.writeAsStringSync(blocContent);
-}
+//   blocFile.writeAsStringSync(blocContent);
+// }
 
 String _camel(String input) {
   final pascal = _pascal(input);
