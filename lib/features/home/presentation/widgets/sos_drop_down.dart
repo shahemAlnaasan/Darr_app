@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 
 class SosDropdown extends StatefulWidget {
   final String dropDownTitle;
-  const SosDropdown({super.key, required this.dropDownTitle});
+  final Widget childrens;
+  const SosDropdown({super.key, required this.dropDownTitle, this.childrens = const SizedBox.shrink()});
 
   @override
   State<SosDropdown> createState() => _SosDropdownState();
@@ -17,6 +18,7 @@ class _SosDropdownState extends State<SosDropdown> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         InkWell(
           highlightColor: Colors.transparent,
@@ -29,7 +31,7 @@ class _SosDropdownState extends State<SosDropdown> with SingleTickerProviderStat
           child: Container(
             width: 390,
             height: 60,
-            decoration: BoxDecoration(color: context.primaryColor, borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(color: context.surfaceContainer, borderRadius: BorderRadius.circular(8)),
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -37,7 +39,7 @@ class _SosDropdownState extends State<SosDropdown> with SingleTickerProviderStat
                 Text(
                   widget.dropDownTitle,
                   textAlign: TextAlign.center,
-                  style: textTheme.titleMedium!.copyWith(fontSize: 20, color: Colors.white, fontFamily: "headLine"),
+                  style: textTheme.titleMedium!.copyWith(fontSize: 20, color: Colors.white),
                 ),
                 Icon(isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, color: Colors.white, size: 30),
               ],
@@ -49,12 +51,7 @@ class _SosDropdownState extends State<SosDropdown> with SingleTickerProviderStat
           curve: Curves.fastLinearToSlowEaseIn,
           child: ConstrainedBox(
             constraints: isExpanded ? const BoxConstraints() : const BoxConstraints(maxHeight: 0),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 10.0),
-              child: Column(spacing: 8, children: [
-                ],
-              ),
-            ),
+            child: Padding(padding: const EdgeInsets.only(top: 10.0), child: widget.childrens),
           ),
         ),
       ],
