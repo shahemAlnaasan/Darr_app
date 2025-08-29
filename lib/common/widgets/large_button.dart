@@ -1,3 +1,4 @@
+import 'package:exchange_darr/common/extentions/colors_extension.dart';
 import 'package:flutter/material.dart';
 
 class LargeButton extends StatelessWidget {
@@ -36,8 +37,12 @@ class LargeButton extends StatelessWidget {
         height: height,
         width: width,
         padding: !isFlexible ? const EdgeInsets.symmetric(vertical: 12.0, horizontal: 0.0) : null,
-        decoration: !isOutlined
-            ? BoxDecoration(color: backgroundColor, borderRadius: BorderRadius.circular(circularRadius))
+        decoration: isOutlined
+            ? BoxDecoration(
+                color: backgroundColor,
+                borderRadius: BorderRadius.circular(circularRadius),
+                border: Border.all(color: context.primaryColor, width: 1),
+              )
             : BoxDecoration(
                 color: backgroundColor,
                 // border: Border.all(color: context.primaryColor, width: 1.5),

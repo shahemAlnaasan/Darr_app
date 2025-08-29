@@ -4,11 +4,12 @@ import '../../../../common/extentions/colors_extension.dart';
 AppBar mainAppbar(BuildContext context, {void Function()? onTap}) {
   return AppBar(
     toolbarHeight: 60,
-    backgroundColor: context.surfaceContainer,
+    backgroundColor: context.tertiary,
     elevation: 0,
     surfaceTintColor: context.background,
     automaticallyImplyLeading: false,
     actionsPadding: const EdgeInsets.only(left: 15),
+    forceMaterialTransparency: true,
 
     // titleTextStyle: TextStyle(fontWeight: FontWeight.w100),
     title: Text("دار الصرافة", style: TextStyle(fontSize: 20, color: context.primaryColor)),
@@ -18,14 +19,11 @@ AppBar mainAppbar(BuildContext context, {void Function()? onTap}) {
     // ),
     leadingWidth: 65,
 
-    // actions: [buildActionButton(icon: Assets.images.share.path, onPressed: () {}, context: context)],
-    // bottom: PreferredSize(
-    //   preferredSize: const Size.fromHeight(1),
-    //   child: Padding(
-    //     padding: const EdgeInsets.symmetric(horizontal: 15),
-    //     child: Container(height: 2, color: context.onPrimaryColor),
-    //   ),
-    // ),
+    // actions: [buildActionButton(icon: Assets.images.logout.path, onPressed: () {}, context: context)],
+    bottom: PreferredSize(
+      preferredSize: const Size.fromHeight(0.5),
+      child: Container(height: 1, color: context.primaryColor),
+    ),
   );
 }
 
@@ -35,8 +33,12 @@ Widget buildActionButton({
   required void Function()? onPressed,
   required BuildContext context,
 }) {
-  return GestureDetector(
+  return InkWell(
+    highlightColor: Colors.transparent,
+    splashColor: Colors.transparent,
+    focusColor: Colors.transparent,
+    hoverColor: Colors.transparent,
     onTap: onPressed,
-    child: Image.asset(icon, scale: scale ?? 4, color: Color.fromARGB(255, 31, 57, 95)),
+    child: Image.asset(icon, scale: scale ?? 6.5, color: context.primaryColor),
   );
 }

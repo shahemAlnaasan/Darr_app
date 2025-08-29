@@ -15,8 +15,8 @@ class AvgPricesResponse {
 
   factory AvgPricesResponse.fromJson(Map<String, dynamic> json) {
     List<CityPrices> cityList = [];
-    json.forEach((cityName, currencies) {
-      cityList.add(CityPrices.fromJson(cityName, currencies));
+    json.forEach((cityName, id) {
+      cityList.add(CityPrices.fromJson(cityName, id));
     });
     return AvgPricesResponse(cities: cityList);
   }
@@ -69,79 +69,3 @@ class Type {
     return {'buy': buy, 'sell': sell};
   }
 }
-
-// class AvgPricesResponse {
-//     Empty empty;
-//     Map<String, Aed> avgPricesResponse;
-
-//     AvgPricesResponse({
-//         required this.empty,
-//         required this.avgPricesResponse,
-//     });
-
-//     factory AvgPricesResponse.fromJson(Map<String, dynamic> json) => AvgPricesResponse(
-//         empty: Empty.fromJson(json["حمص"]),
-//         avgPricesResponse: Map.from(json["دمشق"]).map((k, v) => MapEntry<String, Aed>(k, Aed.fromJson(v))),
-//     );
-
-//     Map<String, dynamic> toJson() => {
-//         "حمص": empty.toJson(),
-//         "دمشق": Map.from(avgPricesResponse).map((k, v) => MapEntry<String, dynamic>(k, v.toJson())),
-//     };
-// }
-
-// class Aed {
-//     int buy;
-//     int sell;
-
-//     Aed({
-//         required this.buy,
-//         required this.sell,
-//     });
-
-//     factory Aed.fromJson(Map<String, dynamic> json) => Aed(
-//         buy: json["buy"],
-//         sell: json["sell"],
-//     );
-
-//     Map<String, dynamic> toJson() => {
-//         "buy": buy,
-//         "sell": sell,
-//     };
-// }
-
-// class Empty {
-//     Aed usd;
-//     Aed eur;
-//     Aed tl;
-//     Aed aed;
-//     Aed egp;
-//     Aed sar;
-
-//     Empty({
-//         required this.usd,
-//         required this.eur,
-//         required this.tl,
-//         required this.aed,
-//         required this.egp,
-//         required this.sar,
-//     });
-
-//     factory Empty.fromJson(Map<String, dynamic> json) => Empty(
-//         usd: Aed.fromJson(json["usd"]),
-//         eur: Aed.fromJson(json["eur"]),
-//         tl: Aed.fromJson(json["tl"]),
-//         aed: Aed.fromJson(json["AED"]),
-//         egp: Aed.fromJson(json["EGP"]),
-//         sar: Aed.fromJson(json["SAR"]),
-//     );
-
-//     Map<String, dynamic> toJson() => {
-//         "usd": usd.toJson(),
-//         "eur": eur.toJson(),
-//         "tl": tl.toJson(),
-//         "AED": aed.toJson(),
-//         "EGP": egp.toJson(),
-//         "SAR": sar.toJson(),
-//     };
-// }

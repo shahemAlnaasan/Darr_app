@@ -35,37 +35,16 @@ class ExchangePriceContainer extends StatelessWidget {
     return Column(
       spacing: 5,
       children: [
-        Align(
-          alignment: Alignment.centerRight,
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-            decoration: BoxDecoration(color: context.surfaceContainer, borderRadius: BorderRadius.circular(8)),
-            child: Skeleton.ignore(
-              child: Row(
-                spacing: 10,
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    parms.buyCur,
-                    style: TextStyle(color: context.primaryColor, fontWeight: FontWeight.w500),
-                  ),
-                  Text(
-                    parms.sellCur,
-                    style: TextStyle(color: context.primaryColor, fontWeight: FontWeight.w500),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-
         ///
         ///
         //////
         Container(
           padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-          decoration: BoxDecoration(color: context.primaryContainer, borderRadius: BorderRadius.circular(8)),
+          decoration: BoxDecoration(
+            color: context.tertiary,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: context.primaryColor.withAlpha(200), width: 3),
+          ),
           child: Skeleton.ignore(
             child: Row(
               spacing: 10,
@@ -105,7 +84,11 @@ class ExchangePriceContainer extends StatelessWidget {
         //////
         Container(
           padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-          decoration: BoxDecoration(color: context.surfaceContainer, borderRadius: BorderRadius.circular(8)),
+          decoration: BoxDecoration(
+            color: context.tertiary,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: context.primaryColor.withAlpha(200), width: 3),
+          ),
           child: Column(
             spacing: 20,
             children: [
@@ -130,7 +113,7 @@ class ExchangePriceContainer extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(height: 10),
+        SizedBox(height: 15),
       ],
     );
   }

@@ -5,3 +5,15 @@ sealed class PricesEvent extends Equatable {
   @override
   List<Object?> get props => [];
 }
+
+class GetPricesEvent extends PricesEvent {
+  final bool isRefreshScreen;
+
+  const GetPricesEvent({this.isRefreshScreen = false});
+}
+
+class GetUsdPricesEvent extends PricesEvent {
+  final bool isRefreshScreen;
+
+  const GetUsdPricesEvent({this.isRefreshScreen = false});
+}

@@ -11,10 +11,10 @@ class ThemesColorScheme {
     onPrimary: Color(0xff1C1C1E),
     secondary: Color.fromARGB(201, 1, 1, 1),
     onSecondary: Colors.black,
-    tertiary: Color(0xFFB0BEC5),
-    onTertiary: Color(0xff63ad5e),
+    tertiary: Color.fromARGB(230, 37, 45, 57),
+    onTertiary: Color.fromARGB(230, 50, 61, 78),
     error: Color(0xffff5d5a),
-    surfaceContainer: Color(0xff26436c),
+    surfaceContainer: Color.fromARGB(255, 40, 78, 133),
     onError: Colors.white,
 
     // app background as light grey

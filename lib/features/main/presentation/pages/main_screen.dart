@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:exchange_darr/features/home/presentation/pages/home_screen.dart';
 import 'package:exchange_darr/features/prices/presentation/pages/best_prices_screen.dart';
+import 'package:exchange_darr/features/prices/presentation/pages/my_prices_screen.dart';
+import 'package:exchange_darr/features/prices/presentation/pages/world_prices_screen.dart';
 import 'package:exchange_darr/generated/assets.gen.dart';
 import 'package:exchange_darr/generated/locale_keys.g.dart';
 import 'package:flutter/material.dart';
@@ -10,22 +12,34 @@ import '../../../../common/widgets/app_text.dart';
 import '../widgets/main_appbar.dart';
 
 class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
+  final int? selectedIndex; // 👈 optional index
+
+  const MainScreen({super.key, this.selectedIndex});
 
   @override
   Widget build(BuildContext context) {
-    return _MainScreenContent();
+    return _MainScreenContent(initialIndex: selectedIndex ?? 0);
   }
 }
 
 class _MainScreenContent extends StatefulWidget {
+  final int initialIndex;
+
+  const _MainScreenContent({required this.initialIndex});
+
   @override
   State<_MainScreenContent> createState() => _MainScreenContentState();
 }
 
 class _MainScreenContentState extends State<_MainScreenContent> {
-  int _selectedIndex = 0;
-  final List<int> _tabHistory = [0];
+  late int _selectedIndex;
+  final List<int> _tabHistory = [];
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex;
+    _tabHistory.add(_selectedIndex);
+  }
 
   final _navigatorKeys = {
     0: GlobalKey<NavigatorState>(),
@@ -33,7 +47,12 @@ class _MainScreenContentState extends State<_MainScreenContent> {
     2: GlobalKey<NavigatorState>(),
   };
 
-  final List<Widget> _rootScreens = [const HomeScreen(), const BestPricesScreen(), const HomeScreen()];
+  final List<Widget> _rootScreens = [
+    const HomeScreen(),
+    const BestPricesScreen(),
+    const WorldPricesScreen(),
+    const PageDecider(),
+  ];
 
   void _onTabTapped(int index) {
     if (_selectedIndex == index) {
@@ -79,11 +98,8 @@ class _MainScreenContentState extends State<_MainScreenContent> {
       child: Scaffold(
         appBar: mainAppbar(context, onTap: () {}),
         extendBody: true,
-        backgroundColor: context.background,
-        body: IndexedStack(
-          index: _selectedIndex,
-          children: List.generate(_rootScreens.length, (i) => _buildTabNavigator(i)),
-        ),
+        backgroundColor: context.tertiary,
+        body: _buildTabNavigator(_selectedIndex),
         bottomNavigationBar: _buildBottomBar(),
       ),
     );
@@ -92,20 +108,21 @@ class _MainScreenContentState extends State<_MainScreenContent> {
   Widget _buildBottomBar() {
     return Container(
       decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: context.onPrimaryColor)),
+        border: Border(top: BorderSide(color: context.primaryColor)),
       ),
       child: BottomAppBar(
         notchMargin: 16,
         padding: const EdgeInsets.only(bottom: 2, top: 1),
         height: 75,
-        color: context.surfaceContainer,
+        color: context.tertiary,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: List.generate(3, (index) {
+          children: List.generate(4, (index) {
             final icons = [
               Assets.images.navbar.home.path,
               Assets.images.bestPrice.path,
-              Assets.images.navbar.home.path,
+              Assets.images.world.path,
+              Assets.images.dollar.path,
             ];
             return Expanded(
               child: _buildNavItem(icon: icons[index], index: index),
@@ -121,30 +138,26 @@ class _MainScreenContentState extends State<_MainScreenContent> {
     return InkWell(
       highlightColor: Colors.transparent,
       splashColor: Colors.transparent,
+      focusColor: Colors.transparent,
+      hoverColor: Colors.transparent,
       onTap: () => _onTabTapped(index),
       child: Padding(
         padding: const EdgeInsets.only(bottom: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(icon, scale: 5.5, color: context.primaryColor),
+            Image.asset(
+              icon,
+              scale: isSelected ? 4.9 : 5,
+              color: isSelected ? context.primaryColor : context.primaryColor.withAlpha(150),
+            ),
             const SizedBox(height: 1),
             AppText.bodyMedium(
-              [LocaleKeys.navbar_home.tr(), "افضل الاسعار", LocaleKeys.navbar_how_are_we.tr()][index],
+              [LocaleKeys.navbar_home.tr(), "افضل الاسعار", "الاسعار العالمية", "اسعاري"][index],
               style: context.textTheme.labelMedium!.copyWith(
-                color: context.primaryColor,
+                color: isSelected ? context.primaryColor : context.primaryColor.withAlpha(150),
                 fontWeight: FontWeight.w900,
-                fontSize: 15,
-              ),
-            ),
-            const SizedBox(height: 2),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              width: 5,
-              height: 5,
-              decoration: BoxDecoration(
-                color: isSelected ? context.primaryColor : Colors.transparent,
-                shape: BoxShape.circle,
+                fontSize: 14,
               ),
             ),
           ],

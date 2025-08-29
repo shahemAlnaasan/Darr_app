@@ -12,6 +12,13 @@
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 
+import '../../features/auth/data/data_sources/auth_remote_data_source.dart'
+    as _i25;
+import '../../features/auth/data/repositories/auth_repository_imp.dart'
+    as _i872;
+import '../../features/auth/domain/repositories/auth_repository.dart' as _i787;
+import '../../features/auth/domain/use_cases/login_usecase.dart' as _i1012;
+import '../../features/auth/presentation/bloc/auth_bloc.dart' as _i797;
 import '../../features/home/presentation/bloc/home_bloc.dart' as _i202;
 import '../../features/prices/data/data_sources/prices_remote_data_source.dart'
     as _i129;
@@ -21,6 +28,11 @@ import '../../features/prices/domain/repositories/prices_repository.dart'
     as _i535;
 import '../../features/prices/domain/use_cases/avg_prices_usecase.dart'
     as _i419;
+import '../../features/prices/domain/use_cases/get_prices_usecase.dart'
+    as _i960;
+import '../../features/prices/domain/use_cases/get_usd_prices_usecase.dart'
+    as _i913;
+import '../../features/prices/presentation/bloc/prices_bloc.dart' as _i191;
 import '../datasources/hive_helper.dart' as _i330;
 import '../network/http_client.dart' as _i1069;
 
@@ -33,8 +45,16 @@ extension GetItInjectableX on _i174.GetIt {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     gh.lazySingleton<_i330.HiveHelper>(() => _i330.HiveHelper());
     gh.lazySingleton<_i1069.HTTPClient>(() => _i1069.DioClient());
+    gh.factory<_i25.AuthRemoteDataSource>(
+      () => _i25.AuthRemoteDataSource(httpClient: gh<_i1069.HTTPClient>()),
+    );
     gh.factory<_i129.PricesRemoteDataSource>(
       () => _i129.PricesRemoteDataSource(httpClient: gh<_i1069.HTTPClient>()),
+    );
+    gh.factory<_i787.AuthRepository>(
+      () => _i872.AuthRepositoryImp(
+        authRemoteDataSource: gh<_i25.AuthRemoteDataSource>(),
+      ),
     );
     gh.factory<_i535.PricesRepository>(
       () => _i426.PricesRepositoryImp(
@@ -46,8 +66,30 @@ extension GetItInjectableX on _i174.GetIt {
         pricesRepository: gh<_i535.PricesRepository>(),
       ),
     );
+    gh.factory<_i960.GetPricesUsecase>(
+      () => _i960.GetPricesUsecase(
+        pricesRepository: gh<_i535.PricesRepository>(),
+      ),
+    );
+    gh.factory<_i913.GetUsdPricesUsecase>(
+      () => _i913.GetUsdPricesUsecase(
+        pricesRepository: gh<_i535.PricesRepository>(),
+      ),
+    );
+    gh.factory<_i1012.LoginUsecase>(
+      () => _i1012.LoginUsecase(authRepository: gh<_i787.AuthRepository>()),
+    );
+    gh.factory<_i797.AuthBloc>(
+      () => _i797.AuthBloc(loginUsecase: gh<_i1012.LoginUsecase>()),
+    );
     gh.factory<_i202.HomeBloc>(
       () => _i202.HomeBloc(avgPricesUsecase: gh<_i419.AvgPricesUsecase>()),
+    );
+    gh.factory<_i191.PricesBloc>(
+      () => _i191.PricesBloc(
+        getPricesUsecase: gh<_i960.GetPricesUsecase>(),
+        getUsdPricesUsecase: gh<_i913.GetUsdPricesUsecase>(),
+      ),
     );
     return this;
   }

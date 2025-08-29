@@ -74,7 +74,11 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
         baseStyle: textTheme.titleSmall!.copyWith(color: context.primaryColor),
         decoration: InputDecoration(
           filled: true,
-          fillColor: context.surfaceContainer,
+          fillColor: context.tertiary,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(6),
+            borderSide: BorderSide(color: context.primaryColor),
+          ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6),
             borderSide: BorderSide(color: context.primaryColor),
@@ -106,7 +110,10 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
             style: TextStyle(color: context.primaryColor, fontSize: 14),
           ),
           labelStyle: textTheme.titleSmall!.copyWith(color: context.primaryColor, fontSize: 14),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(6),
+            borderSide: BorderSide(color: context.primaryColor),
+          ),
         ),
       ),
       popupProps: PopupProps.menu(
@@ -114,9 +121,9 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
         containerBuilder: (context, child) {
           return Container(
             decoration: BoxDecoration(
-              border: Border.all(color: context.surfaceContainer, width: 1.2),
+              border: Border.all(color: context.onTertiary, width: 1.2),
               borderRadius: BorderRadius.circular(6),
-              color: context.surfaceContainer,
+              color: context.onTertiary,
             ),
             child: child,
           );
@@ -124,7 +131,7 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
         menuProps: MenuProps(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(6),
-            side: const BorderSide(color: Colors.black, width: 1.2),
+            side: BorderSide(color: context.primaryColor, width: 1.2),
           ),
         ),
         showSearchBox: widget.enableSearch,

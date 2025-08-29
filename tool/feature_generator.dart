@@ -65,6 +65,8 @@ void _createFeature(String featureName) {
     '$basePath/domain/repositories',
     '$basePath/domain/use_cases',
     '$basePath/presentation/bloc',
+    '$basePath/presentation/pages',
+    '$basePath/presentation/widgets',
   ];
 
   for (final folder in folders) {
@@ -154,7 +156,7 @@ abstract class ${_pascal(camelFeature)}Repository {
     if (!content.contains('$functionName(')) {
       final updated = content.replaceFirst(
         RegExp(r'}\s*$'),
-        '  DataResponse<${className}Response> $functionName({required ${className}Params params});\n}',
+        '  DataResponse<${className}Response> $camelFunc({required ${className}Params params});\n}',
       );
       repoFile.writeAsStringSync(updated);
     }
@@ -220,8 +222,8 @@ class ${_pascal(featureName)}RepositoryImp implements ${_pascal(featureName)}Rep
     if (!content.contains('$functionName(')) {
       final updated = content.replaceFirst(
         RegExp(r'}\s*$'),
-        '  @override\n  DataResponse<${className}Response> $functionName({required ${className}Params params}) {\n'
-        '    return ${camelFeature}RemoteDataSource.$functionName(params: params);\n  }\n}',
+        '  @override\n  DataResponse<${className}Response> $camelFunc({required ${className}Params params}) {\n'
+        '    return ${camelFeature}RemoteDataSource.$camelFunc(params: params);\n  }\n}',
       );
       repoImpFile.writeAsStringSync(updated);
     }
@@ -257,9 +259,9 @@ class ${_pascal(featureName)}RemoteDataSource with ApiHandler {
     if (!content.contains('$functionName(')) {
       final updated = content.replaceFirst(
         RegExp(r'}\s*$'),
-        '  Future<Either<Failure, ${className}Response>> $functionName({required ${className}Params params}) async {\n'
+        '  Future<Either<Failure, ${className}Response>> $camelFunc({required ${className}Params params}) async {\n'
         '    return handleApiCall(\n'
-        '      apiCall: () => httpClient.post(AppEndPoint.${functionName}, data: params.getBody()),\n'
+        '      apiCall: () => httpClient.post(AppEndPoint.$camelFunc, data: params.getBody()),\n'
         '      fromJson: (json) => ${className}Response.fromJson(json),\n'
         '    );\n  }\n}',
       );

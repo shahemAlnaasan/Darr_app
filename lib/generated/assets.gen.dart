@@ -18,11 +18,20 @@ class $AssetsImagesGen {
   AssetGenImage get bestPrice =>
       const AssetGenImage('assets/images/best_price.png');
 
+  /// File path: assets/images/dollar.png
+  AssetGenImage get dollar => const AssetGenImage('assets/images/dollar.png');
+
+  /// File path: assets/images/logout.png
+  AssetGenImage get logout => const AssetGenImage('assets/images/logout.png');
+
   /// Directory path: assets/images/navbar
   $AssetsImagesNavbarGen get navbar => const $AssetsImagesNavbarGen();
 
+  /// File path: assets/images/world.png
+  AssetGenImage get world => const AssetGenImage('assets/images/world.png');
+
   /// List of all assets
-  List<AssetGenImage> get values => [bestPrice];
+  List<AssetGenImage> get values => [bestPrice, dollar, logout, world];
 }
 
 class $AssetsTranslationsGen {

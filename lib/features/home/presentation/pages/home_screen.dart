@@ -21,6 +21,7 @@ class HomeScreen extends StatelessWidget {
       lazy: false,
       create: (context) => getIt<HomeBloc>()..add(GetAvgPrices(isRefreshScreen: true)),
       child: Scaffold(
+        backgroundColor: context.tertiary,
         body: Container(
           width: context.screenWidth,
           padding: EdgeInsets.symmetric(horizontal: 20),
@@ -38,6 +39,7 @@ class HomeScreen extends StatelessWidget {
                     "متوسط الاسعار للمحافظات:",
                     textAlign: TextAlign.right,
                     fontWeight: FontWeight.bold,
+                    color: context.primaryColor,
                   ),
                 ),
                 SizedBox(height: 20),
