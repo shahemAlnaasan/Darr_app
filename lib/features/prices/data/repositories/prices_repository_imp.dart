@@ -1,4 +1,5 @@
 import 'package:exchange_darr/common/consts/typedef.dart';
+import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_exchage_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_syp_usecase.dart';
@@ -37,5 +38,10 @@ class PricesRepositoryImp implements PricesRepository {
   @override
   DataResponse<GetExchangeResponse> getExchangeUsd({required GetExchangeUsdParams params}) {
     return pricesRemoteDataSource.getExchageUsd(params: params);
+  }
+
+  @override
+  DataResponse<GetCursResponse> getCurs() {
+    return pricesRemoteDataSource.getCurs();
   }
 }

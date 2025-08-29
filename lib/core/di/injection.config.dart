@@ -28,6 +28,7 @@ import '../../features/prices/domain/repositories/prices_repository.dart'
     as _i535;
 import '../../features/prices/domain/use_cases/avg_prices_usecase.dart'
     as _i419;
+import '../../features/prices/domain/use_cases/get_curs_usecase.dart' as _i508;
 import '../../features/prices/domain/use_cases/get_exchange_syp_usecase.dart'
     as _i480;
 import '../../features/prices/domain/use_cases/get_exchange_usd_usecase.dart'
@@ -70,15 +71,9 @@ extension GetItInjectableX on _i174.GetIt {
         pricesRepository: gh<_i535.PricesRepository>(),
       ),
     );
-    gh.factory<_i960.GetPricesUsecase>(
-      () => _i960.GetPricesUsecase(
-        pricesRepository: gh<_i535.PricesRepository>(),
-      ),
-    );
-    gh.factory<_i913.GetUsdPricesUsecase>(
-      () => _i913.GetUsdPricesUsecase(
-        pricesRepository: gh<_i535.PricesRepository>(),
-      ),
+    gh.factory<_i508.GetCursUsecase>(
+      () =>
+          _i508.GetCursUsecase(pricesRepository: gh<_i535.PricesRepository>()),
     );
     gh.factory<_i480.GetExchangeSypUsecase>(
       () => _i480.GetExchangeSypUsecase(
@@ -87,6 +82,16 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i605.GetExchangeUsdUsecase>(
       () => _i605.GetExchangeUsdUsecase(
+        pricesRepository: gh<_i535.PricesRepository>(),
+      ),
+    );
+    gh.factory<_i960.GetPricesUsecase>(
+      () => _i960.GetPricesUsecase(
+        pricesRepository: gh<_i535.PricesRepository>(),
+      ),
+    );
+    gh.factory<_i913.GetUsdPricesUsecase>(
+      () => _i913.GetUsdPricesUsecase(
         pricesRepository: gh<_i535.PricesRepository>(),
       ),
     );
@@ -105,6 +110,7 @@ extension GetItInjectableX on _i174.GetIt {
         getUsdPricesUsecase: gh<_i913.GetUsdPricesUsecase>(),
         getExchangeSypUsecase: gh<_i480.GetExchangeSypUsecase>(),
         getExchangeUsdUsecase: gh<_i605.GetExchangeUsdUsecase>(),
+        getCursUsecase: gh<_i508.GetCursUsecase>(),
       ),
     );
     return this;

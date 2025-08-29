@@ -5,6 +5,7 @@ class PricesState extends Equatable {
   final Status? getPricesStatus;
   final Status? getExchangeSypStatus;
   final Status? getExchangeUsdStatus;
+  final Status? getCursStatus;
   final GetPricesResponse? getPricesResponse;
   final bool? isRefreshPrices;
   final Status? getUsdPricesStatus;
@@ -12,6 +13,7 @@ class PricesState extends Equatable {
   final GetExchangeResponse? getExchangeResponse;
   final List<Price>? exchangePrices;
   final bool? isRefreshUsdPrices;
+  final GetCursResponse? getCursResponse;
   const PricesState({
     this.errorMessage,
     this.getPricesStatus,
@@ -24,6 +26,8 @@ class PricesState extends Equatable {
     this.getExchangeUsdStatus,
     this.getExchangeResponse,
     this.exchangePrices,
+    this.getCursStatus,
+    this.getCursResponse,
   });
 
   PricesState copyWith({
@@ -31,6 +35,7 @@ class PricesState extends Equatable {
     Status? getPricesStatus,
     Status? getExchangeSypStatus,
     Status? getExchangeUsdStatus,
+    Status? getCursStatus,
     GetPricesResponse? getPricesResponse,
     bool? isRefreshPrices,
     Status? getUsdPricesStatus,
@@ -38,12 +43,14 @@ class PricesState extends Equatable {
     GetExchangeResponse? getExchangeResponse,
     List<Price>? exchangePrices,
     bool? isRefreshUsdPrices,
+    GetCursResponse? getCursResponse,
   }) {
     return PricesState(
       errorMessage: errorMessage ?? this.errorMessage,
       getPricesStatus: getPricesStatus ?? this.getPricesStatus,
       getExchangeSypStatus: getExchangeSypStatus ?? this.getExchangeSypStatus,
       getExchangeUsdStatus: getExchangeUsdStatus ?? this.getExchangeUsdStatus,
+      getCursStatus: getCursStatus ?? this.getCursStatus,
       getPricesResponse: getPricesResponse ?? this.getPricesResponse,
       isRefreshPrices: isRefreshPrices ?? this.isRefreshPrices,
       getUsdPricesStatus: getUsdPricesStatus ?? this.getUsdPricesStatus,
@@ -51,6 +58,7 @@ class PricesState extends Equatable {
       getExchangeResponse: getExchangeResponse ?? this.getExchangeResponse,
       isRefreshUsdPrices: isRefreshUsdPrices ?? this.isRefreshUsdPrices,
       exchangePrices: exchangePrices ?? this.exchangePrices,
+      getCursResponse: getCursResponse ?? this.getCursResponse,
     );
   }
 
@@ -60,6 +68,7 @@ class PricesState extends Equatable {
     getPricesStatus,
     getExchangeSypStatus,
     getExchangeUsdStatus,
+    getCursStatus,
     getPricesResponse,
     isRefreshPrices,
     getUsdPricesStatus,
@@ -67,5 +76,6 @@ class PricesState extends Equatable {
     getExchangeResponse,
     isRefreshUsdPrices,
     exchangePrices,
+    getCursResponse,
   ];
 }

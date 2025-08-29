@@ -21,3 +21,5 @@ class GetUsdPricesEvent extends PricesEvent {
 class GetExchangeSypEvent extends PricesEvent {}
 
 class GetExchangeUsdEvent extends PricesEvent {}
+
+class GetCursEvent extends PricesEvent {}

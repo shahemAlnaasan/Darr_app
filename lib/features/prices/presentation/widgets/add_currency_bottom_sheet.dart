@@ -2,10 +2,32 @@ import 'package:exchange_darr/common/extentions/colors_extension.dart';
 import 'package:exchange_darr/common/widgets/app_text.dart';
 import 'package:exchange_darr/common/widgets/custom_drop_down.dart';
 import 'package:exchange_darr/common/widgets/large_button.dart';
+import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
+import 'package:exchange_darr/features/prices/data/models/get_exchage_response.dart';
 import 'package:flutter/material.dart';
 
-class AddCurrencyBottomSheet extends StatelessWidget {
-  const AddCurrencyBottomSheet({super.key});
+class AddCurrencyBottomSheet extends StatefulWidget {
+  final List<Cur> curs;
+  final List<Price> prices;
+  const AddCurrencyBottomSheet({super.key, required this.curs, required this.prices});
+
+  @override
+  State<AddCurrencyBottomSheet> createState() => _AddCurrencyBottomSheetState();
+}
+
+class _AddCurrencyBottomSheetState extends State<AddCurrencyBottomSheet> {
+  List<Cur> firstCurs = [];
+  List<Cur> secondCurs = [];
+  Cur? firstSelectedCur;
+  Cur? secondSelectedCur;
+
+  @override
+  void initState() {
+    firstCurs = widget.curs.where((cur) => cur.id == "usd" || cur.id == "syp").toList();
+    final existingCurIds = widget.prices.map((p) => p.cur).toSet();
+    secondCurs = widget.curs.where((cur) => !existingCurIds.contains(cur.id)).toList();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,36 +50,29 @@ class AddCurrencyBottomSheet extends StatelessWidget {
           children: [
             AppText.titleLarge("اضف عملة جديدة", color: context.primaryColor, fontWeight: FontWeight.w600),
 
-            // CustomDropdown<ExchangePair>(
-            //   menuList: exchangePairs,
-            //   initaValue: exchangePairs.isNotEmpty ? exchangePairs[0] : null,
-            //   compareFn: (a, b) => a.buy?.curfrom == b.buy?.curfrom && a.buy?.curto == b.buy?.curto,
-            //   labelText: "اختر العملات",
-            //   hintText: "اختر العملات",
-            //   valueFontSize: 16,
-            //   itemAsString: (pair) =>
-            //       "${getCurrencyObject(pair.buy?.curfrom ?? "")!.name} - ${getCurrencyObject(pair.buy?.curto ?? "")!.name}",
-            //   onChanged: (pair) {
-            //     if (pair != null) {
-            //       widget.onPairSelected(pair); // ✅ send to parent
-            //     }
-            //   },
-            // ),
-            CustomDropdown<String>(
-              menuList: [],
-              initaValue: "asfsa",
-              labelText: "LocaleKeys",
-              hintText: "LocaleKeys",
-              compareFn: (p0, p1) => p0 == p1,
-              onChanged: (value) {},
+            CustomDropdown<Cur>(
+              menuList: firstCurs,
+              initaValue: firstSelectedCur,
+              compareFn: (a, b) => a.id == b.id,
+              labelText: "اختر العملة الاولى",
+              hintText: "اختر العملة الاولى",
+              valueFontSize: 16,
+              itemAsString: (cur) => cur.name,
+              onChanged: (cur) {
+                firstSelectedCur = cur;
+              },
             ),
-            CustomDropdown<String>(
-              menuList: [],
-              initaValue: "asfsa",
-              labelText: "LocaleKeys",
-              hintText: "LocaleKeys",
-              compareFn: (p0, p1) => p0 == p1,
-              onChanged: (value) {},
+            CustomDropdown<Cur>(
+              menuList: secondCurs,
+              initaValue: secondSelectedCur,
+              compareFn: (a, b) => a.id == b.id,
+              labelText: "اختر العملة الثانية",
+              hintText: "اختر العملة الثانية",
+              valueFontSize: 16,
+              itemAsString: (cur) => cur.name,
+              onChanged: (cur) {
+                secondSelectedCur = cur;
+              },
             ),
 
             LargeButton(onPressed: () {}, text: "اضافة", backgroundColor: context.tertiary, circularRadius: 12),

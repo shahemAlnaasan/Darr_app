@@ -5,6 +5,7 @@ import 'package:exchange_darr/common/state_managment/bloc_state.dart';
 import 'package:exchange_darr/common/widgets/large_button.dart';
 import 'package:exchange_darr/core/datasources/hive_helper.dart';
 import 'package:exchange_darr/features/auth/presentation/pages/login_screen.dart';
+import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_exchage_response.dart';
 import 'package:exchange_darr/features/prices/presentation/bloc/prices_bloc.dart';
 import 'package:exchange_darr/features/prices/presentation/widgets/add_currency.dart';
@@ -70,115 +71,124 @@ class MyPricesScreen extends StatefulWidget {
 }
 
 class _MyPricesScreenState extends State<MyPricesScreen> {
-  void _showDetailsDialog(BuildContext context) {
+  void _showDetailsDialog(BuildContext context, {required List<Cur> curs, required List<Price> prices}) {
     showDialog(
       context: context,
       builder: (context) {
-        return AddCurrencyBottomSheet();
+        return AddCurrencyBottomSheet(curs: curs, prices: prices);
       },
     );
   }
 
   int selectedIndex = 0;
   GetExchangeResponse? getExchangeResponse;
-  // List<Price> prices = [];
+  List<Cur> curs = [];
+  List<Cur> unusedCurs = [];
+  List<Price> prices = [];
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       lazy: false,
       create: (context) => getIt<PricesBloc>()
         ..add(GetExchangeSypEvent())
-        ..add(GetExchangeUsdEvent()),
-      child: Scaffold(
-        backgroundColor: context.tertiary,
-        body: SizedBox(
-          width: context.screenWidth,
-          child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                spacing: 10,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(height: 5),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: AppText.titleLarge(
-                      "اسعاري:",
-                      textAlign: TextAlign.right,
-                      fontWeight: FontWeight.bold,
-                      color: context.primaryColor,
+        ..add(GetExchangeUsdEvent())
+        ..add(GetCursEvent()),
+      child: BlocListener<PricesBloc, PricesState>(
+        listener: (context, state) {
+          if (state.getCursStatus == Status.success && state.getCursResponse != null) {
+            curs = state.getCursResponse!.curs;
+          }
+        },
+        child: Scaffold(
+          backgroundColor: context.tertiary,
+          body: SizedBox(
+            width: context.screenWidth,
+            child: SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  spacing: 10,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 5),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: AppText.titleLarge(
+                        "اسعاري:",
+                        textAlign: TextAlign.right,
+                        fontWeight: FontWeight.bold,
+                        color: context.primaryColor,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 10),
-                  AddCurrency(
-                    onTap: () {
-                      _showDetailsDialog(context);
-                    },
-                  ),
-                  SizedBox(height: 10),
-                  BlocBuilder<PricesBloc, PricesState>(
-                    builder: (context, state) {
-                      if (state.getExchangeSypStatus == Status.loading ||
-                          state.getExchangeUsdStatus == Status.loading ||
-                          state.getExchangeSypStatus == Status.initial ||
-                          state.getExchangeUsdStatus == Status.initial) {
-                        return ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: 4,
-                          itemBuilder: (context, index) => Skeletonizer(
-                            enabled: true,
-                            containersColor: const Color.fromARGB(99, 158, 158, 158),
-                            enableSwitchAnimation: true,
-                            child: CurrenciesPairs(
-                              price: Price(cur: "cursadasd", buy: "1000", sell: "10000", isSyp: true),
-                            ),
-                          ),
-                        );
-                      }
-                      if (state.exchangePrices != null && state.exchangePrices!.isNotEmpty) {
-                        final prices = state.exchangePrices;
-
-                        log("${prices!.length}");
-
-                        return ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: prices.length,
-                          itemBuilder: (context, index) {
-                            return CurrenciesPairs(price: prices[index]);
-                          },
-                        );
-                      }
-
-                      if (state.getExchangeSypStatus == Status.failure &&
-                          state.getExchangeUsdStatus == Status.failure) {
-                        return Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              AppText.bodyLarge("لايوجد نشرة اسعار لعرضها", fontWeight: FontWeight.w400),
-                              SizedBox(height: 10),
-                              LargeButton(
-                                onPressed: () {
-                                  context.read<PricesBloc>()
-                                    ..add(GetExchangeSypEvent())
-                                    ..add(GetExchangeUsdEvent());
-                                },
-                                backgroundColor: context.surfaceContainer,
-                                text: "اعادة المحاولة",
-                                textStyle: TextStyle(color: context.primaryColor),
+                    SizedBox(height: 10),
+                    AddCurrency(
+                      onTap: () {
+                        _showDetailsDialog(context, curs: curs, prices: prices);
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    BlocBuilder<PricesBloc, PricesState>(
+                      builder: (context, state) {
+                        if (state.getExchangeSypStatus == Status.loading ||
+                            state.getExchangeUsdStatus == Status.loading ||
+                            state.getExchangeSypStatus == Status.initial ||
+                            state.getExchangeUsdStatus == Status.initial) {
+                          return ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: 4,
+                            itemBuilder: (context, index) => Skeletonizer(
+                              enabled: true,
+                              containersColor: const Color.fromARGB(99, 158, 158, 158),
+                              enableSwitchAnimation: true,
+                              child: CurrenciesPairs(
+                                price: Price(cur: "cursadasd", buy: "1000", sell: "10000", isSyp: true),
                               ),
-                            ],
-                          ),
-                        );
-                      }
-                      return SizedBox.shrink();
-                    },
-                  ),
-                ],
+                            ),
+                          );
+                        }
+                        if (state.exchangePrices != null && state.exchangePrices!.isNotEmpty) {
+                          prices = state.exchangePrices!;
+                          final pricesList = state.exchangePrices;
+
+                          return ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: pricesList!.length,
+                            itemBuilder: (context, index) {
+                              return CurrenciesPairs(price: pricesList[index]);
+                            },
+                          );
+                        }
+
+                        if (state.getExchangeSypStatus == Status.failure &&
+                            state.getExchangeUsdStatus == Status.failure) {
+                          return Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                AppText.bodyLarge("لايوجد نشرة اسعار لعرضها", fontWeight: FontWeight.w400),
+                                SizedBox(height: 10),
+                                LargeButton(
+                                  onPressed: () {
+                                    context.read<PricesBloc>()
+                                      ..add(GetExchangeSypEvent())
+                                      ..add(GetExchangeUsdEvent());
+                                  },
+                                  backgroundColor: context.surfaceContainer,
+                                  text: "اعادة المحاولة",
+                                  textStyle: TextStyle(color: context.primaryColor),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                        return SizedBox.shrink();
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

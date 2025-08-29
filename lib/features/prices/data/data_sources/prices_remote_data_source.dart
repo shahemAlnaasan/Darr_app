@@ -3,6 +3,7 @@ import 'package:exchange_darr/core/config/endpoints.dart';
 import 'package:exchange_darr/core/network/api_handler.dart';
 import 'package:exchange_darr/core/network/exceptions.dart';
 import 'package:exchange_darr/core/network/http_client.dart';
+import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_exchage_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_syp_usecase.dart';
@@ -50,6 +51,13 @@ class PricesRemoteDataSource with ApiHandler {
     return handleApiCall(
       apiCall: () => httpClient.post(AppEndPoint.getExchageUsd, data: params.getBody()),
       fromJson: (json) => GetExchangeResponse.fromJson(json, false),
+    );
+  }
+
+  Future<Either<Failure, GetCursResponse>> getCurs() async {
+    return handleApiCall(
+      apiCall: () => httpClient.post(AppEndPoint.getCurs),
+      fromJson: (json) => GetCursResponse.fromJson(json),
     );
   }
 }
