@@ -26,6 +26,10 @@ import '../../features/prices/data/repositories/prices_repository_imp.dart'
     as _i426;
 import '../../features/prices/domain/repositories/prices_repository.dart'
     as _i535;
+import '../../features/prices/domain/use_cases/add_exchange_syp_usecase.dart'
+    as _i349;
+import '../../features/prices/domain/use_cases/add_exchange_usd_usecase.dart'
+    as _i554;
 import '../../features/prices/domain/use_cases/avg_prices_usecase.dart'
     as _i419;
 import '../../features/prices/domain/use_cases/get_curs_usecase.dart' as _i508;
@@ -95,14 +99,18 @@ extension GetItInjectableX on _i174.GetIt {
         pricesRepository: gh<_i535.PricesRepository>(),
       ),
     );
+    gh.factory<_i349.AddExchangeSypUsecase>(
+      () => _i349.AddExchangeSypUsecase(
+        pricesRepository: gh<_i535.PricesRepository>(),
+      ),
+    );
+    gh.factory<_i554.AddExchangeUsdUsecase>(
+      () => _i554.AddExchangeUsdUsecase(
+        pricesRepository: gh<_i535.PricesRepository>(),
+      ),
+    );
     gh.factory<_i1012.LoginUsecase>(
       () => _i1012.LoginUsecase(authRepository: gh<_i787.AuthRepository>()),
-    );
-    gh.factory<_i797.AuthBloc>(
-      () => _i797.AuthBloc(loginUsecase: gh<_i1012.LoginUsecase>()),
-    );
-    gh.factory<_i202.HomeBloc>(
-      () => _i202.HomeBloc(avgPricesUsecase: gh<_i419.AvgPricesUsecase>()),
     );
     gh.factory<_i191.PricesBloc>(
       () => _i191.PricesBloc(
@@ -111,7 +119,15 @@ extension GetItInjectableX on _i174.GetIt {
         getExchangeSypUsecase: gh<_i480.GetExchangeSypUsecase>(),
         getExchangeUsdUsecase: gh<_i605.GetExchangeUsdUsecase>(),
         getCursUsecase: gh<_i508.GetCursUsecase>(),
+        addExchangeSypUsecase: gh<_i349.AddExchangeSypUsecase>(),
+        addExchangeUsdUsecase: gh<_i554.AddExchangeUsdUsecase>(),
       ),
+    );
+    gh.factory<_i797.AuthBloc>(
+      () => _i797.AuthBloc(loginUsecase: gh<_i1012.LoginUsecase>()),
+    );
+    gh.factory<_i202.HomeBloc>(
+      () => _i202.HomeBloc(avgPricesUsecase: gh<_i419.AvgPricesUsecase>()),
     );
     return this;
   }

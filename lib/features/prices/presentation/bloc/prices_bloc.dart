@@ -4,6 +4,8 @@ import 'package:exchange_darr/core/datasources/hive_helper.dart';
 import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_exchage_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/add_exchange_syp_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/add_exchange_usd_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_curs_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_syp_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_usd_usecase.dart';
@@ -23,18 +25,23 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
   final GetExchangeSypUsecase getExchangeSypUsecase;
   final GetExchangeUsdUsecase getExchangeUsdUsecase;
   final GetCursUsecase getCursUsecase;
+  final AddExchangeSypUsecase addExchangeSypUsecase;
+  final AddExchangeUsdUsecase addExchangeUsdUsecase;
   PricesBloc({
     required this.getPricesUsecase,
     required this.getUsdPricesUsecase,
     required this.getExchangeSypUsecase,
     required this.getExchangeUsdUsecase,
     required this.getCursUsecase,
+    required this.addExchangeSypUsecase,
+    required this.addExchangeUsdUsecase,
   }) : super(PricesState()) {
     on<GetPricesEvent>(_onGetPricesEvent);
     on<GetUsdPricesEvent>(_onGetUsdPricesEvent);
     on<GetExchangeSypEvent>(_onGetExchangeSypEvent);
     on<GetExchangeUsdEvent>(_onGetExchangeUsdEvent);
     on<GetCursEvent>(_onGetCursEvent);
+    on<AddExchangeEvent>(_onAddExchangeEvent);
   }
   Future<void> _onGetPricesEvent(GetPricesEvent event, Emitter<PricesState> emit) async {
     if (state.getPricesResponse != null && !event.isRefreshScreen) {
@@ -72,6 +79,22 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
     );
   }
 
+  Future<void> _onGetCursEvent(GetCursEvent event, Emitter<PricesState> emit) async {
+    emit(state.copyWith(getCursStatus: Status.loading));
+
+    final result = await getCursUsecase();
+
+    result.fold(
+      (left) {
+        emit(state.copyWith(getCursStatus: Status.failure, errorMessage: left.message));
+      },
+      (right) {
+        add(GetExchangeSypEvent());
+        emit(state.copyWith(getCursStatus: Status.success, getCursResponse: right));
+      },
+    );
+  }
+
   Future<void> _onGetExchangeSypEvent(GetExchangeSypEvent event, Emitter<PricesState> emit) async {
     emit(state.copyWith(getExchangeSypStatus: Status.loading));
     final int? id = await HiveHelper.getFromHive(boxName: AppKeys.userBox, key: AppKeys.userId);
@@ -83,12 +106,8 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
         emit(state.copyWith(getExchangeSypStatus: Status.failure, errorMessage: left.message));
       },
       (right) {
-        emit(
-          state.copyWith(
-            getExchangeSypStatus: Status.success,
-            exchangePrices: [...?state.exchangePrices, ...right.prices],
-          ),
-        );
+        add(GetExchangeUsdEvent());
+        emit(state.copyWith(getExchangeSypStatus: Status.success, getExchangeSypResponse: right));
       },
     );
   }
@@ -107,24 +126,28 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
         emit(
           state.copyWith(
             getUsdPricesStatus: Status.success,
-            exchangePrices: [...?state.exchangePrices, ...right.prices],
+            exchangePrices: [...state.getExchangeSypResponse!.prices, ...right.prices],
           ),
         );
       },
     );
   }
 
-  Future<void> _onGetCursEvent(GetCursEvent event, Emitter<PricesState> emit) async {
-    emit(state.copyWith(getCursStatus: Status.loading));
-
-    final result = await getCursUsecase();
+  Future<void> _onAddExchangeEvent(AddExchangeEvent event, Emitter<PricesState> emit) async {
+    emit(state.copyWith(addExchangeStatus: Status.loading));
+    final dynamic result;
+    if (event.isSyp) {
+      result = await addExchangeSypUsecase(params: event.params);
+    } else {
+      result = await addExchangeUsdUsecase(params: event.params);
+    }
 
     result.fold(
       (left) {
-        emit(state.copyWith(getCursStatus: Status.failure, errorMessage: left.message));
+        emit(state.copyWith(addExchangeStatus: Status.failure, errorMessage: left.message));
       },
       (right) {
-        emit(state.copyWith(getCursStatus: Status.success, getCursResponse: right));
+        emit(state.copyWith(addExchangeStatus: Status.success));
       },
     );
   }

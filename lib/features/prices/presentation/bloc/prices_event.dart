@@ -23,3 +23,10 @@ class GetExchangeSypEvent extends PricesEvent {}
 class GetExchangeUsdEvent extends PricesEvent {}
 
 class GetCursEvent extends PricesEvent {}
+
+class AddExchangeEvent extends PricesEvent {
+  final bool isSyp;
+  final AddExchangeParams params;
+
+  const AddExchangeEvent({this.isSyp = true, required this.params});
+}

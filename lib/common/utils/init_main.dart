@@ -14,9 +14,7 @@ class Initialization {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       SystemChrome.setSystemUIOverlayStyle(
         const SystemUiOverlayStyle(
-          systemNavigationBarContrastEnforced: true,
-          systemStatusBarContrastEnforced: true,
-          systemNavigationBarIconBrightness: Brightness.light,
+          systemNavigationBarIconBrightness: Brightness.dark,
           systemNavigationBarDividerColor: Color(0xff26436c),
           systemNavigationBarColor: Color(0xff26436c),
           statusBarColor: Color(0xff26436c),

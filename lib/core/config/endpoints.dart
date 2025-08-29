@@ -10,4 +10,6 @@ class AppEndPoint {
   static const getExchageSyp = "mysarf_syp";
   static const getExchageUsd = "mysarf_usd";
   static const getCurs = "curs";
+  static const addExchangeUsd = "add_usd";
+  static const addExchangeSyp = "add_syp";
 }

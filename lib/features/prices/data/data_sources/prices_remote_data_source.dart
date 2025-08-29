@@ -6,6 +6,7 @@ import 'package:exchange_darr/core/network/http_client.dart';
 import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_exchage_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/add_exchange_syp_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_syp_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_usd_usecase.dart';
 import 'package:injectable/injectable.dart';
@@ -58,6 +59,20 @@ class PricesRemoteDataSource with ApiHandler {
     return handleApiCall(
       apiCall: () => httpClient.post(AppEndPoint.getCurs),
       fromJson: (json) => GetCursResponse.fromJson(json),
+    );
+  }
+
+  Future<Either<Failure, void>> addExchangeUsd({required AddExchangeParams params}) async {
+    return handleApiCall(
+      apiCall: () => httpClient.post(AppEndPoint.addExchangeUsd, data: params.getBody()),
+      fromJson: (json) => {},
+    );
+  }
+
+  Future<Either<Failure, void>> addExchangeSyp({required AddExchangeParams params}) async {
+    return handleApiCall(
+      apiCall: () => httpClient.post(AppEndPoint.addExchangeSyp, data: params.getBody()),
+      fromJson: (json) => {},
     );
   }
 }

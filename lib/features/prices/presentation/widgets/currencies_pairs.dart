@@ -1,13 +1,15 @@
 import 'package:exchange_darr/common/extentions/colors_extension.dart';
 import 'package:exchange_darr/common/widgets/app_text.dart';
 import 'package:exchange_darr/common/widgets/custom_text_field.dart';
+import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_exchage_response.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class CurrenciesPairs extends StatefulWidget {
   final Price price;
-  const CurrenciesPairs({super.key, required this.price});
+  final List<Cur> curs;
+  const CurrenciesPairs({super.key, required this.price, required this.curs});
 
   @override
   State<CurrenciesPairs> createState() => _CurrenciesPairsState();
@@ -17,6 +19,8 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
   final TextEditingController firstAmountController = TextEditingController();
 
   final TextEditingController secondAmountController = TextEditingController();
+
+  String curName = "";
   String _formatNumber(double value) {
     if (value % 1 == 0) {
       return value.toInt().toString();
@@ -28,6 +32,12 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
   void initState() {
     firstAmountController.text = _formatNumber(double.tryParse(widget.price.buy) ?? 0);
     secondAmountController.text = _formatNumber(double.tryParse(widget.price.sell) ?? 0);
+    final cur = widget.curs.firstWhere(
+      (cur) => cur.id == widget.price.cur,
+      orElse: () => Cur(id: "-1", name: widget.price.cur),
+    );
+    curName = cur.name;
+
     super.initState();
   }
 
@@ -48,12 +58,7 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // AppText.titleLarge("اضف عملة جديدة", color: context.primaryColor, fontWeight: FontWeight.w600),
-              AppText.titleMedium(
-                widget.price.cur,
-                color: context.primaryColor,
-                fontWeight: FontWeight.w600,
-                height: 2,
-              ),
+              AppText.titleMedium(curName, color: context.primaryColor, fontWeight: FontWeight.w600, height: 2),
               Skeleton.ignore(
                 child: AppText.titleMedium("-", color: context.primaryColor, fontWeight: FontWeight.w600, height: 2),
               ),
