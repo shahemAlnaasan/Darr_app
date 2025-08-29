@@ -108,6 +108,7 @@ class _MainScreenContentState extends State<_MainScreenContent> {
   Widget _buildBottomBar() {
     return Container(
       decoration: BoxDecoration(
+        color: context.tertiary,
         border: Border(top: BorderSide(color: context.primaryColor)),
       ),
       child: BottomAppBar(

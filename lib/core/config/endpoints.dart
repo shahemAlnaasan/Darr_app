@@ -7,4 +7,6 @@ class AppEndPoint {
   static const news = 'status';
   static const info = 'info';
   static const login = 'login';
+  static const getExchageSyp = "mysarf_syp";
+  static const getExchageUsd = "mysarf_usd";
 }

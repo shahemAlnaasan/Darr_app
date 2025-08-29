@@ -28,6 +28,10 @@ import '../../features/prices/domain/repositories/prices_repository.dart'
     as _i535;
 import '../../features/prices/domain/use_cases/avg_prices_usecase.dart'
     as _i419;
+import '../../features/prices/domain/use_cases/get_exchange_syp_usecase.dart'
+    as _i480;
+import '../../features/prices/domain/use_cases/get_exchange_usd_usecase.dart'
+    as _i605;
 import '../../features/prices/domain/use_cases/get_prices_usecase.dart'
     as _i960;
 import '../../features/prices/domain/use_cases/get_usd_prices_usecase.dart'
@@ -76,6 +80,16 @@ extension GetItInjectableX on _i174.GetIt {
         pricesRepository: gh<_i535.PricesRepository>(),
       ),
     );
+    gh.factory<_i480.GetExchangeSypUsecase>(
+      () => _i480.GetExchangeSypUsecase(
+        pricesRepository: gh<_i535.PricesRepository>(),
+      ),
+    );
+    gh.factory<_i605.GetExchangeUsdUsecase>(
+      () => _i605.GetExchangeUsdUsecase(
+        pricesRepository: gh<_i535.PricesRepository>(),
+      ),
+    );
     gh.factory<_i1012.LoginUsecase>(
       () => _i1012.LoginUsecase(authRepository: gh<_i787.AuthRepository>()),
     );
@@ -89,6 +103,8 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i191.PricesBloc(
         getPricesUsecase: gh<_i960.GetPricesUsecase>(),
         getUsdPricesUsecase: gh<_i913.GetUsdPricesUsecase>(),
+        getExchangeSypUsecase: gh<_i480.GetExchangeSypUsecase>(),
+        getExchangeUsdUsecase: gh<_i605.GetExchangeUsdUsecase>(),
       ),
     );
     return this;

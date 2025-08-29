@@ -1,10 +1,13 @@
 import 'package:exchange_darr/common/extentions/colors_extension.dart';
 import 'package:exchange_darr/common/widgets/app_text.dart';
 import 'package:exchange_darr/common/widgets/custom_text_field.dart';
+import 'package:exchange_darr/features/prices/data/models/get_exchage_response.dart';
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class CurrenciesPairs extends StatefulWidget {
-  const CurrenciesPairs({super.key});
+  final Price price;
+  const CurrenciesPairs({super.key, required this.price});
 
   @override
   State<CurrenciesPairs> createState() => _CurrenciesPairsState();
@@ -14,6 +17,19 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
   final TextEditingController firstAmountController = TextEditingController();
 
   final TextEditingController secondAmountController = TextEditingController();
+  String _formatNumber(double value) {
+    if (value % 1 == 0) {
+      return value.toInt().toString();
+    }
+    return value.toStringAsFixed(3).replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
+  }
+
+  @override
+  void initState() {
+    firstAmountController.text = _formatNumber(double.tryParse(widget.price.buy) ?? 0);
+    secondAmountController.text = _formatNumber(double.tryParse(widget.price.sell) ?? 0);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +48,21 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // AppText.titleLarge("اضف عملة جديدة", color: context.primaryColor, fontWeight: FontWeight.w600),
-              AppText.titleMedium("دولار", color: context.primaryColor, fontWeight: FontWeight.w600, height: 2),
-              AppText.titleMedium("-", color: context.primaryColor, fontWeight: FontWeight.w600, height: 2),
-              AppText.titleMedium("يورو", color: context.primaryColor, fontWeight: FontWeight.w600, height: 2),
+              AppText.titleMedium(
+                widget.price.cur,
+                color: context.primaryColor,
+                fontWeight: FontWeight.w600,
+                height: 2,
+              ),
+              Skeleton.ignore(
+                child: AppText.titleMedium("-", color: context.primaryColor, fontWeight: FontWeight.w600, height: 2),
+              ),
+              AppText.titleMedium(
+                widget.price.isSyp ? "ليرة سورية" : "دولار",
+                color: context.primaryColor,
+                fontWeight: FontWeight.w600,
+                height: 2,
+              ),
             ],
           ),
         ),
@@ -76,7 +104,7 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
                   Expanded(
                     child: buildTextField(
                       hint: "المبلغ",
-                      controller: firstAmountController,
+                      controller: secondAmountController,
                       keyboardType: TextInputType.number,
                       onChanged: (p0) {},
                     ),
@@ -86,6 +114,7 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
             ],
           ),
         ),
+        SizedBox(height: 10),
       ],
     );
   }
