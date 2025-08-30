@@ -3,6 +3,7 @@ import 'package:exchange_darr/core/models/status_response_model.dart';
 import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_exchage_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart';
+import 'package:exchange_darr/features/prices/data/models/get_prices_uni_response.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/add_exchange_syp_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_syp_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_usd_usecase.dart';
@@ -66,5 +67,10 @@ class PricesRepositoryImp implements PricesRepository {
   @override
   DataResponse<StatusResponseModel> updateExchangeUsd({required UpdateExchangeParams params}) {
     return pricesRemoteDataSource.updateExchangeUsd(params: params);
+  }
+
+  @override
+  DataResponse<List<GetPricesUniResponse>> getPricesUni() {
+    return pricesRemoteDataSource.getPricesUni();
   }
 }

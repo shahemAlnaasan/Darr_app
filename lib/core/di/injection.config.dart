@@ -37,6 +37,8 @@ import '../../features/prices/domain/use_cases/get_exchange_syp_usecase.dart'
     as _i480;
 import '../../features/prices/domain/use_cases/get_exchange_usd_usecase.dart'
     as _i605;
+import '../../features/prices/domain/use_cases/get_prices_uni_usecase.dart'
+    as _i899;
 import '../../features/prices/domain/use_cases/get_prices_usecase.dart'
     as _i960;
 import '../../features/prices/domain/use_cases/get_usd_prices_usecase.dart'
@@ -74,6 +76,16 @@ extension GetItInjectableX on _i174.GetIt {
         pricesRemoteDataSource: gh<_i129.PricesRemoteDataSource>(),
       ),
     );
+    gh.factory<_i349.AddExchangeSypUsecase>(
+      () => _i349.AddExchangeSypUsecase(
+        pricesRepository: gh<_i535.PricesRepository>(),
+      ),
+    );
+    gh.factory<_i554.AddExchangeUsdUsecase>(
+      () => _i554.AddExchangeUsdUsecase(
+        pricesRepository: gh<_i535.PricesRepository>(),
+      ),
+    );
     gh.factory<_i419.AvgPricesUsecase>(
       () => _i419.AvgPricesUsecase(
         pricesRepository: gh<_i535.PricesRepository>(),
@@ -93,6 +105,11 @@ extension GetItInjectableX on _i174.GetIt {
         pricesRepository: gh<_i535.PricesRepository>(),
       ),
     );
+    gh.factory<_i899.GetPricesUniUsecase>(
+      () => _i899.GetPricesUniUsecase(
+        pricesRepository: gh<_i535.PricesRepository>(),
+      ),
+    );
     gh.factory<_i960.GetPricesUsecase>(
       () => _i960.GetPricesUsecase(
         pricesRepository: gh<_i535.PricesRepository>(),
@@ -100,16 +117,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i913.GetUsdPricesUsecase>(
       () => _i913.GetUsdPricesUsecase(
-        pricesRepository: gh<_i535.PricesRepository>(),
-      ),
-    );
-    gh.factory<_i349.AddExchangeSypUsecase>(
-      () => _i349.AddExchangeSypUsecase(
-        pricesRepository: gh<_i535.PricesRepository>(),
-      ),
-    );
-    gh.factory<_i554.AddExchangeUsdUsecase>(
-      () => _i554.AddExchangeUsdUsecase(
         pricesRepository: gh<_i535.PricesRepository>(),
       ),
     );
@@ -140,6 +147,7 @@ extension GetItInjectableX on _i174.GetIt {
         addExchangeUsdUsecase: gh<_i554.AddExchangeUsdUsecase>(),
         updateExchangeSypUsecase: gh<_i1071.UpdateExchangeSypUsecase>(),
         updateExchangeUsdUsecase: gh<_i151.UpdateExchangeUsdUsecase>(),
+        getPricesUniUsecase: gh<_i899.GetPricesUniUsecase>(),
       ),
     );
     gh.factory<_i202.HomeBloc>(

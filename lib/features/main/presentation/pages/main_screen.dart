@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:exchange_darr/features/home/presentation/pages/home_screen.dart';
 import 'package:exchange_darr/features/prices/presentation/pages/best_prices_screen.dart';
 import 'package:exchange_darr/features/prices/presentation/pages/my_prices_screen.dart';
+import 'package:exchange_darr/features/prices/presentation/pages/dollar_prices_screen.dart';
 import 'package:exchange_darr/features/prices/presentation/pages/world_prices_screen.dart';
 import 'package:exchange_darr/generated/assets.gen.dart';
 import 'package:exchange_darr/generated/locale_keys.g.dart';
@@ -12,7 +13,7 @@ import '../../../../common/widgets/app_text.dart';
 import '../widgets/main_appbar.dart';
 
 class MainScreen extends StatelessWidget {
-  final int? selectedIndex; // 👈 optional index
+  final int? selectedIndex;
 
   const MainScreen({super.key, this.selectedIndex});
 
@@ -45,14 +46,17 @@ class _MainScreenContentState extends State<_MainScreenContent> {
     0: GlobalKey<NavigatorState>(),
     1: GlobalKey<NavigatorState>(),
     2: GlobalKey<NavigatorState>(),
+    3: GlobalKey<NavigatorState>(),
+    4: GlobalKey<NavigatorState>(),
+    // 5: GlobalKey<NavigatorState>(),
   };
 
   final List<Widget> _rootScreens = [
     const HomeScreen(),
     const BestPricesScreen(),
+    const DollarPricesScreen(),
     const WorldPricesScreen(),
-    const WorldPricesScreen(),
-    const WorldPricesScreen(),
+    // const DollarPricesScreen(),
     const PageDecider(),
   ];
 
@@ -110,23 +114,23 @@ class _MainScreenContentState extends State<_MainScreenContent> {
   Widget _buildBottomBar() {
     return Container(
       decoration: BoxDecoration(
-        color: context.tertiary,
-        border: Border(top: BorderSide(color: context.primaryColor)),
+        color: context.primaryColor,
+        border: Border(top: BorderSide(color: context.onPrimaryColor, width: 2)),
       ),
       child: BottomAppBar(
         notchMargin: 16,
         padding: const EdgeInsets.only(bottom: 2, top: 1),
         height: 75,
-        color: context.tertiary,
+        color: context.background,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: List.generate(6, (index) {
+          children: List.generate(5, (index) {
             final icons = [
               Assets.images.navbar.home.path,
               Assets.images.bestPrice.path,
               Assets.images.dollar.path,
               Assets.images.world.path,
-              Assets.images.news.path,
+              // Assets.images.news.path,
               Assets.images.user.path,
             ];
             return Expanded(
@@ -155,7 +159,7 @@ class _MainScreenContentState extends State<_MainScreenContent> {
               child: Image.asset(
                 icon,
                 scale: isSelected ? 5.5 : 6,
-                color: isSelected ? context.primaryColor : context.primaryColor.withAlpha(150),
+                color: isSelected ? context.primaryContainer : context.onPrimaryColor,
                 alignment: Alignment.bottomCenter,
               ),
             ),
@@ -170,11 +174,11 @@ class _MainScreenContentState extends State<_MainScreenContent> {
                     "افضل الاسعار",
                     "اسعار الدولار",
                     "الاسعار العالمية",
-                    "الاخبار",
+                    // "الاخبار",
                     "اسعاري",
                   ][index],
                   style: context.textTheme.labelMedium!.copyWith(
-                    color: isSelected ? context.primaryColor : context.primaryColor.withAlpha(150),
+                    color: isSelected ? context.primaryContainer : context.onPrimaryColor,
                     fontWeight: FontWeight.w900,
                     fontSize: 12,
                   ),

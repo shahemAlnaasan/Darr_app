@@ -40,7 +40,7 @@ class ExchangePriceContainer extends StatelessWidget {
     );
     final sellCur = parms.curs.firstWhere(
       (cur) => cur.id == parms.sellCur,
-      orElse: () => Cur(id: "-1", name: parms.buyCur),
+      orElse: () => Cur(id: "-1", name: parms.sellCur),
     );
 
     final buyCurName = buyCur.name;
@@ -100,7 +100,7 @@ class ExchangePriceContainer extends StatelessWidget {
         Container(
           padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
           decoration: BoxDecoration(
-            color: context.onTertiary,
+            color: context.primaryContainer,
             borderRadius: BorderRadius.circular(8),
             boxShadow: [BoxShadow(color: const Color(0x20000000), blurRadius: 5, offset: const Offset(0, 0))],
           ),
@@ -111,18 +111,26 @@ class ExchangePriceContainer extends StatelessWidget {
                 spacing: 10,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildSubContainer(context, title: "الشراء"),
+                  _buildSubContainer(context, title: "الشراء", color: const Color.fromARGB(255, 59, 135, 61)),
                   SizedBox(width: 30),
-                  _buildSubContainer(context, title: "البيع"),
+                  _buildSubContainer(context, title: "البيع", color: const Color.fromARGB(255, 201, 55, 45)),
                 ],
               ),
               Row(
                 spacing: 10,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildSubContainer(context, title: formatPrice(parms.buyPrice)),
+                  _buildSubContainer(
+                    context,
+                    title: formatPrice(parms.buyPrice),
+                    color: const Color.fromARGB(255, 59, 135, 61),
+                  ),
                   SizedBox(width: 30),
-                  _buildSubContainer(context, title: formatPrice(parms.sellPrice)),
+                  _buildSubContainer(
+                    context,
+                    title: formatPrice(parms.sellPrice),
+                    color: const Color.fromARGB(255, 201, 55, 45),
+                  ),
                 ],
               ),
             ],
@@ -134,12 +142,16 @@ class ExchangePriceContainer extends StatelessWidget {
   }
 }
 
-Widget _buildSubContainer(BuildContext context, {required String title}) {
+Widget _buildSubContainer(BuildContext context, {required String title, Color color = Colors.white}) {
   return Expanded(
     child: Container(
       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
       margin: EdgeInsets.symmetric(horizontal: 3),
-      decoration: BoxDecoration(color: context.primaryColor, borderRadius: BorderRadius.circular(5)),
+      decoration: BoxDecoration(
+        color: context.primaryColor,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color, width: 3),
+      ),
       child: Skeleton.ignore(
         child: Row(
           spacing: 10,

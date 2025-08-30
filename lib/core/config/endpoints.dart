@@ -4,6 +4,7 @@ class AppEndPoint {
   static const getPrices = 'prices';
   static const getUsdPrices = 'prices_usd';
   static const avgPrices = 'avg_prices';
+  static const getPricesUni = 'prices_uni';
   static const news = 'status';
   static const info = 'info';
   static const login = 'login';

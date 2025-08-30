@@ -18,6 +18,12 @@ class GetUsdPricesEvent extends PricesEvent {
   const GetUsdPricesEvent({this.isRefreshScreen = false});
 }
 
+class GetUniPricesEvent extends PricesEvent {
+  final bool isRefreshScreen;
+
+  const GetUniPricesEvent({this.isRefreshScreen = false});
+}
+
 class GetExchangeSypEvent extends PricesEvent {}
 
 class GetExchangeUsdEvent extends PricesEvent {}

@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // ),
         ],
         child: Scaffold(
-          backgroundColor: context.tertiary,
+          backgroundColor: context.background,
           body: Container(
             width: context.screenWidth,
             padding: EdgeInsets.symmetric(horizontal: 20),
@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             "متوسط الاسعار للمحافظات:",
                             textAlign: TextAlign.right,
                             fontWeight: FontWeight.bold,
-                            color: context.primaryColor,
+                            color: context.onPrimaryColor,
                           ),
                         ),
                         SizedBox(height: 20),
@@ -110,10 +110,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                 itemBuilder: (context, cityIndex) {
                                   final city = cities[cityIndex];
 
+                                  final initCurrencyMap = city.currencies[0];
+                                  final initCurrencyKey = initCurrencyMap.keys.first;
+                                  final initType = initCurrencyMap[initCurrencyKey]!;
+
                                   return Padding(
-                                    padding: const EdgeInsets.only(bottom: 10.0),
+                                    padding: const EdgeInsets.only(bottom: 5.0),
                                     child: SosDropdown(
                                       dropDownTitle: city.cityName,
+                                      initChild: ExchangePriceContainer(
+                                        parms: PriceContainerParms(
+                                          buyCur: initCurrencyKey,
+                                          buyPrice: initType.buy.toString(),
+                                          sellCur: "syp",
+                                          sellPrice: initType.sell.toString(),
+                                          curs: curs,
+                                        ),
+                                      ),
                                       childrens: ListView.builder(
                                         shrinkWrap: true,
                                         physics: NeverScrollableScrollPhysics(),

@@ -145,7 +145,9 @@ class _MyPricesScreenState extends State<MyPricesScreen> {
                           SizedBox(height: 10),
                           BlocBuilder<PricesBloc, PricesState>(
                             builder: (context, state) {
-                              if (state.getUsdPricesStatus != Status.success) {
+                              if (state.getUsdPricesStatus == Status.loading ||
+                                  state.getUsdPricesStatus == Status.initial ||
+                                  state.getCursStatus == Status.loading) {
                                 return ListView.builder(
                                   physics: NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
@@ -176,8 +178,7 @@ class _MyPricesScreenState extends State<MyPricesScreen> {
                                 );
                               }
 
-                              if (state.getExchangeSypStatus == Status.failure &&
-                                  state.getExchangeUsdStatus == Status.failure) {
+                              if (state.getExchangeUsdStatus == Status.failure) {
                                 return Center(
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,

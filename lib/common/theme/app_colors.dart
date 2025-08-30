@@ -11,21 +11,21 @@ class ThemesColorScheme {
     onPrimary: Color(0xff1C1C1E),
     secondary: Color.fromARGB(201, 1, 1, 1),
     onSecondary: Colors.black,
-    tertiary: Color.fromARGB(230, 37, 45, 57),
-    onTertiary: Color.fromARGB(230, 50, 61, 78),
+    tertiary: Color(0xff032139),
+    onTertiary: Color.fromARGB(255, 50, 61, 78),
     error: Color(0xffff5d5a),
     surfaceContainer: Color.fromARGB(255, 40, 78, 133),
     onError: Colors.white,
 
     // app background as light grey
-    background: _mainOrange,
+    background: Color(0xffF0F0F0),
     onBackground: Color(0xff1C1C1E),
 
     // surface elements white
     surface: Colors.white,
     onSurface: Color(0xff1C1C1E),
 
-    primaryContainer: Color(0xffff6117),
+    primaryContainer: Color(0xffe1b248),
     onPrimaryContainer: Color(0xffEDEDED),
     secondaryContainer: Color(0xffFFF0E6),
     onSecondaryContainer: Color(0xff2C2C2E),

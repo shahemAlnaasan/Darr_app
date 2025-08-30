@@ -4,11 +4,13 @@ import 'package:exchange_darr/core/datasources/hive_helper.dart';
 import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_exchage_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart';
+import 'package:exchange_darr/features/prices/data/models/get_prices_uni_response.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/add_exchange_syp_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/add_exchange_usd_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_curs_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_syp_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_usd_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/get_prices_uni_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_prices_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_usd_prices_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/update_exchange_syp_usecase.dart';
@@ -24,6 +26,7 @@ part 'prices_state.dart';
 class PricesBloc extends Bloc<PricesEvent, PricesState> {
   final GetPricesUsecase getPricesUsecase;
   final GetUsdPricesUsecase getUsdPricesUsecase;
+  final GetPricesUniUsecase getPricesUniUsecase;
   final GetExchangeSypUsecase getExchangeSypUsecase;
   final GetExchangeUsdUsecase getExchangeUsdUsecase;
   final GetCursUsecase getCursUsecase;
@@ -41,6 +44,7 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
     required this.addExchangeUsdUsecase,
     required this.updateExchangeSypUsecase,
     required this.updateExchangeUsdUsecase,
+    required this.getPricesUniUsecase,
   }) : super(PricesState()) {
     on<GetPricesEvent>(_onGetPricesEvent);
     on<GetUsdPricesEvent>(_onGetUsdPricesEvent);
@@ -49,6 +53,7 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
     on<GetCursEvent>(_onGetCursEvent);
     on<AddExchangeEvent>(_onAddExchangeEvent);
     on<UpdateExchangeEvent>(_onUpdateExchangeEvent);
+    on<GetUniPricesEvent>(_onGetUniPricesEvent);
   }
   Future<void> _onGetPricesEvent(GetPricesEvent event, Emitter<PricesState> emit) async {
     if (state.getPricesResponse != null && !event.isRefreshScreen) {
@@ -86,6 +91,24 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
     );
   }
 
+  Future<void> _onGetUniPricesEvent(GetUniPricesEvent event, Emitter<PricesState> emit) async {
+    if (state.getUniPricesStatus != null && !event.isRefreshScreen) {
+      emit(state.copyWith(isRefreshUsdPrices: true));
+    } else {
+      emit(state.copyWith(getUniPricesStatus: Status.loading));
+    }
+    final result = await getPricesUniUsecase();
+
+    result.fold(
+      (left) {
+        emit(state.copyWith(getUniPricesStatus: Status.failure, errorMessage: left.message));
+      },
+      (right) {
+        emit(state.copyWith(getUniPricesStatus: Status.success, getPricesUniResponse: right));
+      },
+    );
+  }
+
   Future<void> _onGetCursEvent(GetCursEvent event, Emitter<PricesState> emit) async {
     emit(state.copyWith(getCursStatus: Status.loading));
 
@@ -97,7 +120,7 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
       },
       (right) {
         add(GetExchangeSypEvent());
-        emit(state.copyWith(getCursStatus: Status.success, getCursResponse: right));
+        emit(state.copyWith(getCursResponse: right));
       },
     );
   }
@@ -114,7 +137,13 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
       },
       (right) {
         add(GetExchangeUsdEvent());
-        emit(state.copyWith(getExchangeSypStatus: Status.success, getExchangeSypResponse: right));
+        emit(
+          state.copyWith(
+            getExchangeSypStatus: Status.success,
+            getExchangeSypResponse: right,
+            getCursStatus: Status.success,
+          ),
+        );
       },
     );
   }
@@ -133,6 +162,7 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
         emit(
           state.copyWith(
             getUsdPricesStatus: Status.success,
+            getCursStatus: Status.success,
             exchangePrices: [...state.getExchangeSypResponse!.prices, ...right.prices],
           ),
         );

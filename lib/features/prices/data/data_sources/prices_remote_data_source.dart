@@ -7,6 +7,7 @@ import 'package:exchange_darr/core/network/http_client.dart';
 import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_exchage_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart';
+import 'package:exchange_darr/features/prices/data/models/get_prices_uni_response.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/add_exchange_syp_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_syp_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_usd_usecase.dart';
@@ -90,6 +91,14 @@ class PricesRemoteDataSource with ApiHandler {
     return handleApiCall(
       apiCall: () => httpClient.post(AppEndPoint.updateExchangeUsd, data: params.getBody()),
       fromJson: (json) => StatusResponseModel.fromJson(json),
+    );
+  }
+
+  Future<Either<Failure, List<GetPricesUniResponse>>> getPricesUni() async {
+    return handleApiCall(
+      apiCall: () => httpClient.post(AppEndPoint.getPricesUni),
+      fromJson: (json) => (json as List).map((e) => GetPricesUniResponse.fromJson(e)).toList(),
+      validateApi: false,
     );
   }
 }

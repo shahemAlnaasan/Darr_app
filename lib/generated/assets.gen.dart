@@ -21,6 +21,9 @@ class $AssetsImagesGen {
   /// File path: assets/images/dollar.png
   AssetGenImage get dollar => const AssetGenImage('assets/images/dollar.png');
 
+  /// Directory path: assets/images/logo
+  $AssetsImagesLogoGen get logo => const $AssetsImagesLogoGen();
+
   /// File path: assets/images/logout.png
   AssetGenImage get logout => const AssetGenImage('assets/images/logout.png');
 
@@ -57,6 +60,25 @@ class $AssetsTranslationsGen {
   List<String> get values => [ar];
 }
 
+class $AssetsImagesLogoGen {
+  const $AssetsImagesLogoGen();
+
+  /// File path: assets/images/logo/android_12_splash.png
+  AssetGenImage get android12Splash =>
+      const AssetGenImage('assets/images/logo/android_12_splash.png');
+
+  /// File path: assets/images/logo/company_logo.png
+  AssetGenImage get companyLogo =>
+      const AssetGenImage('assets/images/logo/company_logo.png');
+
+  /// File path: assets/images/logo/splash_logo.png
+  AssetGenImage get splashLogo =>
+      const AssetGenImage('assets/images/logo/splash_logo.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [android12Splash, companyLogo, splashLogo];
+}
+
 class $AssetsImagesNavbarGen {
   const $AssetsImagesNavbarGen();
 
@@ -64,8 +86,20 @@ class $AssetsImagesNavbarGen {
   AssetGenImage get home =>
       const AssetGenImage('assets/images/navbar/home.png');
 
+  /// File path: assets/images/navbar/light_mode.png
+  AssetGenImage get lightMode =>
+      const AssetGenImage('assets/images/navbar/light_mode.png');
+
+  /// File path: assets/images/navbar/logout.png
+  AssetGenImage get logout =>
+      const AssetGenImage('assets/images/navbar/logout.png');
+
+  /// File path: assets/images/navbar/night_mode.png
+  AssetGenImage get nightMode =>
+      const AssetGenImage('assets/images/navbar/night_mode.png');
+
   /// List of all assets
-  List<AssetGenImage> get values => [home];
+  List<AssetGenImage> get values => [home, lightMode, logout, nightMode];
 }
 
 class Assets {
