@@ -12,3 +12,11 @@ class GetAvgPrices extends HomeEvent {
 
   const GetAvgPrices({this.isRefreshScreen = false});
 }
+
+class GetCursEvent extends HomeEvent {}
+
+class GetPricesEvent extends HomeEvent {
+  final bool isRefreshScreen;
+
+  const GetPricesEvent({this.isRefreshScreen = false});
+}

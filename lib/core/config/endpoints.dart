@@ -12,4 +12,6 @@ class AppEndPoint {
   static const getCurs = "curs";
   static const addExchangeUsd = "add_usd";
   static const addExchangeSyp = "add_syp";
+  static const updateExchangeSyp = "update_syp";
+  static const updateExchangeUsd = "update_usd";
 }

@@ -41,6 +41,10 @@ import '../../features/prices/domain/use_cases/get_prices_usecase.dart'
     as _i960;
 import '../../features/prices/domain/use_cases/get_usd_prices_usecase.dart'
     as _i913;
+import '../../features/prices/domain/use_cases/update_exchange_syp_usecase.dart'
+    as _i1071;
+import '../../features/prices/domain/use_cases/update_exchange_usd_usecase.dart'
+    as _i151;
 import '../../features/prices/presentation/bloc/prices_bloc.dart' as _i191;
 import '../datasources/hive_helper.dart' as _i330;
 import '../network/http_client.dart' as _i1069;
@@ -109,8 +113,21 @@ extension GetItInjectableX on _i174.GetIt {
         pricesRepository: gh<_i535.PricesRepository>(),
       ),
     );
+    gh.factory<_i1071.UpdateExchangeSypUsecase>(
+      () => _i1071.UpdateExchangeSypUsecase(
+        pricesRepository: gh<_i535.PricesRepository>(),
+      ),
+    );
+    gh.factory<_i151.UpdateExchangeUsdUsecase>(
+      () => _i151.UpdateExchangeUsdUsecase(
+        pricesRepository: gh<_i535.PricesRepository>(),
+      ),
+    );
     gh.factory<_i1012.LoginUsecase>(
       () => _i1012.LoginUsecase(authRepository: gh<_i787.AuthRepository>()),
+    );
+    gh.factory<_i797.AuthBloc>(
+      () => _i797.AuthBloc(loginUsecase: gh<_i1012.LoginUsecase>()),
     );
     gh.factory<_i191.PricesBloc>(
       () => _i191.PricesBloc(
@@ -121,13 +138,16 @@ extension GetItInjectableX on _i174.GetIt {
         getCursUsecase: gh<_i508.GetCursUsecase>(),
         addExchangeSypUsecase: gh<_i349.AddExchangeSypUsecase>(),
         addExchangeUsdUsecase: gh<_i554.AddExchangeUsdUsecase>(),
+        updateExchangeSypUsecase: gh<_i1071.UpdateExchangeSypUsecase>(),
+        updateExchangeUsdUsecase: gh<_i151.UpdateExchangeUsdUsecase>(),
       ),
     );
-    gh.factory<_i797.AuthBloc>(
-      () => _i797.AuthBloc(loginUsecase: gh<_i1012.LoginUsecase>()),
-    );
     gh.factory<_i202.HomeBloc>(
-      () => _i202.HomeBloc(avgPricesUsecase: gh<_i419.AvgPricesUsecase>()),
+      () => _i202.HomeBloc(
+        avgPricesUsecase: gh<_i419.AvgPricesUsecase>(),
+        getCursUsecase: gh<_i508.GetCursUsecase>(),
+        getPricesUsecase: gh<_i960.GetPricesUsecase>(),
+      ),
     );
     return this;
   }

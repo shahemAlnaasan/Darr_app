@@ -89,8 +89,8 @@ class Currency {
     return Currency(
       code: code,
       currencyName: json['currency_name'] ?? "",
-      buy: json['buy'] ?? "0",
-      sell: json['sell'] ?? "0",
+      buy: json['buy']?.toString() ?? "0",
+      sell: json['sell']?.toString() ?? "0",
     );
   }
 

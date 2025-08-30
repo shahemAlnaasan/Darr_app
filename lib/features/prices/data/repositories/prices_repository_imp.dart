@@ -1,10 +1,12 @@
 import 'package:exchange_darr/common/consts/typedef.dart';
+import 'package:exchange_darr/core/models/status_response_model.dart';
 import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_exchage_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/add_exchange_syp_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_syp_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_usd_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/update_exchange_syp_usecase.dart';
 import 'package:injectable/injectable.dart';
 import '../../domain/repositories/prices_repository.dart';
 import '../data_sources/prices_remote_data_source.dart';
@@ -47,12 +49,22 @@ class PricesRepositoryImp implements PricesRepository {
   }
 
   @override
-  DataResponse<void> addExchangeUsd({required AddExchangeParams params}) {
+  DataResponse<StatusResponseModel> addExchangeUsd({required AddExchangeParams params}) {
     return pricesRemoteDataSource.addExchangeUsd(params: params);
   }
 
   @override
-  DataResponse<void> addExchangeSyp({required AddExchangeParams params}) {
+  DataResponse<StatusResponseModel> addExchangeSyp({required AddExchangeParams params}) {
     return pricesRemoteDataSource.addExchangeSyp(params: params);
+  }
+
+  @override
+  DataResponse<StatusResponseModel> updateExchangeSyp({required UpdateExchangeParams params}) {
+    return pricesRemoteDataSource.updateExchangeSyp(params: params);
+  }
+
+  @override
+  DataResponse<StatusResponseModel> updateExchangeUsd({required UpdateExchangeParams params}) {
+    return pricesRemoteDataSource.updateExchangeUsd(params: params);
   }
 }

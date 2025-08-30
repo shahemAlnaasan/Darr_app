@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:exchange_darr/core/config/endpoints.dart';
+import 'package:exchange_darr/core/models/status_response_model.dart';
 import 'package:exchange_darr/core/network/api_handler.dart';
 import 'package:exchange_darr/core/network/exceptions.dart';
 import 'package:exchange_darr/core/network/http_client.dart';
@@ -9,6 +10,7 @@ import 'package:exchange_darr/features/prices/data/models/get_prices_response.da
 import 'package:exchange_darr/features/prices/domain/use_cases/add_exchange_syp_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_syp_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_usd_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/update_exchange_syp_usecase.dart';
 import 'package:injectable/injectable.dart';
 import '../models/avg_prices_response.dart';
 
@@ -30,6 +32,7 @@ class PricesRemoteDataSource with ApiHandler {
     return handleApiCall(
       apiCall: () => httpClient.post(AppEndPoint.getPrices),
       fromJson: (json) => GetPricesResponse.fromJson(json),
+      validateApi: false,
     );
   }
 
@@ -62,17 +65,31 @@ class PricesRemoteDataSource with ApiHandler {
     );
   }
 
-  Future<Either<Failure, void>> addExchangeUsd({required AddExchangeParams params}) async {
+  Future<Either<Failure, StatusResponseModel>> addExchangeUsd({required AddExchangeParams params}) async {
     return handleApiCall(
       apiCall: () => httpClient.post(AppEndPoint.addExchangeUsd, data: params.getBody()),
-      fromJson: (json) => {},
+      fromJson: (json) => StatusResponseModel.fromJson(json),
     );
   }
 
-  Future<Either<Failure, void>> addExchangeSyp({required AddExchangeParams params}) async {
+  Future<Either<Failure, StatusResponseModel>> addExchangeSyp({required AddExchangeParams params}) async {
     return handleApiCall(
       apiCall: () => httpClient.post(AppEndPoint.addExchangeSyp, data: params.getBody()),
-      fromJson: (json) => {},
+      fromJson: (json) => StatusResponseModel.fromJson(json),
+    );
+  }
+
+  Future<Either<Failure, StatusResponseModel>> updateExchangeSyp({required UpdateExchangeParams params}) async {
+    return handleApiCall(
+      apiCall: () => httpClient.post(AppEndPoint.updateExchangeSyp, data: params.getBody()),
+      fromJson: (json) => StatusResponseModel.fromJson(json),
+    );
+  }
+
+  Future<Either<Failure, StatusResponseModel>> updateExchangeUsd({required UpdateExchangeParams params}) async {
+    return handleApiCall(
+      apiCall: () => httpClient.post(AppEndPoint.updateExchangeUsd, data: params.getBody()),
+      fromJson: (json) => StatusResponseModel.fromJson(json),
     );
   }
 }

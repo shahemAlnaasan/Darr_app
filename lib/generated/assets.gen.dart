@@ -27,11 +27,24 @@ class $AssetsImagesGen {
   /// Directory path: assets/images/navbar
   $AssetsImagesNavbarGen get navbar => const $AssetsImagesNavbarGen();
 
+  /// File path: assets/images/news.png
+  AssetGenImage get news => const AssetGenImage('assets/images/news.png');
+
+  /// File path: assets/images/user.png
+  AssetGenImage get user => const AssetGenImage('assets/images/user.png');
+
   /// File path: assets/images/world.png
   AssetGenImage get world => const AssetGenImage('assets/images/world.png');
 
   /// List of all assets
-  List<AssetGenImage> get values => [bestPrice, dollar, logout, world];
+  List<AssetGenImage> get values => [
+    bestPrice,
+    dollar,
+    logout,
+    news,
+    user,
+    world,
+  ];
 }
 
 class $AssetsTranslationsGen {

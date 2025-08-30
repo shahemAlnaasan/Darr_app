@@ -81,18 +81,11 @@ class _MyPricesScreenState extends State<MyPricesScreen> {
           child: AddCurrencyBottomSheet(curs: curs, prices: prices),
         );
       },
-    ).then((result) {
-      if (result == true) {
-        log("pop with true");
-        _onRefresh(context);
-      }
-    });
+    );
   }
 
   Future<void> _onRefresh(BuildContext context) async {
-    context.read<PricesBloc>()
-      ..add(GetExchangeSypEvent())
-      ..add(GetCursEvent());
+    context.read<PricesBloc>().add(GetCursEvent());
   }
 
   List<Cur> curs = [];

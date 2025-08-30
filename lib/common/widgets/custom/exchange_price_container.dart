@@ -1,5 +1,5 @@
 import 'package:exchange_darr/common/extentions/colors_extension.dart';
-import 'package:exchange_darr/common/widgets/custom/bouncing_arrow.dart';
+import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -8,8 +8,15 @@ class PriceContainerParms {
   final String buyPrice;
   final String sellCur;
   final String sellPrice;
+  final List<Cur> curs;
 
-  PriceContainerParms({required this.buyCur, required this.buyPrice, required this.sellCur, required this.sellPrice});
+  PriceContainerParms({
+    required this.buyCur,
+    required this.buyPrice,
+    required this.sellCur,
+    required this.sellPrice,
+    required this.curs,
+  });
 }
 
 class ExchangePriceContainer extends StatelessWidget {
@@ -27,10 +34,17 @@ class ExchangePriceContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final List<Map<String, Type>> Price = cityPrices.currencies;
-    // final curName = Price.
-    // final from = buyPrice?.curfrom ?? sellPrice?.curfrom ?? "";
-    // final to = buyPrice?.curto ?? sellPrice?.curto ?? "";
+    final buyCur = parms.curs.firstWhere(
+      (cur) => cur.id == parms.buyCur,
+      orElse: () => Cur(id: "-1", name: parms.buyCur),
+    );
+    final sellCur = parms.curs.firstWhere(
+      (cur) => cur.id == parms.sellCur,
+      orElse: () => Cur(id: "-1", name: parms.buyCur),
+    );
+
+    final buyCurName = buyCur.name;
+    final sellCurName = sellCur.name;
 
     return Column(
       spacing: 5,
@@ -41,9 +55,10 @@ class ExchangePriceContainer extends StatelessWidget {
         Container(
           padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
           decoration: BoxDecoration(
-            color: context.tertiary,
+            color: context.onTertiary,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: context.primaryColor.withAlpha(200), width: 3),
+            // border: Border.all(width: 3),
+            boxShadow: [BoxShadow(color: const Color(0x20000000), blurRadius: 5, offset: const Offset(0, 0))],
           ),
           child: Skeleton.ignore(
             child: Row(
@@ -61,7 +76,7 @@ class ExchangePriceContainer extends StatelessWidget {
                 //   },
                 // ),
                 Text(
-                  "${parms.sellCur} - ${parms.buyCur}",
+                  "$sellCurName - $buyCurName",
                   style: TextStyle(color: context.primaryColor, fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 // Image.network(
@@ -85,9 +100,9 @@ class ExchangePriceContainer extends StatelessWidget {
         Container(
           padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
           decoration: BoxDecoration(
-            color: context.tertiary,
+            color: context.onTertiary,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: context.primaryColor.withAlpha(200), width: 3),
+            boxShadow: [BoxShadow(color: const Color(0x20000000), blurRadius: 5, offset: const Offset(0, 0))],
           ),
           child: Column(
             spacing: 20,
@@ -97,7 +112,7 @@ class ExchangePriceContainer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _buildSubContainer(context, title: "الشراء"),
-                  BouncingArrow(bounceUp: true, icon: Icons.keyboard_arrow_up_rounded, color: Colors.green),
+                  SizedBox(width: 30),
                   _buildSubContainer(context, title: "البيع"),
                 ],
               ),
@@ -106,7 +121,7 @@ class ExchangePriceContainer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _buildSubContainer(context, title: formatPrice(parms.buyPrice)),
-                  BouncingArrow(bounceUp: false, icon: Icons.keyboard_arrow_down_rounded, color: Colors.red),
+                  SizedBox(width: 30),
                   _buildSubContainer(context, title: formatPrice(parms.sellPrice)),
                 ],
               ),

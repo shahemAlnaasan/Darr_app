@@ -1,4 +1,3 @@
-
 // ignore_for_file: deprecated_member_use
 
 import 'dart:ui' as ui;
@@ -67,11 +66,7 @@ class AppText extends StatelessWidget {
           )
         : Text(
             text,
-            style: style?.copyWith(
-              color: color,
-              textBaseline: TextBaseline.alphabetic,
-              height: height,
-            ),
+            style: style?.copyWith(color: color, textBaseline: TextBaseline.alphabetic, height: height),
             key: key,
             locale: locale,
             maxLines: maxLines,
@@ -459,4 +454,3 @@ class AppText extends StatelessWidget {
     this.height,
   }) : style = textTheme.bodySmall?.merge(style).copyWith(fontWeight: fontWeight);
 }
-

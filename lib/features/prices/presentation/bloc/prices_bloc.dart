@@ -11,6 +11,8 @@ import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_syp_
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_usd_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_prices_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_usd_prices_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/update_exchange_syp_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/update_exchange_usd_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
@@ -27,6 +29,8 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
   final GetCursUsecase getCursUsecase;
   final AddExchangeSypUsecase addExchangeSypUsecase;
   final AddExchangeUsdUsecase addExchangeUsdUsecase;
+  final UpdateExchangeSypUsecase updateExchangeSypUsecase;
+  final UpdateExchangeUsdUsecase updateExchangeUsdUsecase;
   PricesBloc({
     required this.getPricesUsecase,
     required this.getUsdPricesUsecase,
@@ -35,6 +39,8 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
     required this.getCursUsecase,
     required this.addExchangeSypUsecase,
     required this.addExchangeUsdUsecase,
+    required this.updateExchangeSypUsecase,
+    required this.updateExchangeUsdUsecase,
   }) : super(PricesState()) {
     on<GetPricesEvent>(_onGetPricesEvent);
     on<GetUsdPricesEvent>(_onGetUsdPricesEvent);
@@ -42,6 +48,7 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
     on<GetExchangeUsdEvent>(_onGetExchangeUsdEvent);
     on<GetCursEvent>(_onGetCursEvent);
     on<AddExchangeEvent>(_onAddExchangeEvent);
+    on<UpdateExchangeEvent>(_onUpdateExchangeEvent);
   }
   Future<void> _onGetPricesEvent(GetPricesEvent event, Emitter<PricesState> emit) async {
     if (state.getPricesResponse != null && !event.isRefreshScreen) {
@@ -148,6 +155,25 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
       },
       (right) {
         emit(state.copyWith(addExchangeStatus: Status.success));
+      },
+    );
+  }
+
+  Future<void> _onUpdateExchangeEvent(UpdateExchangeEvent event, Emitter<PricesState> emit) async {
+    emit(state.copyWith(updateExchangeStatus: Status.loading));
+    final dynamic result;
+    if (event.isSyp) {
+      result = await updateExchangeSypUsecase(params: event.params);
+    } else {
+      result = await updateExchangeUsdUsecase(params: event.params);
+    }
+
+    result.fold(
+      (left) {
+        emit(state.copyWith(updateExchangeStatus: Status.failure, errorMessage: left.message));
+      },
+      (right) {
+        emit(state.copyWith(updateExchangeStatus: Status.success));
       },
     );
   }

@@ -1,3 +1,5 @@
+import 'package:exchange_darr/core/models/status_response_model.dart';
+
 import '../../../../common/consts/typedef.dart';
 import '../repositories/prices_repository.dart';
 import 'package:injectable/injectable.dart';
@@ -8,7 +10,7 @@ class AddExchangeSypUsecase {
 
   AddExchangeSypUsecase({required this.pricesRepository});
 
-  DataResponse<void> call({required AddExchangeParams params}) {
+  DataResponse<StatusResponseModel> call({required AddExchangeParams params}) {
     return pricesRepository.addExchangeSyp(params: params);
   }
 }

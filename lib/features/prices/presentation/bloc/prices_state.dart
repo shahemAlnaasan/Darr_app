@@ -7,6 +7,7 @@ class PricesState extends Equatable {
   final Status? getExchangeUsdStatus;
   final Status? getCursStatus;
   final Status? addExchangeStatus;
+  final Status? updateExchangeStatus;
   final GetPricesResponse? getPricesResponse;
   final bool? isRefreshPrices;
   final Status? getUsdPricesStatus;
@@ -20,6 +21,7 @@ class PricesState extends Equatable {
     this.errorMessage,
     this.addExchangeStatus,
     this.getPricesStatus,
+    this.updateExchangeStatus,
     this.getPricesResponse,
     this.isRefreshPrices,
     this.getUsdPricesStatus,
@@ -40,6 +42,7 @@ class PricesState extends Equatable {
     Status? getExchangeSypStatus,
     Status? getExchangeUsdStatus,
     Status? addExchangeStatus,
+    Status? updateExchangeStatus,
     Status? getCursStatus,
     GetPricesResponse? getPricesResponse,
     bool? isRefreshPrices,
@@ -57,6 +60,7 @@ class PricesState extends Equatable {
       getExchangeSypStatus: getExchangeSypStatus ?? this.getExchangeSypStatus,
       getExchangeUsdStatus: getExchangeUsdStatus ?? this.getExchangeUsdStatus,
       addExchangeStatus: addExchangeStatus ?? this.addExchangeStatus,
+      updateExchangeStatus: updateExchangeStatus ?? this.updateExchangeStatus,
       getCursStatus: getCursStatus ?? this.getCursStatus,
       getPricesResponse: getPricesResponse ?? this.getPricesResponse,
       isRefreshPrices: isRefreshPrices ?? this.isRefreshPrices,
@@ -77,6 +81,7 @@ class PricesState extends Equatable {
     getExchangeSypStatus,
     getExchangeUsdStatus,
     addExchangeStatus,
+    updateExchangeStatus,
     getCursStatus,
     getPricesResponse,
     isRefreshPrices,

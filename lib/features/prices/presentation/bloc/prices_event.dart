@@ -30,3 +30,10 @@ class AddExchangeEvent extends PricesEvent {
 
   const AddExchangeEvent({this.isSyp = true, required this.params});
 }
+
+class UpdateExchangeEvent extends PricesEvent {
+  final bool isSyp;
+  final UpdateExchangeParams params;
+
+  const UpdateExchangeEvent({this.isSyp = true, required this.params});
+}

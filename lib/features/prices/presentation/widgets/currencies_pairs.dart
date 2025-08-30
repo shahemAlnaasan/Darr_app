@@ -1,9 +1,16 @@
+import 'dart:developer';
+
+import 'package:exchange_darr/common/consts/app_keys.dart';
 import 'package:exchange_darr/common/extentions/colors_extension.dart';
 import 'package:exchange_darr/common/widgets/app_text.dart';
 import 'package:exchange_darr/common/widgets/custom_text_field.dart';
+import 'package:exchange_darr/core/datasources/hive_helper.dart';
 import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_exchage_response.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/update_exchange_syp_usecase.dart';
+import 'package:exchange_darr/features/prices/presentation/bloc/prices_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class CurrenciesPairs extends StatefulWidget {
@@ -39,6 +46,19 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
     curName = cur.name;
 
     super.initState();
+  }
+
+  void updatePrice() async {
+    final int? id = await HiveHelper.getFromHive(boxName: AppKeys.userBox, key: AppKeys.userId);
+    final isSyp = widget.price.isSyp;
+    log("syp $isSyp");
+    UpdateExchangeParams params = UpdateExchangeParams(
+      id: id.toString(),
+      cur: widget.price.cur,
+      buy: firstAmountController.text,
+      sell: secondAmountController.text,
+    );
+    context.read<PricesBloc>().add(UpdateExchangeEvent(params: params, isSyp: isSyp));
   }
 
   @override
@@ -101,8 +121,9 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
                       hint: "المبلغ",
                       controller: firstAmountController,
                       keyboardType: TextInputType.number,
-
-                      onChanged: (p0) {},
+                      onChanged: (p0) async {
+                        updatePrice();
+                      },
                     ),
                   ),
                   SizedBox(width: 20),
@@ -111,7 +132,9 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
                       hint: "المبلغ",
                       controller: secondAmountController,
                       keyboardType: TextInputType.number,
-                      onChanged: (p0) {},
+                      onChanged: (p0) async {
+                        updatePrice();
+                      },
                     ),
                   ),
                 ],

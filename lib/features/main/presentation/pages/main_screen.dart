@@ -51,6 +51,8 @@ class _MainScreenContentState extends State<_MainScreenContent> {
     const HomeScreen(),
     const BestPricesScreen(),
     const WorldPricesScreen(),
+    const WorldPricesScreen(),
+    const WorldPricesScreen(),
     const PageDecider(),
   ];
 
@@ -118,12 +120,14 @@ class _MainScreenContentState extends State<_MainScreenContent> {
         color: context.tertiary,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: List.generate(4, (index) {
+          children: List.generate(6, (index) {
             final icons = [
               Assets.images.navbar.home.path,
               Assets.images.bestPrice.path,
-              Assets.images.world.path,
               Assets.images.dollar.path,
+              Assets.images.world.path,
+              Assets.images.news.path,
+              Assets.images.user.path,
             ];
             return Expanded(
               child: _buildNavItem(icon: icons[index], index: index),
@@ -143,22 +147,39 @@ class _MainScreenContentState extends State<_MainScreenContent> {
       hoverColor: Colors.transparent,
       onTap: () => _onTabTapped(index),
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 4),
+        padding: const EdgeInsets.only(bottom: 4, top: 10),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(
-              icon,
-              scale: isSelected ? 4.9 : 5,
-              color: isSelected ? context.primaryColor : context.primaryColor.withAlpha(150),
-            ),
-            const SizedBox(height: 1),
-            AppText.bodyMedium(
-              [LocaleKeys.navbar_home.tr(), "افضل الاسعار", "الاسعار العالمية", "اسعاري"][index],
-              style: context.textTheme.labelMedium!.copyWith(
+            Expanded(
+              child: Image.asset(
+                icon,
+                scale: isSelected ? 5.5 : 6,
                 color: isSelected ? context.primaryColor : context.primaryColor.withAlpha(150),
-                fontWeight: FontWeight.w900,
-                fontSize: 14,
+                alignment: Alignment.bottomCenter,
+              ),
+            ),
+            // const SizedBox(height: 1),
+            Expanded(
+              flex: 2,
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: AppText.bodyMedium(
+                  [
+                    LocaleKeys.navbar_home.tr(),
+                    "افضل الاسعار",
+                    "اسعار الدولار",
+                    "الاسعار العالمية",
+                    "الاخبار",
+                    "اسعاري",
+                  ][index],
+                  style: context.textTheme.labelMedium!.copyWith(
+                    color: isSelected ? context.primaryColor : context.primaryColor.withAlpha(150),
+                    fontWeight: FontWeight.w900,
+                    fontSize: 12,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
           ],

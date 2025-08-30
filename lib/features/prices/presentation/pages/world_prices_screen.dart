@@ -176,42 +176,36 @@ class _WorldPricesScreenState extends State<WorldPricesScreen> {
                       if (state.getUsdPricesStatus == Status.success && state.getUsdPricesResponse != null) {
                         final List<CityPrices> cities = state.getUsdPricesResponse!.cities;
 
+                        final selectedCity = cities[selectedIndex];
                         return ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
-                          itemCount: cities.length,
-                          itemBuilder: (context, cityIndex) {
-                            final city = cities[cityIndex];
+                          itemCount: selectedCity.centers.length,
+                          itemBuilder: (context, centerIndex) {
+                            final center = selectedCity.centers[centerIndex];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 10.0),
+                              child: SosDropdown(
+                                dropDownTitle: center.centerName,
+                                childrens: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: center.currencies.length,
+                                  itemBuilder: (context, currencyIndex) {
+                                    final cur = center.currencies[currencyIndex];
 
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: city.centers.length,
-                              itemBuilder: (context, centerIndex) {
-                                final center = city.centers[centerIndex];
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 10.0),
-                                  child: SosDropdown(
-                                    dropDownTitle: center.centerName,
-                                    childrens: ListView.builder(
-                                      shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      itemCount: center.currencies.length,
-                                      itemBuilder: (context, currencyIndex) {
-                                        final cur = center.currencies[currencyIndex];
-
-                                        return ExchangePriceContainer(
-                                          parms: PriceContainerParms(
-                                            buyCur: cur.currencyName,
-                                            buyPrice: cur.buy.toString(),
-                                            sellCur: "دولار امريكي",
-                                            sellPrice: cur.sell.toString(),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                );
-                              },
+                                    return ExchangePriceContainer(
+                                      parms: PriceContainerParms(
+                                        buyCur: cur.currencyName,
+                                        buyPrice: cur.buy.toString(),
+                                        sellCur: "دولار امريكي",
+                                        sellPrice: cur.sell.toString(),
+                                        curs: [],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
                             );
                           },
                         );
