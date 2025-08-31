@@ -42,7 +42,7 @@ class _WorldPricesScreenState extends State<WorldPricesScreen> {
           // }
         },
         child: Scaffold(
-          backgroundColor: context.tertiary,
+          backgroundColor: context.background,
           body: SizedBox(
             width: context.screenWidth,
             child: Builder(
@@ -66,7 +66,7 @@ class _WorldPricesScreenState extends State<WorldPricesScreen> {
                               "الاسعار العالمية:",
                               textAlign: TextAlign.right,
                               fontWeight: FontWeight.bold,
-                              color: context.primaryColor,
+                              color: context.onPrimaryColor,
                             ),
                           ),
                         ),
@@ -114,7 +114,7 @@ class _WorldPricesScreenState extends State<WorldPricesScreen> {
                                         buyPrice: price.buy.toString(),
                                         sellCur: price.cur2,
                                         sellPrice: price.sell.toString(),
-                                        curs: [],
+                                        curs: curs,
                                       ),
                                     );
                                   },

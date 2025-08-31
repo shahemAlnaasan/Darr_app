@@ -47,8 +47,6 @@ class _MainScreenContentState extends State<_MainScreenContent> {
     1: GlobalKey<NavigatorState>(),
     2: GlobalKey<NavigatorState>(),
     3: GlobalKey<NavigatorState>(),
-    4: GlobalKey<NavigatorState>(),
-    // 5: GlobalKey<NavigatorState>(),
   };
 
   final List<Widget> _rootScreens = [
@@ -57,7 +55,6 @@ class _MainScreenContentState extends State<_MainScreenContent> {
     const DollarPricesScreen(),
     const WorldPricesScreen(),
     // const DollarPricesScreen(),
-    const PageDecider(),
   ];
 
   void _onTabTapped(int index) {
@@ -102,7 +99,14 @@ class _MainScreenContentState extends State<_MainScreenContent> {
         }
       },
       child: Scaffold(
-        appBar: mainAppbar(context, onTap: () {}),
+        appBar: mainAppbar(
+          context,
+          onTap: () {},
+          onLoginPress: () {
+            final currentNavigator = _navigatorKeys[_selectedIndex]!.currentState!;
+            currentNavigator.push(MaterialPageRoute(builder: (_) => PageDecider()));
+          },
+        ),
         extendBody: true,
         backgroundColor: context.tertiary,
         body: _buildTabNavigator(_selectedIndex),
@@ -114,24 +118,23 @@ class _MainScreenContentState extends State<_MainScreenContent> {
   Widget _buildBottomBar() {
     return Container(
       decoration: BoxDecoration(
-        color: context.primaryColor,
+        color: context.tertiary,
         border: Border(top: BorderSide(color: context.onPrimaryColor, width: 2)),
       ),
       child: BottomAppBar(
         notchMargin: 16,
         padding: const EdgeInsets.only(bottom: 2, top: 1),
         height: 75,
-        color: context.background,
+        color: context.onTertiary,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: List.generate(5, (index) {
+          children: List.generate(4, (index) {
             final icons = [
               Assets.images.navbar.home.path,
               Assets.images.bestPrice.path,
               Assets.images.dollar.path,
               Assets.images.world.path,
               // Assets.images.news.path,
-              Assets.images.user.path,
             ];
             return Expanded(
               child: _buildNavItem(icon: icons[index], index: index),
@@ -159,7 +162,7 @@ class _MainScreenContentState extends State<_MainScreenContent> {
               child: Image.asset(
                 icon,
                 scale: isSelected ? 5.5 : 6,
-                color: isSelected ? context.primaryContainer : context.onPrimaryColor,
+                color: isSelected ? context.primaryContainer : context.primaryColor,
                 alignment: Alignment.bottomCenter,
               ),
             ),
@@ -175,12 +178,11 @@ class _MainScreenContentState extends State<_MainScreenContent> {
                     "اسعار الدولار",
                     "الاسعار العالمية",
                     // "الاخبار",
-                    "اسعاري",
                   ][index],
                   style: context.textTheme.labelMedium!.copyWith(
-                    color: isSelected ? context.primaryContainer : context.onPrimaryColor,
+                    color: isSelected ? context.primaryContainer : context.primaryColor,
                     fontWeight: FontWeight.w900,
-                    fontSize: 12,
+                    fontSize: 13,
                   ),
                   textAlign: TextAlign.center,
                 ),

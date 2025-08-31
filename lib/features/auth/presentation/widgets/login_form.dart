@@ -1,6 +1,6 @@
 import 'package:exchange_darr/features/auth/domain/use_cases/login_usecase.dart';
 import 'package:exchange_darr/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:exchange_darr/features/main/presentation/pages/main_screen.dart';
+import 'package:exchange_darr/features/prices/presentation/pages/my_prices_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../common/extentions/colors_extension.dart';
@@ -44,10 +44,7 @@ class _NewTransferFormState extends State<LoginForm> {
             ToastificationDialog.showToast(msg: state.errorMessage!, context: context, type: ToastificationType.error);
           }
           if (state.loginStatus == Status.success && state.loginResponse != null) {
-            Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => MainScreen(selectedIndex: 3)),
-              (route) => false,
-            );
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => PageDecider()));
           }
         },
         child: Form(
@@ -58,7 +55,7 @@ class _NewTransferFormState extends State<LoginForm> {
             children: [
               buildTextField(
                 hint: "اسم المستخدم",
-                preIcon: Icon(Icons.person_outline_outlined, color: context.primaryColor.withAlpha(170)),
+                preIcon: Icon(Icons.person_outline_outlined, color: context.onPrimaryColor.withAlpha(170)),
                 controller: usernameController,
                 focusNode: usernameNode,
                 focusOn: passwardNode,
@@ -67,7 +64,7 @@ class _NewTransferFormState extends State<LoginForm> {
               SizedBox(height: 5),
               buildTextField(
                 hint: "كلمة السر",
-                preIcon: Icon(Icons.lock_outline, color: context.primaryColor.withAlpha(170)),
+                preIcon: Icon(Icons.lock_outline, color: context.onPrimaryColor.withAlpha(170)),
                 obSecure: true,
                 controller: passwordController,
                 focusNode: passwardNode,
@@ -138,7 +135,7 @@ class _NewTransferFormState extends State<LoginForm> {
       hint: hint,
       focusNode: focusNode,
       focusOn: focusOn,
-      filledColor: context.onTertiary,
+      filledColor: context.primaryColor,
       validator: needValidation
           ? (value) {
               if (value == null || value.isEmpty) {

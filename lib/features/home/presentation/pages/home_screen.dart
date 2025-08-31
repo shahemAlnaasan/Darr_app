@@ -34,9 +34,9 @@ class _HomeScreenState extends State<HomeScreen> {
       child: MultiBlocListener(
         listeners: [
           BlocListener<HomeBloc, HomeState>(
-            listenWhen: (previous, current) => previous.getCursStatus != current.getCursStatus,
+            listenWhen: (previous, current) => previous.getCursResponse != current.getCursResponse,
             listener: (context, state) {
-              if (state.getCursStatus == Status.success && state.getCursResponse != null) {
+              if (state.getCursResponse != null) {
                 curs = state.getCursResponse!.curs;
                 context.read<HomeBloc>().add(GetAvgPrices(isRefreshScreen: true));
               }

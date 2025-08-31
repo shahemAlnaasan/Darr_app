@@ -2,7 +2,7 @@ import 'package:exchange_darr/generated/assets.gen.dart';
 import 'package:flutter/material.dart';
 import '../../../../common/extentions/colors_extension.dart';
 
-AppBar mainAppbar(BuildContext context, {void Function()? onTap}) {
+AppBar mainAppbar(BuildContext context, {void Function()? onTap, required void Function()? onLoginPress}) {
   return AppBar(
     toolbarHeight: 60,
     backgroundColor: context.background,
@@ -10,9 +10,8 @@ AppBar mainAppbar(BuildContext context, {void Function()? onTap}) {
     surfaceTintColor: context.background,
     automaticallyImplyLeading: false,
     actionsPadding: const EdgeInsets.only(left: 20),
-    // forceMaterialTransparency: true,
 
-    // titleTextStyle: TextStyle(fontWeight: FontWeight.w100),
+    // forceMaterialTransparency: true,
     title: Image.asset(Assets.images.logo.companyLogo.path, scale: 11, filterQuality: FilterQuality.high),
     // leading: Padding(
     //   padding: const EdgeInsets.only(right: 15),
@@ -21,29 +20,19 @@ AppBar mainAppbar(BuildContext context, {void Function()? onTap}) {
     leadingWidth: 65,
 
     actions: [
-      buildActionButton(
-        icon: Assets.images.navbar.lightMode.path,
-        scale: 5.5,
-        onPressed: () {
-          // HiveHelper.storeInHive(boxName: AppKeys.userBox, key: AppKeys.hasLogin, value: false);
-          // HiveHelper.storeInHive(boxName: AppKeys.userBox, key: AppKeys.hasVerifyLogin, value: false);
-          // HiveHelper.storeInHive(boxName: AppKeys.userBox, key: AppKeys.tokenKey, value: null);
-          // context.pushAndRemoveUntil(LoginScreen());
-        },
-        context: context,
-      ),
+      // buildActionButton(
+      //   icon: Assets.images.navbar.lightMode.path,
+      //   scale: 5.5,
+      //   onPressed: () {
+      //     // HiveHelper.storeInHive(boxName: AppKeys.userBox, key: AppKeys.hasLogin, value: false);
+      //     // HiveHelper.storeInHive(boxName: AppKeys.userBox, key: AppKeys.hasVerifyLogin, value: false);
+      //     // HiveHelper.storeInHive(boxName: AppKeys.userBox, key: AppKeys.tokenKey, value: null);
+      //     // context.pushAndRemoveUntil(LoginScreen());
+      //   },
+      //   context: context,
+      // ),
       SizedBox(width: 20),
-      buildActionButton(
-        icon: Assets.images.user.path,
-        scale: 5,
-        onPressed: () {
-          // HiveHelper.storeInHive(boxName: AppKeys.userBox, key: AppKeys.hasLogin, value: false);
-          // HiveHelper.storeInHive(boxName: AppKeys.userBox, key: AppKeys.hasVerifyLogin, value: false);
-          // HiveHelper.storeInHive(boxName: AppKeys.userBox, key: AppKeys.tokenKey, value: null);
-          // context.pushAndRemoveUntil(LoginScreen());
-        },
-        context: context,
-      ),
+      buildActionButton(icon: Assets.images.user.path, scale: 5, onPressed: () => onLoginPress!(), context: context),
 
       // BlocBuilder<MainBloc, MainState>(
       //   builder: (context, state) {

@@ -35,15 +35,15 @@ class _DollarPricesScreenState extends State<DollarPricesScreen> {
       lazy: false,
       create: (context) => getIt<PricesBloc>()..add(GetCursEvent()),
       child: BlocListener<PricesBloc, PricesState>(
-        listenWhen: (previous, current) => previous.getCursStatus != current.getCursStatus,
+        listenWhen: (previous, current) => previous.getCursResponse != current.getCursResponse,
         listener: (context, state) {
-          if (state.getCursStatus == Status.success && state.getCursResponse != null) {
+          if (state.getCursResponse != null) {
             curs = state.getCursResponse!.curs;
             context.read<PricesBloc>().add(GetUsdPricesEvent(isRefreshScreen: true));
           }
         },
         child: Scaffold(
-          backgroundColor: context.tertiary,
+          backgroundColor: context.background,
           body: SizedBox(
             width: context.screenWidth,
             child: Builder(
@@ -67,7 +67,7 @@ class _DollarPricesScreenState extends State<DollarPricesScreen> {
                               "اسعار الدولار:",
                               textAlign: TextAlign.right,
                               fontWeight: FontWeight.bold,
-                              color: context.primaryColor,
+                              color: context.onPrimaryColor,
                             ),
                           ),
                         ),
@@ -88,7 +88,7 @@ class _DollarPricesScreenState extends State<DollarPricesScreen> {
                                 AppText.bodyMedium(
                                   "فلترة حسب:",
                                   fontWeight: FontWeight.bold,
-                                  color: context.primaryColor,
+                                  color: context.onPrimaryColor,
                                   textAlign: TextAlign.right,
                                   height: 2,
                                 ),
@@ -148,16 +148,24 @@ class _DollarPricesScreenState extends State<DollarPricesScreen> {
                                             child: Container(
                                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                                               decoration: BoxDecoration(
-                                                color: context.surfaceContainer,
+                                                color: context.primaryColor,
                                                 borderRadius: BorderRadius.circular(22),
                                                 border: Border.all(
-                                                  color: isSelected ? context.primaryColor : context.surfaceContainer,
+                                                  color: isSelected ? context.surfaceContainer : context.primaryColor,
+                                                  width: 2.5,
                                                 ),
+                                                boxShadow: const [
+                                                  BoxShadow(
+                                                    color: Color(0x20000000),
+                                                    blurRadius: 5,
+                                                    offset: Offset(0, 4),
+                                                  ),
+                                                ],
                                               ),
                                               child: AppText.bodyMedium(
                                                 citiesList[i].cityName,
                                                 fontWeight: FontWeight.bold,
-                                                color: context.primaryColor,
+                                                color: context.onPrimaryColor,
                                                 height: 2,
                                               ),
                                             ),
@@ -205,10 +213,20 @@ class _DollarPricesScreenState extends State<DollarPricesScreen> {
                                   itemCount: selectedCity.centers.length,
                                   itemBuilder: (context, centerIndex) {
                                     final center = selectedCity.centers[centerIndex];
+                                    final initCur = center.currencies[0];
                                     return Padding(
                                       padding: const EdgeInsets.only(bottom: 10.0),
                                       child: SosDropdown(
                                         dropDownTitle: center.centerName,
+                                        initChild: ExchangePriceContainer(
+                                          parms: PriceContainerParms(
+                                            buyCur: initCur.code,
+                                            buyPrice: initCur.buy.toString(),
+                                            sellCur: "usd",
+                                            sellPrice: initCur.sell.toString(),
+                                            curs: curs,
+                                          ),
+                                        ),
                                         childrens: ListView.builder(
                                           shrinkWrap: true,
                                           physics: NeverScrollableScrollPhysics(),
@@ -218,7 +236,7 @@ class _DollarPricesScreenState extends State<DollarPricesScreen> {
 
                                             return ExchangePriceContainer(
                                               parms: PriceContainerParms(
-                                                buyCur: cur.currencyName,
+                                                buyCur: cur.code,
                                                 buyPrice: cur.buy.toString(),
                                                 sellCur: "usd",
                                                 sellPrice: cur.sell.toString(),

@@ -14,15 +14,15 @@ class AddCurrency extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 30),
 
         decoration: BoxDecoration(
-          color: context.onTertiary,
+          color: context.primaryColor,
           borderRadius: BorderRadius.circular(8),
-          boxShadow: [BoxShadow(color: const Color(0x20000000), blurRadius: 5, offset: const Offset(0, 0))],
+          boxShadow: [BoxShadow(color: const Color(0x20000000), blurRadius: 5, offset: const Offset(0, 4))],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            AppText.titleLarge("اضف عملة جديدة", color: context.primaryColor, fontWeight: FontWeight.w600),
-            Icon(Icons.add_circle_outline_rounded, size: 40, color: context.primaryColor),
+            AppText.titleLarge("اضف عملة جديدة", color: context.onPrimaryColor, fontWeight: FontWeight.w600),
+            Icon(Icons.add_circle_outline_rounded, size: 40, color: context.onPrimaryColor),
           ],
         ),
       ),

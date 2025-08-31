@@ -96,15 +96,20 @@ class _MyPricesScreenState extends State<MyPricesScreen> {
     return BlocProvider(
       lazy: false,
       create: (context) => getIt<PricesBloc>()..add(GetCursEvent()),
-      child: BlocListener<PricesBloc, PricesState>(
-        listenWhen: (previous, current) => previous.getCursStatus != current.getCursStatus,
-        listener: (context, state) {
-          if (state.getCursStatus == Status.success && state.getCursResponse != null) {
-            curs = state.getCursResponse!.curs;
-          }
-        },
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<PricesBloc, PricesState>(
+            listenWhen: (previous, current) => previous.getCursResponse != current.getCursResponse,
+            listener: (context, state) {
+              if (state.getCursResponse != null) {
+                curs = state.getCursResponse!.curs;
+                context.read<PricesBloc>().add(GetExchangeSypEvent());
+              }
+            },
+          ),
+        ],
         child: Scaffold(
-          backgroundColor: context.tertiary,
+          backgroundColor: context.background,
           body: SizedBox(
             width: context.screenWidth,
             child: Builder(
@@ -129,7 +134,7 @@ class _MyPricesScreenState extends State<MyPricesScreen> {
                               "اسعاري:",
                               textAlign: TextAlign.right,
                               fontWeight: FontWeight.bold,
-                              color: context.primaryColor,
+                              color: context.onPrimaryColor,
                             ),
                           ),
                           SizedBox(height: 10),

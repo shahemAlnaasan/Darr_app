@@ -86,7 +86,13 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
         emit(state.copyWith(getUsdPricesStatus: Status.failure, errorMessage: left.message));
       },
       (right) {
-        emit(state.copyWith(getUsdPricesStatus: Status.success, getUsdPricesResponse: right));
+        emit(
+          state.copyWith(
+            getUsdPricesStatus: Status.success,
+            getCursStatus: Status.success,
+            getUsdPricesResponse: right,
+          ),
+        );
       },
     );
   }
@@ -119,7 +125,6 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
         emit(state.copyWith(getCursStatus: Status.failure, errorMessage: left.message));
       },
       (right) {
-        add(GetExchangeSypEvent());
         emit(state.copyWith(getCursResponse: right));
       },
     );

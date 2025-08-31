@@ -41,7 +41,7 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
     secondAmountController.text = _formatNumber(double.tryParse(widget.price.sell) ?? 0);
     final cur = widget.curs.firstWhere(
       (cur) => cur.id == widget.price.cur,
-      orElse: () => Cur(id: "-1", name: widget.price.cur),
+      orElse: () => Cur(id: "-1", name: widget.price.cur, img: ""),
     );
     curName = cur.name;
 
@@ -95,7 +95,7 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
         Container(
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: context.onTertiary,
+            color: context.primaryContainer,
             borderRadius: BorderRadius.circular(8),
             boxShadow: [BoxShadow(color: const Color(0x20000000), blurRadius: 5, offset: const Offset(0, 0))],
           ),
@@ -106,10 +106,10 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Expanded(
-                    child: AppText.bodyLarge("شراء", color: context.primaryColor, fontWeight: FontWeight.w600),
+                    child: AppText.bodyLarge("شراء", color: context.onPrimaryColor, fontWeight: FontWeight.w600),
                   ),
                   Expanded(
-                    child: AppText.bodyLarge("مبيع", color: context.primaryColor, fontWeight: FontWeight.w600),
+                    child: AppText.bodyLarge("مبيع", color: context.onPrimaryColor, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -172,7 +172,7 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
       hint: hint,
       focusNode: focusNode,
       focusOn: focusOn,
-      filledColor: context.tertiary,
+      filledColor: context.primaryColor,
       validator: needValidation
           ? (value) {
               if (value == null || value.isEmpty) {

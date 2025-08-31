@@ -34,7 +34,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         emit(state.copyWith(getCursStatus: Status.failure, errorMessage: left.message));
       },
       (right) {
-        emit(state.copyWith(getCursStatus: Status.success, getCursResponse: right));
+        emit(state.copyWith(getCursResponse: right));
       },
     );
   }
@@ -52,7 +52,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         emit(state.copyWith(getPricesStatus: Status.failure, errorMessage: left.message));
       },
       (right) {
-        emit(state.copyWith(getPricesStatus: Status.success, getPricesResponse: right));
+        emit(state.copyWith(getPricesStatus: Status.success, getCursStatus: Status.success, getPricesResponse: right));
       },
     );
   }
@@ -70,7 +70,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         emit(state.copyWith(getAvgPricesStatus: Status.failure, errorMessage: left.message));
       },
       (right) {
-        emit(state.copyWith(getAvgPricesStatus: Status.success, avgPricesResponse: right));
+        emit(
+          state.copyWith(getAvgPricesStatus: Status.success, getCursStatus: Status.success, avgPricesResponse: right),
+        );
       },
     );
   }

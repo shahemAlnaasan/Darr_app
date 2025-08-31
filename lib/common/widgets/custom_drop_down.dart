@@ -74,7 +74,7 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
         baseStyle: textTheme.titleSmall!.copyWith(color: context.primaryColor),
         decoration: InputDecoration(
           filled: true,
-          fillColor: context.tertiary,
+          fillColor: context.onTertiary,
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6),
             borderSide: BorderSide(color: context.primaryColor),

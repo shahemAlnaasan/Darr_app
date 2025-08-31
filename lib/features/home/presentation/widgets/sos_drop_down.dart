@@ -1,6 +1,7 @@
 import 'package:exchange_darr/common/extentions/colors_extension.dart';
 import 'package:exchange_darr/common/theme/text_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class SosDropdown extends StatefulWidget {
   final String dropDownTitle;
@@ -54,10 +55,12 @@ class _SosDropdownState extends State<SosDropdown> with SingleTickerProviderStat
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          isExpanded ? "اخفاء" : "عرض المزيد",
-                          textAlign: TextAlign.center,
-                          style: textTheme.titleMedium!.copyWith(fontSize: 14, color: context.onPrimaryColor),
+                        Skeleton.ignore(
+                          child: Text(
+                            isExpanded ? "اخفاء" : "عرض المزيد",
+                            textAlign: TextAlign.center,
+                            style: textTheme.titleMedium!.copyWith(fontSize: 14, color: context.onPrimaryColor),
+                          ),
                         ),
 
                         Icon(

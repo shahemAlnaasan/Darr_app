@@ -85,8 +85,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
       },
       onEditingComplete: widget.onEditingComplete,
       focusNode: widget.focusNode,
-      cursorColor: context.primaryColor,
-      style: textTheme.titleSmall?.copyWith(color: context.primaryColor, fontSize: widget.fontSized),
+      cursorColor: context.onPrimaryColor,
+      style: textTheme.titleSmall?.copyWith(color: context.onPrimaryColor, fontSize: widget.fontSized),
       textAlignVertical: TextAlignVertical.center,
       textAlign: widget.textAlign ?? TextAlign.start,
       obscureText: _obscure,
@@ -107,7 +107,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         hintStyle:
             widget.hintStyle ??
             textTheme.titleSmall?.copyWith(
-              color: context.colorScheme.primary.withAlpha(190),
+              color: context.onPrimaryColor.withAlpha(190),
               fontSize: widget.fontSized ?? 14,
             ),
         labelStyle:
@@ -126,24 +126,21 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 },
                 child: Icon(
                   _obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                  color: context.primaryColor.withAlpha(130),
+                  color: context.onPrimaryColor.withAlpha(130),
                 ),
               )
             : widget.sufIcon,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(widget.radios ?? 8),
-          borderSide: BorderSide(color: context.colorScheme.primary, width: 2),
+          borderSide: BorderSide(color: context.onPrimaryColor, width: 2),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(widget.radios ?? 8),
-          borderSide: BorderSide(color: widget.mainColor ?? context.colorScheme.primary.withAlpha(190), width: 1),
+          borderSide: BorderSide(color: widget.mainColor ?? context.onPrimaryColor.withAlpha(190), width: 1),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(widget.radios ?? 8),
-          borderSide: BorderSide(
-            color: widget.mainColor ?? context.colorScheme.primary,
-            width: widget.borderWidth ?? 2,
-          ),
+          borderSide: BorderSide(color: widget.mainColor ?? context.onPrimaryColor, width: widget.borderWidth ?? 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(widget.radios ?? 8),

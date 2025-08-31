@@ -10,7 +10,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.tertiary,
+      backgroundColor: context.background,
       body: SingleChildScrollView(
         child: SizedBox(
           height: context.screenHeight - 2.5 * kBottomNavigationBarHeight,
@@ -26,7 +26,7 @@ class LoginScreen extends StatelessWidget {
                   "مرحبا بكم في دار الصرافة",
                   textAlign: TextAlign.center,
                   fontWeight: FontWeight.w500,
-                  color: context.primaryColor,
+                  color: context.onPrimaryColor,
                 ),
                 SizedBox(height: 20),
                 LoginForm(),

@@ -36,15 +36,15 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
       lazy: false,
       create: (context) => getIt<HomeBloc>()..add(GetCursEvent()),
       child: BlocListener<HomeBloc, HomeState>(
-        listenWhen: (previous, current) => previous.getCursStatus != current.getCursStatus,
+        listenWhen: (previous, current) => previous.getCursResponse != current.getCursResponse,
         listener: (context, state) {
-          if (state.getCursStatus == Status.success && state.getCursResponse != null) {
+          if (state.getCursResponse != null) {
             curs = state.getCursResponse!.curs;
             context.read<HomeBloc>().add(GetPricesEvent(isRefreshScreen: true));
           }
         },
         child: Scaffold(
-          backgroundColor: context.tertiary,
+          backgroundColor: context.background,
           body: SizedBox(
             width: context.screenWidth,
             child: Builder(
@@ -68,7 +68,7 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
                               "افضل الاسعار:",
                               textAlign: TextAlign.right,
                               fontWeight: FontWeight.bold,
-                              color: context.primaryColor,
+                              color: context.onPrimaryColor,
                             ),
                           ),
                         ),
@@ -85,13 +85,14 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
                                 AppText.bodyMedium(
                                   "فلترة حسب:",
                                   fontWeight: FontWeight.bold,
-                                  color: context.primaryColor,
+                                  color: context.onPrimaryColor,
                                   height: 2,
                                 ),
                                 BlocBuilder<HomeBloc, HomeState>(
                                   builder: (context, state) {
                                     if (state.getPricesStatus == Status.loading ||
-                                        state.getPricesStatus == Status.initial) {
+                                        state.getPricesStatus == Status.initial ||
+                                        state.getCursStatus == Status.loading) {
                                       return Row(
                                         spacing: 10,
                                         mainAxisSize: MainAxisSize.min,
@@ -105,7 +106,14 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
                                               decoration: BoxDecoration(
                                                 color: context.surfaceContainer,
                                                 borderRadius: BorderRadius.circular(22),
-                                                border: Border.all(color: context.surfaceContainer),
+                                                border: Border.all(color: context.surfaceContainer, width: 2),
+                                                boxShadow: const [
+                                                  BoxShadow(
+                                                    color: Color(0x20000000),
+                                                    blurRadius: 5,
+                                                    offset: Offset(0, 4),
+                                                  ),
+                                                ],
                                               ),
                                               child: AppText.bodyMedium(
                                                 "Lss",
@@ -119,7 +127,7 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
                                       );
                                     }
 
-                                    if (state.getPricesStatus == Status.success && state.getPricesStatus != null) {
+                                    if (state.getPricesStatus == Status.success && state.getPricesResponse != null) {
                                       citiesList = state.getPricesResponse!.cities;
                                       return Row(
                                         spacing: 10,
@@ -140,16 +148,24 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
                                             child: Container(
                                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                                               decoration: BoxDecoration(
-                                                color: context.surfaceContainer,
+                                                color: context.primaryColor,
                                                 borderRadius: BorderRadius.circular(22),
                                                 border: Border.all(
-                                                  color: isSelected ? context.primaryColor : context.surfaceContainer,
+                                                  color: isSelected ? context.surfaceContainer : context.primaryColor,
+                                                  width: 2.5,
                                                 ),
+                                                boxShadow: const [
+                                                  BoxShadow(
+                                                    color: Color(0x20000000),
+                                                    blurRadius: 5,
+                                                    offset: Offset(0, 4),
+                                                  ),
+                                                ],
                                               ),
                                               child: AppText.bodyMedium(
                                                 citiesList[i].cityName,
                                                 fontWeight: FontWeight.bold,
-                                                color: context.primaryColor,
+                                                color: context.onPrimaryColor,
                                                 height: 2,
                                               ),
                                             ),
@@ -169,7 +185,9 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
                           padding: EdgeInsets.symmetric(horizontal: 20),
                           child: BlocBuilder<HomeBloc, HomeState>(
                             builder: (context, state) {
-                              if (state.getPricesStatus == Status.loading || state.getPricesStatus == Status.initial) {
+                              if (state.getPricesStatus == Status.loading ||
+                                  state.getPricesStatus == Status.initial ||
+                                  state.getCursStatus == Status.loading) {
                                 return ListView.builder(
                                   physics: NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
@@ -195,10 +213,20 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
                                   itemCount: selectedCity.centers.length,
                                   itemBuilder: (context, centerIndex) {
                                     final center = selectedCity.centers[centerIndex];
+                                    final initCur = center.currencies[0];
                                     return Padding(
                                       padding: const EdgeInsets.only(bottom: 10.0),
                                       child: SosDropdown(
                                         dropDownTitle: center.centerName,
+                                        initChild: ExchangePriceContainer(
+                                          parms: PriceContainerParms(
+                                            buyCur: initCur.code,
+                                            buyPrice: initCur.buy.toString(),
+                                            sellCur: "syp",
+                                            sellPrice: initCur.sell.toString(),
+                                            curs: curs,
+                                          ),
+                                        ),
                                         childrens: ListView.builder(
                                           shrinkWrap: true,
                                           physics: NeverScrollableScrollPhysics(),
@@ -208,11 +236,11 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
 
                                             return ExchangePriceContainer(
                                               parms: PriceContainerParms(
-                                                buyCur: cur.currencyName,
+                                                buyCur: cur.code,
                                                 buyPrice: cur.buy.toString(),
-                                                sellCur: "دولار امريكي",
+                                                sellCur: "syp",
                                                 sellPrice: cur.sell.toString(),
-                                                curs: [],
+                                                curs: curs,
                                               ),
                                             );
                                           },

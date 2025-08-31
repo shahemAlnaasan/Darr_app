@@ -23,10 +23,11 @@ class GetCursResponse {
 class Cur {
   String id;
   String name;
+  String img;
 
-  Cur({required this.id, required this.name});
+  Cur({required this.id, required this.name, required this.img});
 
-  factory Cur.fromJson(Map<String, dynamic> json) => Cur(id: json["id"], name: json["name"]);
+  factory Cur.fromJson(Map<String, dynamic> json) => Cur(id: json["id"], name: json["name"], img: json["img"] ?? "");
 
   Map<String, dynamic> toJson() => {"id": id, "name": name};
 }

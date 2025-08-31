@@ -1,12 +1,12 @@
 import 'package:exchange_darr/common/consts/app_keys.dart';
 import 'package:exchange_darr/common/extentions/colors_extension.dart';
+import 'package:exchange_darr/common/extentions/navigation_extensions.dart';
 import 'package:exchange_darr/common/state_managment/bloc_state.dart';
 import 'package:exchange_darr/common/widgets/app_text.dart';
 import 'package:exchange_darr/common/widgets/custom_drop_down.dart';
 import 'package:exchange_darr/common/widgets/custom_progress_indecator.dart';
 import 'package:exchange_darr/common/widgets/large_button.dart';
 import 'package:exchange_darr/core/datasources/hive_helper.dart';
-import 'package:exchange_darr/features/main/presentation/pages/main_screen.dart';
 import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_exchage_response.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/add_exchange_syp_usecase.dart';
@@ -49,31 +49,29 @@ class _AddCurrencyBottomSheetState extends State<AddCurrencyBottomSheet> {
     return BlocListener<PricesBloc, PricesState>(
       listener: (context, state) {
         if (state.addExchangeStatus == Status.success) {
-          Navigator.of(
-            context,
-          ).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MainScreen(selectedIndex: 3)), (route) => false);
+          context.read<PricesBloc>().add(GetCursEvent());
+          context.pop();
         }
       },
       child: Form(
         key: _formKey,
         child: Dialog(
-          elevation: 0,
-          shadowColor: Colors.black,
+          // elevation: 0,
+          shadowColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 25, vertical: 30),
-
             decoration: BoxDecoration(
-              color: context.tertiary,
+              color: context.background,
               borderRadius: BorderRadius.circular(8),
-              boxShadow: [BoxShadow(color: const Color(0x20000000), blurRadius: 5, offset: const Offset(0, 0))],
+              boxShadow: [BoxShadow(color: const Color(0x20000000), blurRadius: 5, offset: const Offset(0, 4))],
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               spacing: 20,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                AppText.titleLarge("اضف عملة جديدة", color: context.primaryColor, fontWeight: FontWeight.w600),
+                AppText.titleLarge("اضف عملة جديدة", color: context.onPrimaryColor, fontWeight: FontWeight.w600),
 
                 CustomDropdown<Cur>(
                   menuList: firstCurs,
@@ -126,7 +124,7 @@ class _AddCurrencyBottomSheetState extends State<AddCurrencyBottomSheet> {
                               }
                             },
                       text: "اضافة",
-                      backgroundColor: context.tertiary,
+                      backgroundColor: context.onTertiary,
                       circularRadius: 12,
                       child: state.addExchangeStatus == Status.loading ? CustomProgressIndecator() : null,
                     );

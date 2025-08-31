@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:exchange_darr/common/extentions/colors_extension.dart';
 import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:flutter/material.dart';
@@ -26,9 +27,9 @@ class ExchangePriceContainer extends StatelessWidget {
     double price = double.tryParse(priceStr) ?? 0.0;
 
     if (price == price.toInt()) {
-      return price.toInt().toString();
+      return NumberFormat('#,###').format(price.toInt());
     } else {
-      return price.toStringAsFixed(3);
+      return NumberFormat('#,##0.000').format(price);
     }
   }
 
@@ -36,15 +37,17 @@ class ExchangePriceContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     final buyCur = parms.curs.firstWhere(
       (cur) => cur.id == parms.buyCur,
-      orElse: () => Cur(id: "-1", name: parms.buyCur),
+      orElse: () => Cur(id: "-1", name: parms.buyCur, img: ""),
     );
     final sellCur = parms.curs.firstWhere(
       (cur) => cur.id == parms.sellCur,
-      orElse: () => Cur(id: "-1", name: parms.sellCur),
+      orElse: () => Cur(id: "-1", name: parms.sellCur, img: ""),
     );
 
     final buyCurName = buyCur.name;
     final sellCurName = sellCur.name;
+    final buyImg = buyCur.img;
+    final sellImg = sellCur.img;
 
     return Column(
       spacing: 5,
@@ -65,30 +68,30 @@ class ExchangePriceContainer extends StatelessWidget {
               spacing: 10,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Image.network(
-                //   "https://kawaja2025.com/x5k4e/img/${getCurrencyObject(from)!.img}",
-                //   width: 30,
-                //   height: 30,
-                //   fit: BoxFit.cover,
-                //   filterQuality: FilterQuality.high,
-                //   errorBuilder: (context, error, stackTrace) {
-                //     return SizedBox.shrink();
-                //   },
-                // ),
+                Image.network(
+                  sellImg,
+                  width: 27,
+                  height: 27,
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.high,
+                  errorBuilder: (context, error, stackTrace) {
+                    return SizedBox.shrink();
+                  },
+                ),
                 Text(
                   "$sellCurName - $buyCurName",
                   style: TextStyle(color: context.primaryColor, fontWeight: FontWeight.bold, fontSize: 18),
                 ),
-                // Image.network(
-                //   "https://kawaja2025.com/x5k4e/img/${getCurrencyObject(to)!.img}",
-                //   width: 30,
-                //   height: 30,
-                //   fit: BoxFit.cover,
-                //   filterQuality: FilterQuality.high,
-                //   errorBuilder: (context, error, stackTrace) {
-                //     return SizedBox.shrink();
-                //   },
-                // ),
+                Image.network(
+                  buyImg,
+                  width: 27,
+                  height: 27,
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.high,
+                  errorBuilder: (context, error, stackTrace) {
+                    return SizedBox.shrink();
+                  },
+                ),
               ],
             ),
           ),
