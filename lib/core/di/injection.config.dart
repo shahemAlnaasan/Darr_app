@@ -19,6 +19,14 @@ import '../../features/auth/data/repositories/auth_repository_imp.dart'
 import '../../features/auth/domain/repositories/auth_repository.dart' as _i787;
 import '../../features/auth/domain/use_cases/login_usecase.dart' as _i1012;
 import '../../features/auth/presentation/bloc/auth_bloc.dart' as _i797;
+import '../../features/home/data/data_sources/home_remote_data_source.dart'
+    as _i350;
+import '../../features/home/data/repositories/home_repository_imp.dart'
+    as _i758;
+import '../../features/home/domain/repositories/home_repository.dart' as _i0;
+import '../../features/home/domain/use_cases/get_ads_usecase.dart' as _i793;
+import '../../features/home/domain/use_cases/get_atms_info_usecase.dart'
+    as _i494;
 import '../../features/home/presentation/bloc/home_bloc.dart' as _i202;
 import '../../features/prices/data/data_sources/prices_remote_data_source.dart'
     as _i129;
@@ -63,8 +71,16 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i25.AuthRemoteDataSource>(
       () => _i25.AuthRemoteDataSource(httpClient: gh<_i1069.HTTPClient>()),
     );
+    gh.factory<_i350.HomeRemoteDataSource>(
+      () => _i350.HomeRemoteDataSource(httpClient: gh<_i1069.HTTPClient>()),
+    );
     gh.factory<_i129.PricesRemoteDataSource>(
       () => _i129.PricesRemoteDataSource(httpClient: gh<_i1069.HTTPClient>()),
+    );
+    gh.factory<_i0.HomeRepository>(
+      () => _i758.HomeRepositoryImp(
+        homeRemoteDataSource: gh<_i350.HomeRemoteDataSource>(),
+      ),
     );
     gh.factory<_i787.AuthRepository>(
       () => _i872.AuthRepositoryImp(
@@ -75,6 +91,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i426.PricesRepositoryImp(
         pricesRemoteDataSource: gh<_i129.PricesRemoteDataSource>(),
       ),
+    );
+    gh.factory<_i793.GetAdsUsecase>(
+      () => _i793.GetAdsUsecase(homeRepository: gh<_i0.HomeRepository>()),
+    );
+    gh.factory<_i494.GetAtmsInfoUsecase>(
+      () => _i494.GetAtmsInfoUsecase(homeRepository: gh<_i0.HomeRepository>()),
     );
     gh.factory<_i349.AddExchangeSypUsecase>(
       () => _i349.AddExchangeSypUsecase(
@@ -136,6 +158,15 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i797.AuthBloc>(
       () => _i797.AuthBloc(loginUsecase: gh<_i1012.LoginUsecase>()),
     );
+    gh.factory<_i202.HomeBloc>(
+      () => _i202.HomeBloc(
+        avgPricesUsecase: gh<_i419.AvgPricesUsecase>(),
+        getCursUsecase: gh<_i508.GetCursUsecase>(),
+        getPricesUsecase: gh<_i960.GetPricesUsecase>(),
+        getAdsUsecase: gh<_i793.GetAdsUsecase>(),
+        getAtmsInfoUsecase: gh<_i494.GetAtmsInfoUsecase>(),
+      ),
+    );
     gh.factory<_i191.PricesBloc>(
       () => _i191.PricesBloc(
         getPricesUsecase: gh<_i960.GetPricesUsecase>(),
@@ -148,13 +179,6 @@ extension GetItInjectableX on _i174.GetIt {
         updateExchangeSypUsecase: gh<_i1071.UpdateExchangeSypUsecase>(),
         updateExchangeUsdUsecase: gh<_i151.UpdateExchangeUsdUsecase>(),
         getPricesUniUsecase: gh<_i899.GetPricesUniUsecase>(),
-      ),
-    );
-    gh.factory<_i202.HomeBloc>(
-      () => _i202.HomeBloc(
-        avgPricesUsecase: gh<_i419.AvgPricesUsecase>(),
-        getCursUsecase: gh<_i508.GetCursUsecase>(),
-        getPricesUsecase: gh<_i960.GetPricesUsecase>(),
       ),
     );
     return this;

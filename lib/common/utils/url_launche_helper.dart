@@ -32,14 +32,9 @@ class UrlLaucncheHelper {
   }
 
   static Future<void> launchWebUrl(String url) async {
-    final Uri uri = Uri.parse(url);
+    final Uri uri = Uri.parse(url.startsWith("http") ? url : "https://$url");
 
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication, // opens in browser
-      );
-    } else {
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       return;
     }
   }

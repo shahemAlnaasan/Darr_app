@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:exchange_darr/features/home/presentation/pages/ads_screen.dart';
 import 'package:exchange_darr/features/home/presentation/pages/home_screen.dart';
 import 'package:exchange_darr/features/prices/presentation/pages/best_prices_screen.dart';
 import 'package:exchange_darr/features/prices/presentation/pages/my_prices_screen.dart';
@@ -105,6 +106,10 @@ class _MainScreenContentState extends State<_MainScreenContent> {
           onLoginPress: () {
             final currentNavigator = _navigatorKeys[_selectedIndex]!.currentState!;
             currentNavigator.push(MaterialPageRoute(builder: (_) => PageDecider()));
+          },
+          onNewPress: () {
+            final currentNavigator = _navigatorKeys[_selectedIndex]!.currentState!;
+            currentNavigator.push(MaterialPageRoute(builder: (_) => AdsScreen()));
           },
         ),
         extendBody: true,

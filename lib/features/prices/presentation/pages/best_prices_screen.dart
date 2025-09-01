@@ -1,4 +1,5 @@
 import 'package:exchange_darr/common/extentions/colors_extension.dart';
+import 'package:exchange_darr/common/extentions/navigation_extensions.dart';
 import 'package:exchange_darr/common/extentions/size_extension.dart';
 import 'package:exchange_darr/common/state_managment/bloc_state.dart';
 import 'package:exchange_darr/common/widgets/app_text.dart';
@@ -6,6 +7,7 @@ import 'package:exchange_darr/common/widgets/custom/exchange_price_container.dar
 import 'package:exchange_darr/common/widgets/large_button.dart';
 import 'package:exchange_darr/core/di/injection.dart';
 import 'package:exchange_darr/features/home/presentation/bloc/home_bloc.dart';
+import 'package:exchange_darr/features/home/presentation/pages/atm_details_screen.dart';
 import 'package:exchange_darr/features/home/presentation/widgets/sos_drop_down.dart';
 import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart' hide Center;
@@ -24,7 +26,8 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
   final ScrollController _scrollController = ScrollController();
   int selectedIndex = 0;
   List<CityPrices> citiesList = [];
-
+  String? selectedCityName;
+  final List<String> priorityOrder = ["دمشق", "حلب", "حمص"];
   List<Cur> curs = [];
   Future<void> _onRefresh(BuildContext context) async {
     context.read<HomeBloc>().add(GetCursEvent());
@@ -129,6 +132,23 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
 
                                     if (state.getPricesStatus == Status.success && state.getPricesResponse != null) {
                                       citiesList = state.getPricesResponse!.cities;
+
+                                      final prioritized = <CityPrices>[];
+                                      for (var name in priorityOrder) {
+                                        final match = citiesList.where((c) => c.cityName == name).toList();
+                                        if (match.isNotEmpty) {
+                                          prioritized.addAll(match);
+                                        }
+                                      }
+
+                                      // Keep the rest (excluding ones already added)
+                                      final remaining = citiesList
+                                          .where((c) => !priorityOrder.contains(c.cityName))
+                                          .toList();
+
+                                      citiesList = [...prioritized, ...remaining];
+                                      selectedCityName = citiesList[0].cityName;
+
                                       return Row(
                                         spacing: 10,
                                         mainAxisSize: MainAxisSize.min,
@@ -138,6 +158,7 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
                                             onTap: () {
                                               setState(() {
                                                 selectedIndex = i;
+                                                selectedCityName = citiesList[i].cityName;
                                               });
                                               _scrollController.animateTo(
                                                 0,
@@ -173,6 +194,7 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
                                         }),
                                       );
                                     }
+
                                     return const SizedBox.shrink();
                                   },
                                 ),
@@ -196,16 +218,36 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
                                     enabled: true,
                                     containersColor: const Color.fromARGB(99, 158, 158, 158),
                                     enableSwitchAnimation: true,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(bottom: 10.0),
-                                      child: SosDropdown(dropDownTitle: "حلب"),
+                                    child: SosDropdown(
+                                      dropDownTitle: "حasdsلب",
+                                      isAtm: true,
+                                      initChild: ExchangePriceContainer(
+                                        parms: PriceContainerParms(
+                                          buyCur: "initCur.code",
+                                          buyPrice: "initCur.buy",
+                                          sellCur: "initCur.buy",
+                                          sellPrice: "initCur.se",
+                                          curs: curs,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 );
                               }
                               if (state.getPricesStatus == Status.success && state.getPricesResponse != null) {
                                 final List<CityPrices> cities = state.getPricesResponse!.cities;
-                                final selectedCity = cities[selectedIndex];
+
+                                final prioritized = <CityPrices>[];
+                                for (var name in priorityOrder) {
+                                  final match = cities.where((c) => c.cityName == name).toList();
+                                  if (match.isNotEmpty) prioritized.addAll(match);
+                                }
+
+                                final remaining = cities.where((c) => !priorityOrder.contains(c.cityName)).toList();
+
+                                citiesList = [...prioritized, ...remaining];
+
+                                final selectedCity = citiesList[selectedIndex];
 
                                 return ListView.builder(
                                   physics: NeverScrollableScrollPhysics(),
@@ -213,38 +255,52 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
                                   itemCount: selectedCity.centers.length,
                                   itemBuilder: (context, centerIndex) {
                                     final center = selectedCity.centers[centerIndex];
-                                    final initCur = center.currencies[0];
-                                    return Padding(
-                                      padding: const EdgeInsets.only(bottom: 10.0),
-                                      child: SosDropdown(
-                                        dropDownTitle: center.centerName,
-                                        initChild: ExchangePriceContainer(
-                                          parms: PriceContainerParms(
-                                            buyCur: initCur.code,
-                                            buyPrice: initCur.buy.toString(),
-                                            sellCur: "syp",
-                                            sellPrice: initCur.sell.toString(),
-                                            curs: curs,
-                                          ),
-                                        ),
-                                        childrens: ListView.builder(
-                                          shrinkWrap: true,
-                                          physics: NeverScrollableScrollPhysics(),
-                                          itemCount: center.currencies.length,
-                                          itemBuilder: (context, currencyIndex) {
-                                            final cur = center.currencies[currencyIndex];
 
-                                            return ExchangePriceContainer(
-                                              parms: PriceContainerParms(
-                                                buyCur: cur.code,
-                                                buyPrice: cur.buy.toString(),
-                                                sellCur: "syp",
-                                                sellPrice: cur.sell.toString(),
-                                                curs: curs,
-                                              ),
-                                            );
-                                          },
+                                    final filteredCurrencies = center.currencies.where((cur) {
+                                      final buy = double.tryParse(cur.buy) ?? 0;
+                                      final sell = double.tryParse(cur.sell) ?? 0;
+                                      return !(buy == 0 && sell == 0);
+                                    }).toList();
+
+                                    if (filteredCurrencies.isEmpty) {
+                                      return AppText.bodyLarge(
+                                        "لايوجد نشرة اسعار لعرضها",
+                                        fontWeight: FontWeight.w400,
+                                        color: context.onPrimaryColor,
+                                      );
+                                    }
+
+                                    final initCur = filteredCurrencies[0];
+
+                                    return SosDropdown(
+                                      dropDownTitle: center.centerName,
+                                      isAtm: true,
+                                      onDetailsTap: () => context.push(AtmDetailsScreen(atmId: center.id)),
+                                      initChild: ExchangePriceContainer(
+                                        parms: PriceContainerParms(
+                                          buyCur: initCur.code,
+                                          buyPrice: initCur.buy,
+                                          sellCur: "syp",
+                                          sellPrice: initCur.sell,
+                                          curs: curs,
                                         ),
+                                      ),
+                                      childrens: ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemCount: filteredCurrencies.length,
+                                        itemBuilder: (context, currencyIndex) {
+                                          final cur = filteredCurrencies[currencyIndex];
+                                          return ExchangePriceContainer(
+                                            parms: PriceContainerParms(
+                                              buyCur: cur.code,
+                                              buyPrice: cur.buy,
+                                              sellCur: "syp",
+                                              sellPrice: cur.sell,
+                                              curs: curs,
+                                            ),
+                                          );
+                                        },
                                       ),
                                     );
                                   },

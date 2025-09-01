@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   containersColor: const Color.fromARGB(99, 158, 158, 158),
                                   enableSwitchAnimation: true,
                                   child: Padding(
-                                    padding: const EdgeInsets.only(bottom: 10.0),
+                                    padding: const EdgeInsets.only(bottom: 4.0),
                                     child: SosDropdown(dropDownTitle: "حلب"),
                                   ),
                                 ),
@@ -110,43 +110,47 @@ class _HomeScreenState extends State<HomeScreen> {
                                 itemBuilder: (context, cityIndex) {
                                   final city = cities[cityIndex];
 
-                                  final initCurrencyMap = city.currencies[0];
+                                  final filteredCurrencies = city.currencies.where((currencyMap) {
+                                    final type = currencyMap.values.first;
+                                    return !(type.buy == 0 && type.sell == 0);
+                                  }).toList();
+
+                                  if (filteredCurrencies.isEmpty) return SizedBox.shrink();
+
+                                  final initCurrencyMap = filteredCurrencies[0];
                                   final initCurrencyKey = initCurrencyMap.keys.first;
                                   final initType = initCurrencyMap[initCurrencyKey]!;
 
-                                  return Padding(
-                                    padding: const EdgeInsets.only(bottom: 5.0),
-                                    child: SosDropdown(
-                                      dropDownTitle: city.cityName,
-                                      initChild: ExchangePriceContainer(
-                                        parms: PriceContainerParms(
-                                          buyCur: initCurrencyKey,
-                                          buyPrice: initType.buy.toString(),
-                                          sellCur: "syp",
-                                          sellPrice: initType.sell.toString(),
-                                          curs: curs,
-                                        ),
+                                  return SosDropdown(
+                                    dropDownTitle: city.cityName,
+                                    initChild: ExchangePriceContainer(
+                                      parms: PriceContainerParms(
+                                        buyCur: initCurrencyKey,
+                                        buyPrice: initType.buy.toString(),
+                                        sellCur: "syp",
+                                        sellPrice: initType.sell.toString(),
+                                        curs: curs,
                                       ),
-                                      childrens: ListView.builder(
-                                        shrinkWrap: true,
-                                        physics: NeverScrollableScrollPhysics(),
-                                        itemCount: city.currencies.length,
-                                        itemBuilder: (context, currencyIndex) {
-                                          final currencyMap = city.currencies[currencyIndex];
-                                          final currencyKey = currencyMap.keys.first;
-                                          final type = currencyMap[currencyKey]!;
+                                    ),
+                                    childrens: ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: filteredCurrencies.length,
+                                      itemBuilder: (context, currencyIndex) {
+                                        final currencyMap = filteredCurrencies[currencyIndex];
+                                        final currencyKey = currencyMap.keys.first;
+                                        final type = currencyMap[currencyKey]!;
 
-                                          return ExchangePriceContainer(
-                                            parms: PriceContainerParms(
-                                              buyCur: currencyKey,
-                                              buyPrice: type.buy.toString(),
-                                              sellCur: "syp",
-                                              sellPrice: type.sell.toString(),
-                                              curs: curs,
-                                            ),
-                                          );
-                                        },
-                                      ),
+                                        return ExchangePriceContainer(
+                                          parms: PriceContainerParms(
+                                            buyCur: currencyKey,
+                                            buyPrice: type.buy.toString(),
+                                            sellCur: "syp",
+                                            sellPrice: type.sell.toString(),
+                                            curs: curs,
+                                          ),
+                                        );
+                                      },
                                     ),
                                   );
                                 },

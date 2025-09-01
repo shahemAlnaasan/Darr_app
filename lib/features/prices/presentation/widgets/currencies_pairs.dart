@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:exchange_darr/common/consts/app_keys.dart';
 import 'package:exchange_darr/common/extentions/colors_extension.dart';
 import 'package:exchange_darr/common/widgets/app_text.dart';
@@ -27,7 +25,10 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
 
   final TextEditingController secondAmountController = TextEditingController();
 
-  String curName = "";
+  String buyCurName = "";
+  String sellCurName = "";
+  String buyCurImage = "";
+  String sellCurImage = "";
   String _formatNumber(double value) {
     if (value % 1 == 0) {
       return value.toInt().toString();
@@ -39,11 +40,19 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
   void initState() {
     firstAmountController.text = _formatNumber(double.tryParse(widget.price.buy) ?? 0);
     secondAmountController.text = _formatNumber(double.tryParse(widget.price.sell) ?? 0);
-    final cur = widget.curs.firstWhere(
+    final buyCur = widget.curs.firstWhere(
       (cur) => cur.id == widget.price.cur,
       orElse: () => Cur(id: "-1", name: widget.price.cur, img: ""),
     );
-    curName = cur.name;
+    final sellCurCode = widget.price.isSyp ? "syp" : "usd";
+    final sellCur = widget.curs.firstWhere(
+      (cur) => cur.id == sellCurCode,
+      orElse: () => Cur(id: "-1", name: widget.price.cur, img: ""),
+    );
+    buyCurName = buyCur.name;
+    buyCurImage = buyCur.img;
+    sellCurName = sellCur.name;
+    sellCurImage = sellCur.img;
 
     super.initState();
   }
@@ -51,7 +60,7 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
   void updatePrice() async {
     final int? id = await HiveHelper.getFromHive(boxName: AppKeys.userBox, key: AppKeys.userId);
     final isSyp = widget.price.isSyp;
-    log("syp $isSyp");
+
     UpdateExchangeParams params = UpdateExchangeParams(
       id: id.toString(),
       cur: widget.price.cur,
@@ -77,16 +86,43 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
             spacing: 10,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // AppText.titleLarge("اضف عملة جديدة", color: context.primaryColor, fontWeight: FontWeight.w600),
-              AppText.titleMedium(curName, color: context.primaryColor, fontWeight: FontWeight.w600, height: 2),
+              Image.network(
+                buyCurImage,
+                width: 27,
+                height: 27,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.high,
+                errorBuilder: (context, error, stackTrace) {
+                  return SizedBox.shrink();
+                },
+              ),
+
+              AppText.titleMedium(
+                buyCurName,
+                color: context.primaryColor,
+                fontWeight: FontWeight.w600,
+                height: 2,
+                style: TextStyle(fontSize: 19),
+              ),
               Skeleton.ignore(
                 child: AppText.titleMedium("-", color: context.primaryColor, fontWeight: FontWeight.w600, height: 2),
               ),
               AppText.titleMedium(
-                widget.price.isSyp ? "ليرة سورية" : "دولار",
+                sellCurName,
                 color: context.primaryColor,
                 fontWeight: FontWeight.w600,
                 height: 2,
+                style: TextStyle(fontSize: 19),
+              ),
+              Image.network(
+                sellCurImage,
+                width: 27,
+                height: 27,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.high,
+                errorBuilder: (context, error, stackTrace) {
+                  return SizedBox.shrink();
+                },
               ),
             ],
           ),

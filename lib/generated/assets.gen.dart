@@ -21,6 +21,13 @@ class $AssetsImagesGen {
   /// File path: assets/images/dollar.png
   AssetGenImage get dollar => const AssetGenImage('assets/images/dollar.png');
 
+  /// File path: assets/images/info.png
+  AssetGenImage get info => const AssetGenImage('assets/images/info.png');
+
+  /// File path: assets/images/location.png
+  AssetGenImage get location =>
+      const AssetGenImage('assets/images/location.png');
+
   /// Directory path: assets/images/logo
   $AssetsImagesLogoGen get logo => const $AssetsImagesLogoGen();
 
@@ -43,6 +50,8 @@ class $AssetsImagesGen {
   List<AssetGenImage> get values => [
     bestPrice,
     dollar,
+    info,
+    location,
     logout,
     news,
     user,

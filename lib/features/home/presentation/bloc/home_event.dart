@@ -15,6 +15,14 @@ class GetAvgPrices extends HomeEvent {
 
 class GetCursEvent extends HomeEvent {}
 
+class GetAdsEvent extends HomeEvent {}
+
+class GetAtmInfoEvent extends HomeEvent {
+  final String id;
+
+  const GetAtmInfoEvent({required this.id});
+}
+
 class GetPricesEvent extends HomeEvent {
   final bool isRefreshScreen;
 

@@ -15,4 +15,6 @@ class AppEndPoint {
   static const addExchangeSyp = "add_syp";
   static const updateExchangeSyp = "update_syp";
   static const updateExchangeUsd = "update_usd";
+  static const getAds = "ads";
+  static const getAtmsInfo = "info";
 }

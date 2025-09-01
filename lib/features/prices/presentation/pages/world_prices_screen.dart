@@ -25,21 +25,21 @@ class _WorldPricesScreenState extends State<WorldPricesScreen> {
   List<CityPrices> citiesList = [];
   List<Cur> curs = [];
   Future<void> _onRefresh(BuildContext context) async {
-    context.read<PricesBloc>().add(GetUniPricesEvent(isRefreshScreen: true));
+    context.read<PricesBloc>().add(GetCursEvent());
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       lazy: false,
-      create: (context) => getIt<PricesBloc>()..add(GetUniPricesEvent(isRefreshScreen: true)),
+      create: (context) => getIt<PricesBloc>()..add(GetCursEvent()),
       child: BlocListener<PricesBloc, PricesState>(
-        listenWhen: (previous, current) => previous.getCursStatus != current.getCursStatus,
+        listenWhen: (previous, current) => previous.getCursResponse != current.getCursResponse,
         listener: (context, state) {
-          // if (state.getCursStatus == Status.success && state.getCursResponse != null) {
-          //   curs = state.getCursResponse!.curs;
-          //   context.read<PricesBloc>().add(GetUniPricesEvent(isRefreshScreen: true));
-          // }
+          if (state.getCursResponse != null) {
+            curs = state.getCursResponse!.curs;
+            context.read<PricesBloc>().add(GetUniPricesEvent(isRefreshScreen: true));
+          }
         },
         child: Scaffold(
           backgroundColor: context.background,
@@ -110,9 +110,9 @@ class _WorldPricesScreenState extends State<WorldPricesScreen> {
 
                                     return ExchangePriceContainer(
                                       parms: PriceContainerParms(
-                                        buyCur: price.cur1,
+                                        buyCur: price.cur1Id,
                                         buyPrice: price.buy.toString(),
-                                        sellCur: price.cur2,
+                                        sellCur: price.cur2Id,
                                         sellPrice: price.sell.toString(),
                                         curs: curs,
                                       ),

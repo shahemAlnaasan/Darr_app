@@ -1,6 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:exchange_darr/common/state_managment/bloc_state.dart';
+import 'package:exchange_darr/features/home/data/models/get_ads_response.dart';
+import 'package:exchange_darr/features/home/data/models/get_atms_info_response.dart';
+import 'package:exchange_darr/features/home/domain/use_cases/get_ads_usecase.dart';
+import 'package:exchange_darr/features/home/domain/use_cases/get_atms_info_usecase.dart';
 import 'package:exchange_darr/features/prices/data/models/avg_prices_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart';
@@ -16,12 +20,21 @@ part 'home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final AvgPricesUsecase avgPricesUsecase;
   final GetCursUsecase getCursUsecase;
+  final GetAdsUsecase getAdsUsecase;
+  final GetAtmsInfoUsecase getAtmsInfoUsecase;
   final GetPricesUsecase getPricesUsecase;
-  HomeBloc({required this.avgPricesUsecase, required this.getCursUsecase, required this.getPricesUsecase})
-    : super(HomeState()) {
+  HomeBloc({
+    required this.avgPricesUsecase,
+    required this.getCursUsecase,
+    required this.getPricesUsecase,
+    required this.getAdsUsecase,
+    required this.getAtmsInfoUsecase,
+  }) : super(HomeState()) {
     on<GetAvgPrices>(_onGetAvgPrice);
     on<GetCursEvent>(_onGetCursEvent);
     on<GetPricesEvent>(_onGetPricesEvent);
+    on<GetAdsEvent>(_onGetAdsEvent);
+    on<GetAtmInfoEvent>(_onGetAtmInfoEvent);
   }
 
   Future<void> _onGetCursEvent(GetCursEvent event, Emitter<HomeState> emit) async {
@@ -35,6 +48,36 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       },
       (right) {
         emit(state.copyWith(getCursResponse: right));
+      },
+    );
+  }
+
+  Future<void> _onGetAdsEvent(GetAdsEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(getAdsStatus: Status.loading));
+
+    final result = await getAdsUsecase();
+
+    result.fold(
+      (left) {
+        emit(state.copyWith(getAdsStatus: Status.failure, errorMessage: left.message));
+      },
+      (right) {
+        emit(state.copyWith(getAdsStatus: Status.success, getAdsResponse: right));
+      },
+    );
+  }
+
+  Future<void> _onGetAtmInfoEvent(GetAtmInfoEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(getAtmInfoStatus: Status.loading));
+
+    final result = await getAtmsInfoUsecase(params: GetAtmsInfoParams(id: event.id));
+
+    result.fold(
+      (left) {
+        emit(state.copyWith(getAtmInfoStatus: Status.failure, errorMessage: left.message));
+      },
+      (right) {
+        emit(state.copyWith(getAtmInfoStatus: Status.success, getAtmsInfoResponse: right));
       },
     );
   }

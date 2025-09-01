@@ -110,7 +110,13 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
         emit(state.copyWith(getUniPricesStatus: Status.failure, errorMessage: left.message));
       },
       (right) {
-        emit(state.copyWith(getUniPricesStatus: Status.success, getPricesUniResponse: right));
+        emit(
+          state.copyWith(
+            getUniPricesStatus: Status.success,
+            getCursStatus: Status.success,
+            getPricesUniResponse: right,
+          ),
+        );
       },
     );
   }
