@@ -109,16 +109,31 @@ class DioClient implements HTTPClient {
       }
     }
 
-    return dio.post(url, data: data, options: Options(headers: headers), cancelToken: cancelToken);
+    return dio.post(
+      url,
+      data: data,
+      options: Options(headers: headers),
+      cancelToken: cancelToken,
+    );
   }
 
   @override
   Future<Response> put(String url, {Map<String, dynamic>? headers, dynamic data, CancelToken? cancelToken}) {
-    return dio.put(url, data: data, options: Options(headers: headers), cancelToken: cancelToken);
+    return dio.put(
+      url,
+      data: data,
+      options: Options(headers: headers),
+      cancelToken: cancelToken,
+    );
   }
 
   @override
   Future<Response> delete(String url, {Map<String, dynamic>? headers, dynamic data, CancelToken? cancelToken}) {
-    return dio.delete(url, data: data, options: Options(headers: headers), cancelToken: cancelToken);
+    return dio.delete(
+      url,
+      data: data,
+      options: Options(headers: headers),
+      cancelToken: cancelToken,
+    );
   }
 }

@@ -11,8 +11,8 @@ class ThemesColorScheme {
     onPrimary: Color(0xff1C1C1E),
     secondary: Color.fromARGB(201, 1, 1, 1),
     onSecondary: Colors.black,
-    tertiary: Color(0xff032139),
-    onTertiary: Color.fromARGB(255, 50, 61, 78),
+    tertiary: Color(0xffff6117),
+    onTertiary: Color(0xffff6117),
     error: Color(0xffff5d5a),
     surfaceContainer: Color.fromARGB(255, 40, 78, 133),
     onError: Colors.white,
@@ -25,7 +25,7 @@ class ThemesColorScheme {
     surface: Colors.white,
     onSurface: Color(0xff1C1C1E),
 
-    primaryContainer: Color(0xffe1b248),
+    primaryContainer: Color(0xff26436c),
     onPrimaryContainer: Color(0xffEDEDED),
     secondaryContainer: Color(0xffFFF0E6),
     onSecondaryContainer: Color(0xff2C2C2E),
@@ -53,14 +53,14 @@ class ThemesColorScheme {
     onSurface: Color(0xFFE0E0E0),
 
     // Custom containers
-    primaryContainer: Color.fromARGB(237, 252, 197, 47),
+    primaryContainer: Color(0xFF3c3c3c),
     onPrimaryContainer: Color(0xFFDADADA),
 
     secondaryContainer: Color(0xFF3A3A3A),
     onSecondaryContainer: Color(0xFFF0F0F0),
 
-    tertiary: Color(0xFF2C2C2F),
-    onTertiary: Color(0xff63ad5e),
+    tertiary: Color(0xffff6117),
+    onTertiary: Color(0xffff6117),
 
     // Additional (if needed)
     outline: Color(0xFF5A5A5A),

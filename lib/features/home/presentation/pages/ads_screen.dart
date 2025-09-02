@@ -42,79 +42,82 @@ class _AdsScreenState extends State<AdsScreen> {
                 color: context.onPrimaryColor,
                 child: SingleChildScrollView(
                   physics: AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    spacing: 10,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(height: 10),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: AppText.titleLarge(
-                          "الاعلانات:",
-                          textAlign: TextAlign.right,
-                          fontWeight: FontWeight.bold,
-                          color: context.onPrimaryColor,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height),
+                    child: Column(
+                      spacing: 10,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(height: 10),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: AppText.titleLarge(
+                            "الاعلانات:",
+                            textAlign: TextAlign.right,
+                            fontWeight: FontWeight.bold,
+                            color: context.onPrimaryColor,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 20),
-                      BlocBuilder<HomeBloc, HomeState>(
-                        builder: (context, state) {
-                          if (state.getAdsStatus == Status.loading || state.getAdsStatus == Status.initial) {
-                            return ListView.builder(
-                              physics: NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: 4,
-                              itemBuilder: (context, index) => Skeletonizer(
-                                enabled: true,
-                                containersColor: const Color.fromARGB(99, 158, 158, 158),
-                                enableSwitchAnimation: true,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(bottom: 20.0),
-                                  child: AdContainer(
-                                    ad: Ad(title: "titlasfasfasfdfsdfe", txt: "txt", img: "img", map: "map"),
+                        SizedBox(height: 20),
+                        BlocBuilder<HomeBloc, HomeState>(
+                          builder: (context, state) {
+                            if (state.getAdsStatus == Status.loading || state.getAdsStatus == Status.initial) {
+                              return ListView.builder(
+                                physics: NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: 4,
+                                itemBuilder: (context, index) => Skeletonizer(
+                                  enabled: true,
+                                  containersColor: const Color.fromARGB(99, 158, 158, 158),
+                                  enableSwitchAnimation: true,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 20.0),
+                                    child: AdContainer(
+                                      ad: Ad(title: "titlasfasfasfdfsdfe", txt: "txt", img: "img", map: "map"),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          }
-                          if (state.getAdsStatus == Status.success && state.getAdsResponse != null) {
-                            getAdsResponse = state.getAdsResponse!;
-                            return ListView.builder(
-                              physics: NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: getAdsResponse!.ads.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 20.0),
-                                  child: AdContainer(ad: getAdsResponse!.ads[index]),
-                                );
-                              },
-                            );
-                          }
+                              );
+                            }
+                            if (state.getAdsStatus == Status.success && state.getAdsResponse != null) {
+                              getAdsResponse = state.getAdsResponse!;
+                              return ListView.builder(
+                                physics: NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: getAdsResponse!.ads.length,
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 20.0),
+                                    child: AdContainer(ad: getAdsResponse!.ads[index]),
+                                  );
+                                },
+                              );
+                            }
 
-                          if (state.getAdsStatus == Status.failure) {
-                            return Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  AppText.bodyLarge("لايوجد نشرة اسعار لعرضها", fontWeight: FontWeight.w400),
-                                  SizedBox(height: 10),
-                                  LargeButton(
-                                    onPressed: () {
-                                      context.read<HomeBloc>().add(GetCursEvent());
-                                    },
-                                    backgroundColor: context.surfaceContainer,
-                                    text: "اعادة المحاولة",
-                                    textStyle: TextStyle(color: context.primaryColor),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                          return SizedBox.shrink();
-                        },
-                      ),
-                    ],
+                            if (state.getAdsStatus == Status.failure || state.getCursStatus == Status.failure) {
+                              return Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    AppText.bodyLarge("لايوجد نشرة اسعار لعرضها", fontWeight: FontWeight.w400),
+                                    SizedBox(height: 10),
+                                    LargeButton(
+                                      onPressed: () {
+                                        _onRefresh(context);
+                                      },
+                                      backgroundColor: context.surfaceContainer,
+                                      text: "اعادة المحاولة",
+                                      textStyle: TextStyle(color: context.primaryColor),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            return SizedBox.shrink();
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );

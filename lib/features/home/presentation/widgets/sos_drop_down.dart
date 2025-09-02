@@ -1,11 +1,11 @@
 import 'package:exchange_darr/common/extentions/colors_extension.dart';
 import 'package:exchange_darr/common/theme/text_theme.dart';
-import 'package:exchange_darr/generated/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class SosDropdown extends StatefulWidget {
   final String dropDownTitle;
+  final String? icon;
   final Widget childrens;
   final Widget? initChild;
   final bool isAtm;
@@ -17,6 +17,7 @@ class SosDropdown extends StatefulWidget {
     this.initChild,
     this.onDetailsTap,
     this.isAtm = false,
+    this.icon,
   });
 
   @override
@@ -50,18 +51,32 @@ class _SosDropdownState extends State<SosDropdown> with SingleTickerProviderStat
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Expanded(
+                    flex: 2,
                     child: InkWell(
                       onTap: widget.isAtm ? widget.onDetailsTap : () {},
                       child: Row(
                         spacing: 5,
                         children: [
-                          widget.isAtm
-                              ? Skeleton.ignore(child: Image.asset(Assets.images.info.path, scale: 5.5))
-                              : SizedBox.shrink(),
-                          Text(
-                            widget.dropDownTitle,
-                            textAlign: TextAlign.center,
-                            style: textTheme.titleMedium!.copyWith(fontSize: 18, color: context.onPrimaryColor),
+                          if (widget.isAtm)
+                            Skeleton.ignore(
+                              child: Image.network(
+                                widget.icon ?? "",
+                                width: 40,
+                                height: 40,
+                                fit: BoxFit.contain,
+                                filterQuality: FilterQuality.high,
+                                errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+                              ),
+                            ),
+                          Expanded(
+                            child: Text(
+                              widget.dropDownTitle,
+                              textAlign: TextAlign.start,
+                              style: textTheme.titleMedium!.copyWith(fontSize: 18, color: context.onPrimaryColor),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: true,
+                            ),
                           ),
                         ],
                       ),

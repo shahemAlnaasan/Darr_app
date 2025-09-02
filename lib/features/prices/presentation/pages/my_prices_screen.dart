@@ -121,93 +121,95 @@ class _MyPricesScreenState extends State<MyPricesScreen> {
 
                   child: SingleChildScrollView(
                     physics: AlwaysScrollableScrollPhysics(),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        spacing: 10,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(height: 5),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: AppText.titleLarge(
-                              "اسعاري:",
-                              textAlign: TextAlign.right,
-                              fontWeight: FontWeight.bold,
-                              color: context.onPrimaryColor,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          spacing: 10,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(height: 5),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: AppText.titleLarge(
+                                "اسعاري:",
+                                textAlign: TextAlign.right,
+                                fontWeight: FontWeight.bold,
+                                color: context.onPrimaryColor,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 10),
-                          Builder(
-                            builder: (context) {
-                              return AddCurrency(
-                                onTap: () {
-                                  _showDetailsDialog(context, curs: curs, prices: prices);
-                                },
-                              );
-                            },
-                          ),
-                          SizedBox(height: 10),
-                          BlocBuilder<PricesBloc, PricesState>(
-                            builder: (context, state) {
-                              if (state.getUsdPricesStatus == Status.loading ||
-                                  state.getUsdPricesStatus == Status.initial ||
-                                  state.getCursStatus == Status.loading) {
-                                return ListView.builder(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: 4,
-                                  itemBuilder: (context, index) => Skeletonizer(
-                                    enabled: true,
-                                    containersColor: const Color.fromARGB(99, 158, 158, 158),
-                                    enableSwitchAnimation: true,
-                                    child: CurrenciesPairs(
-                                      curs: [],
-                                      price: Price(cur: "cursadasd", buy: "1000", sell: "10000", isSyp: true),
-                                    ),
-                                  ),
-                                );
-                              }
-                              if (state.getUsdPricesStatus == Status.success && state.exchangePrices!.isNotEmpty) {
-                                log("${curs.length}");
-                                prices = state.exchangePrices!;
-                                final pricesList = state.exchangePrices;
-
-                                return ListView.builder(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: pricesList!.length,
-                                  itemBuilder: (context, index) {
-                                    return CurrenciesPairs(price: pricesList[index], curs: curs);
+                            SizedBox(height: 10),
+                            Builder(
+                              builder: (context) {
+                                return AddCurrency(
+                                  onTap: () {
+                                    _showDetailsDialog(context, curs: curs, prices: prices);
                                   },
                                 );
-                              }
-
-                              if (state.getExchangeUsdStatus == Status.failure) {
-                                return Center(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      AppText.bodyLarge("لايوجد نشرة اسعار لعرضها", fontWeight: FontWeight.w400),
-                                      SizedBox(height: 10),
-                                      LargeButton(
-                                        onPressed: () {
-                                          context.read<PricesBloc>()
-                                            ..add(GetExchangeSypEvent())
-                                            ..add(GetExchangeUsdEvent());
-                                        },
-                                        backgroundColor: context.surfaceContainer,
-                                        text: "اعادة المحاولة",
-                                        textStyle: TextStyle(color: context.primaryColor),
+                              },
+                            ),
+                            SizedBox(height: 10),
+                            BlocBuilder<PricesBloc, PricesState>(
+                              builder: (context, state) {
+                                if (state.getUsdPricesStatus == Status.loading ||
+                                    state.getUsdPricesStatus == Status.initial ||
+                                    state.getCursStatus == Status.loading) {
+                                  return ListView.builder(
+                                    physics: NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount: 4,
+                                    itemBuilder: (context, index) => Skeletonizer(
+                                      enabled: true,
+                                      containersColor: const Color.fromARGB(99, 158, 158, 158),
+                                      enableSwitchAnimation: true,
+                                      child: CurrenciesPairs(
+                                        curs: [],
+                                        price: Price(cur: "cursadasd", buy: "1000", sell: "10000", isSyp: true),
                                       ),
-                                    ],
-                                  ),
-                                );
-                              }
-                              return SizedBox.shrink();
-                            },
-                          ),
-                        ],
+                                    ),
+                                  );
+                                }
+                                if (state.getUsdPricesStatus == Status.success && state.exchangePrices!.isNotEmpty) {
+                                  log("${curs.length}");
+                                  prices = state.exchangePrices!;
+                                  final pricesList = state.exchangePrices;
+
+                                  return ListView.builder(
+                                    physics: NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount: pricesList!.length,
+                                    itemBuilder: (context, index) {
+                                      return CurrenciesPairs(price: pricesList[index], curs: curs);
+                                    },
+                                  );
+                                }
+
+                                if (state.getExchangeUsdStatus == Status.failure ||
+                                    state.getCursStatus == Status.failure) {
+                                  return Center(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        AppText.bodyLarge("لايوجد نشرة اسعار لعرضها", fontWeight: FontWeight.w400),
+                                        SizedBox(height: 10),
+                                        LargeButton(
+                                          onPressed: () {
+                                            _onRefresh(context);
+                                          },
+                                          backgroundColor: context.surfaceContainer,
+                                          text: "اعادة المحاولة",
+                                          textStyle: TextStyle(color: context.primaryColor),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                                return SizedBox.shrink();
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

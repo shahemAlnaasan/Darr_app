@@ -21,6 +21,10 @@ class $AssetsImagesGen {
   /// File path: assets/images/dollar.png
   AssetGenImage get dollar => const AssetGenImage('assets/images/dollar.png');
 
+  /// File path: assets/images/facebook.png
+  AssetGenImage get facebook =>
+      const AssetGenImage('assets/images/facebook.png');
+
   /// File path: assets/images/info.png
   AssetGenImage get info => const AssetGenImage('assets/images/info.png');
 
@@ -40,8 +44,19 @@ class $AssetsImagesGen {
   /// File path: assets/images/news.png
   AssetGenImage get news => const AssetGenImage('assets/images/news.png');
 
+  /// File path: assets/images/share.png
+  AssetGenImage get share => const AssetGenImage('assets/images/share.png');
+
+  /// File path: assets/images/telegram.png
+  AssetGenImage get telegram =>
+      const AssetGenImage('assets/images/telegram.png');
+
   /// File path: assets/images/user.png
   AssetGenImage get user => const AssetGenImage('assets/images/user.png');
+
+  /// File path: assets/images/whatsapp.png
+  AssetGenImage get whatsapp =>
+      const AssetGenImage('assets/images/whatsapp.png');
 
   /// File path: assets/images/world.png
   AssetGenImage get world => const AssetGenImage('assets/images/world.png');
@@ -50,11 +65,15 @@ class $AssetsImagesGen {
   List<AssetGenImage> get values => [
     bestPrice,
     dollar,
+    facebook,
     info,
     location,
     logout,
     news,
+    share,
+    telegram,
     user,
+    whatsapp,
     world,
   ];
 }

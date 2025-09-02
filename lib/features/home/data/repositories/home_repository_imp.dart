@@ -1,5 +1,6 @@
 import 'package:exchange_darr/common/consts/typedef.dart';
 import 'package:exchange_darr/features/home/data/models/get_atms_info_response.dart';
+import 'package:exchange_darr/features/home/data/models/get_company_info_response.dart';
 import 'package:exchange_darr/features/home/domain/use_cases/get_atms_info_usecase.dart';
 import 'package:injectable/injectable.dart';
 import '../../domain/repositories/home_repository.dart';
@@ -20,5 +21,10 @@ class HomeRepositoryImp implements HomeRepository {
   @override
   DataResponse<GetAtmsInfoResponse> getAtmsInfo({required GetAtmsInfoParams params}) {
     return homeRemoteDataSource.getAtmsInfo(params: params);
+  }
+
+  @override
+  DataResponse<GetCompanyInfoResponse> getCompanyInfo() {
+    return homeRemoteDataSource.getCompanyInfo();
   }
 }

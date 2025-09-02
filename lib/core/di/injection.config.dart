@@ -27,7 +27,10 @@ import '../../features/home/domain/repositories/home_repository.dart' as _i0;
 import '../../features/home/domain/use_cases/get_ads_usecase.dart' as _i793;
 import '../../features/home/domain/use_cases/get_atms_info_usecase.dart'
     as _i494;
+import '../../features/home/domain/use_cases/get_company_info_usecase.dart'
+    as _i996;
 import '../../features/home/presentation/bloc/home_bloc.dart' as _i202;
+import '../../features/main/bloc/main_bloc.dart' as _i299;
 import '../../features/prices/data/data_sources/prices_remote_data_source.dart'
     as _i129;
 import '../../features/prices/data/repositories/prices_repository_imp.dart'
@@ -66,6 +69,7 @@ extension GetItInjectableX on _i174.GetIt {
     _i526.EnvironmentFilter? environmentFilter,
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
+    gh.singleton<_i299.MainBloc>(() => _i299.MainBloc());
     gh.lazySingleton<_i330.HiveHelper>(() => _i330.HiveHelper());
     gh.lazySingleton<_i1069.HTTPClient>(() => _i1069.DioClient());
     gh.factory<_i25.AuthRemoteDataSource>(
@@ -97,6 +101,10 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i494.GetAtmsInfoUsecase>(
       () => _i494.GetAtmsInfoUsecase(homeRepository: gh<_i0.HomeRepository>()),
+    );
+    gh.factory<_i996.GetCompanyInfoUsecase>(
+      () =>
+          _i996.GetCompanyInfoUsecase(homeRepository: gh<_i0.HomeRepository>()),
     );
     gh.factory<_i349.AddExchangeSypUsecase>(
       () => _i349.AddExchangeSypUsecase(
@@ -165,6 +173,7 @@ extension GetItInjectableX on _i174.GetIt {
         getPricesUsecase: gh<_i960.GetPricesUsecase>(),
         getAdsUsecase: gh<_i793.GetAdsUsecase>(),
         getAtmsInfoUsecase: gh<_i494.GetAtmsInfoUsecase>(),
+        getCompanyInfoUsecase: gh<_i996.GetCompanyInfoUsecase>(),
       ),
     );
     gh.factory<_i191.PricesBloc>(

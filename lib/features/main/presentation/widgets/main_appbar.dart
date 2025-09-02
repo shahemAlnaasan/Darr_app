@@ -1,5 +1,8 @@
+import 'package:exchange_darr/common/theme/app_theme.dart';
+import 'package:exchange_darr/features/main/bloc/main_bloc.dart';
 import 'package:exchange_darr/generated/assets.gen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../common/extentions/colors_extension.dart';
 
 AppBar mainAppbar(
@@ -14,19 +17,26 @@ AppBar mainAppbar(
     elevation: 0,
     surfaceTintColor: context.background,
     automaticallyImplyLeading: false,
-    // actionsPadding: const EdgeInsets.only(left: 20),
-
-    // forceMaterialTransparency: true,
+    leading: InkWell(
+      onTap: onTap,
+      child: Icon(Icons.menu, color: context.onPrimaryColor),
+    ),
     title: Image.asset(Assets.images.logo.companyLogo.path, scale: 11, filterQuality: FilterQuality.high),
-    // leading: Padding(
-    //   padding: const EdgeInsets.only(right: 15),
-    // child: Image.asset(Assets.images.logo.logo.path, scale: 10, filterQuality: FilterQuality.high),
-    // ),
-    leadingWidth: 65,
-
+    titleSpacing: 0,
     actions: [
-      buildActionButton(icon: Assets.images.news.path, scale: 5.3, onPressed: () => onNewPress!(), context: context),
-      // SizedBox(width: 20),
+      BlocBuilder<MainBloc, MainState>(
+        builder: (context, state) {
+          return buildActionButton(
+            icon: state.theme == AppTheme.lightTheme
+                ? Assets.images.navbar.nightMode.path
+                : Assets.images.navbar.lightMode.path,
+            onPressed: () {
+              context.read<MainBloc>().add(SetThemeEvent());
+            },
+            context: context,
+          );
+        },
+      ),
       buildActionButton(icon: Assets.images.user.path, scale: 5, onPressed: () => onLoginPress!(), context: context),
     ],
     bottom: PreferredSize(
@@ -49,6 +59,7 @@ Widget buildActionButton({
     hoverColor: Colors.transparent,
     onTap: onPressed,
     child: Row(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [Image.asset(icon, scale: scale ?? 6.5, color: context.onPrimaryColor)],
     ),

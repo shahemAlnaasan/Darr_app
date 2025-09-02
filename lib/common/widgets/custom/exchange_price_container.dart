@@ -80,7 +80,7 @@ class ExchangePriceContainer extends StatelessWidget {
                 ),
                 Text(
                   "$sellCurName - $buyCurName",
-                  style: TextStyle(color: context.primaryColor, fontWeight: FontWeight.bold, fontSize: 18),
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 Image.network(
                   buyImg,

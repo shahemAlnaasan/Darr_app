@@ -16,6 +16,8 @@ class CustomDropdown<T> extends StatefulWidget {
   final String Function(T)? itemAsString;
   final bool Function(T, T)? compareFn;
   final double? valueFontSize;
+  final Color? fillColor;
+  final Color? color;
 
   const CustomDropdown({
     super.key,
@@ -23,7 +25,9 @@ class CustomDropdown<T> extends StatefulWidget {
     required this.labelText,
     required this.hintText,
     this.initaValue,
+    this.color,
     this.singleSelectValidator,
+    this.fillColor,
     this.enableSearch = false,
     this.onChanged,
     this.onChangedSearch,
@@ -59,14 +63,17 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
           display,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: textTheme.titleSmall!.copyWith(color: context.primaryColor, fontSize: widget.valueFontSize),
+          style: textTheme.titleSmall!.copyWith(
+            color: widget.color ?? context.primaryColor,
+            fontSize: widget.valueFontSize,
+          ),
         );
       },
 
       suffixProps: DropdownSuffixProps(
         dropdownButtonProps: DropdownButtonProps(
-          iconClosed: Icon(Icons.keyboard_arrow_down, color: context.primaryColor),
-          iconOpened: Icon(Icons.keyboard_arrow_up, color: context.primaryColor),
+          iconClosed: Icon(Icons.keyboard_arrow_down, color: widget.color ?? context.primaryColor),
+          iconOpened: Icon(Icons.keyboard_arrow_up, color: widget.color ?? context.primaryColor),
         ),
       ),
       decoratorProps: DropDownDecoratorProps(
@@ -74,10 +81,10 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
         baseStyle: textTheme.titleSmall!.copyWith(color: context.primaryColor),
         decoration: InputDecoration(
           filled: true,
-          fillColor: context.onTertiary,
+          fillColor: widget.fillColor ?? context.onTertiary,
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6),
-            borderSide: BorderSide(color: context.primaryColor),
+            borderSide: BorderSide(color: widget.color ?? context.primaryColor),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6),
@@ -95,10 +102,10 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
             widget.labelText,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: context.primaryColor, fontSize: 14),
+            style: TextStyle(color: widget.color ?? context.primaryColor, fontSize: 14),
           ),
           hintStyle: textTheme.titleSmall!.copyWith(
-            color: context.primaryColor,
+            color: widget.color ?? context.primaryColor,
             fontSize: 14,
             overflow: TextOverflow.ellipsis,
           ),
@@ -107,12 +114,12 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
             widget.labelText,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: context.primaryColor, fontSize: 14),
+            style: TextStyle(color: widget.color ?? context.primaryColor, fontSize: 14),
           ),
           labelStyle: textTheme.titleSmall!.copyWith(color: context.primaryColor, fontSize: 14),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6),
-            borderSide: BorderSide(color: context.primaryColor),
+            borderSide: BorderSide(color: widget.color ?? context.primaryColor),
           ),
         ),
       ),
@@ -121,9 +128,9 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
         containerBuilder: (context, child) {
           return Container(
             decoration: BoxDecoration(
-              border: Border.all(color: context.onTertiary, width: 1.2),
+              border: Border.all(color: widget.fillColor ?? context.onTertiary, width: 1.2),
               borderRadius: BorderRadius.circular(6),
-              color: context.onTertiary,
+              color: widget.fillColor ?? context.onTertiary,
             ),
             child: child,
           );
@@ -154,7 +161,10 @@ class _CustomDropdownState<T> extends State<CustomDropdown<T>> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(15.0),
-                child: Text(display, style: textTheme.titleSmall!.copyWith(color: context.primaryColor, fontSize: 14)),
+                child: Text(
+                  display,
+                  style: textTheme.titleSmall!.copyWith(color: widget.color ?? context.primaryColor, fontSize: 14),
+                ),
               ),
               Divider(color: Colors.grey[500], thickness: 1, height: 1),
             ],

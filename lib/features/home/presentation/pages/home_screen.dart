@@ -22,6 +22,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Cur> curs = [];
+  final List<String> priorityOrder = ["دمشق", "حلب", "حمص"];
+
   Future<void> _onRefresh(BuildContext context) async {
     context.read<HomeBloc>().add(GetCursEvent());
   }
@@ -64,122 +66,136 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: context.onPrimaryColor,
                   child: SingleChildScrollView(
                     physics: AlwaysScrollableScrollPhysics(),
-                    child: Column(
-                      spacing: 10,
-
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(height: 10),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: AppText.titleLarge(
-                            "متوسط الاسعار للمحافظات:",
-                            textAlign: TextAlign.right,
-                            fontWeight: FontWeight.bold,
-                            color: context.onPrimaryColor,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height),
+                      child: Column(
+                        spacing: 10,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(height: 10),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: AppText.titleLarge(
+                              "متوسط الاسعار للمحافظات:",
+                              textAlign: TextAlign.right,
+                              fontWeight: FontWeight.bold,
+                              color: context.onPrimaryColor,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 20),
-                        BlocBuilder<HomeBloc, HomeState>(
-                          builder: (context, state) {
-                            if (state.getAvgPricesStatus == Status.loading ||
-                                state.getAvgPricesStatus == Status.initial ||
-                                state.getCursStatus == Status.loading) {
-                              return ListView.builder(
-                                physics: NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: 4,
-                                itemBuilder: (context, index) => Skeletonizer(
-                                  enabled: true,
-                                  containersColor: const Color.fromARGB(99, 158, 158, 158),
-                                  enableSwitchAnimation: true,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(bottom: 4.0),
-                                    child: SosDropdown(dropDownTitle: "حلب"),
+                          SizedBox(height: 20),
+                          BlocBuilder<HomeBloc, HomeState>(
+                            builder: (context, state) {
+                              if (state.getAvgPricesStatus == Status.loading ||
+                                  state.getAvgPricesStatus == Status.initial ||
+                                  state.getCursStatus == Status.loading) {
+                                return ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: 4,
+                                  itemBuilder: (context, index) => Skeletonizer(
+                                    enabled: true,
+                                    containersColor: const Color.fromARGB(99, 158, 158, 158),
+                                    enableSwitchAnimation: true,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(bottom: 4.0),
+                                      child: SosDropdown(dropDownTitle: "حلب"),
+                                    ),
                                   ),
-                                ),
-                              );
-                            }
-                            if (state.getAvgPricesStatus == Status.success && state.avgPricesResponse != null) {
-                              final List<CityPrices> cities = state.avgPricesResponse!.cities;
+                                );
+                              }
+                              if (state.getAvgPricesStatus == Status.success && state.avgPricesResponse != null) {
+                                List<CityPrices> cities = state.avgPricesResponse!.cities;
+                                final prioritized = <CityPrices>[];
+                                for (var name in priorityOrder) {
+                                  final match = cities.where((c) => c.cityName == name).toList();
+                                  if (match.isNotEmpty) {
+                                    prioritized.addAll(match);
+                                  }
+                                }
 
-                              return ListView.builder(
-                                physics: NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: cities.length,
-                                itemBuilder: (context, cityIndex) {
-                                  final city = cities[cityIndex];
+                                // Keep the rest (excluding ones already added)
+                                final remaining = cities.where((c) => !priorityOrder.contains(c.cityName)).toList();
 
-                                  final filteredCurrencies = city.currencies.where((currencyMap) {
-                                    final type = currencyMap.values.first;
-                                    return !(type.buy == 0 && type.sell == 0);
-                                  }).toList();
+                                cities = [...prioritized, ...remaining];
 
-                                  if (filteredCurrencies.isEmpty) return SizedBox.shrink();
+                                return ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: cities.length,
+                                  itemBuilder: (context, cityIndex) {
+                                    final city = cities[cityIndex];
 
-                                  final initCurrencyMap = filteredCurrencies[0];
-                                  final initCurrencyKey = initCurrencyMap.keys.first;
-                                  final initType = initCurrencyMap[initCurrencyKey]!;
+                                    final filteredCurrencies = city.currencies.where((currencyMap) {
+                                      final type = currencyMap.values.first;
+                                      return !(type.buy == 0 && type.sell == 0);
+                                    }).toList();
 
-                                  return SosDropdown(
-                                    dropDownTitle: city.cityName,
-                                    initChild: ExchangePriceContainer(
-                                      parms: PriceContainerParms(
-                                        buyCur: initCurrencyKey,
-                                        buyPrice: initType.buy.toString(),
-                                        sellCur: "syp",
-                                        sellPrice: initType.sell.toString(),
-                                        curs: curs,
+                                    if (filteredCurrencies.isEmpty) return SizedBox.shrink();
+
+                                    final initCurrencyMap = filteredCurrencies[0];
+                                    final initCurrencyKey = initCurrencyMap.keys.first;
+                                    final initType = initCurrencyMap[initCurrencyKey]!;
+
+                                    return SosDropdown(
+                                      dropDownTitle: city.cityName,
+                                      initChild: ExchangePriceContainer(
+                                        parms: PriceContainerParms(
+                                          buyCur: initCurrencyKey,
+                                          buyPrice: initType.buy.toString(),
+                                          sellCur: "syp",
+                                          sellPrice: initType.sell.toString(),
+                                          curs: curs,
+                                        ),
                                       ),
-                                    ),
-                                    childrens: ListView.builder(
-                                      shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      itemCount: filteredCurrencies.length,
-                                      itemBuilder: (context, currencyIndex) {
-                                        final currencyMap = filteredCurrencies[currencyIndex];
-                                        final currencyKey = currencyMap.keys.first;
-                                        final type = currencyMap[currencyKey]!;
+                                      childrens: ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemCount: filteredCurrencies.length,
+                                        itemBuilder: (context, currencyIndex) {
+                                          final currencyMap = filteredCurrencies[currencyIndex];
+                                          final currencyKey = currencyMap.keys.first;
+                                          final type = currencyMap[currencyKey]!;
 
-                                        return ExchangePriceContainer(
-                                          parms: PriceContainerParms(
-                                            buyCur: currencyKey,
-                                            buyPrice: type.buy.toString(),
-                                            sellCur: "syp",
-                                            sellPrice: type.sell.toString(),
-                                            curs: curs,
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                              );
-                            }
+                                          return ExchangePriceContainer(
+                                            parms: PriceContainerParms(
+                                              buyCur: currencyKey,
+                                              buyPrice: type.buy.toString(),
+                                              sellCur: "syp",
+                                              sellPrice: type.sell.toString(),
+                                              curs: curs,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
 
-                            if (state.getAvgPricesStatus == Status.failure) {
-                              return Center(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    AppText.bodyLarge("لايوجد نشرة اسعار لعرضها", fontWeight: FontWeight.w400),
-                                    SizedBox(height: 10),
-                                    LargeButton(
-                                      onPressed: () {
-                                        context.read<HomeBloc>().add(GetCursEvent());
-                                      },
-                                      backgroundColor: context.surfaceContainer,
-                                      text: "اعادة المحاولة",
-                                      textStyle: TextStyle(color: context.primaryColor),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-                            return SizedBox.shrink();
-                          },
-                        ),
-                      ],
+                              if (state.getAvgPricesStatus == Status.failure || state.getCursStatus == Status.failure) {
+                                return Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      AppText.bodyLarge("لايوجد نشرة اسعار لعرضها", fontWeight: FontWeight.w400),
+                                      SizedBox(height: 10),
+                                      LargeButton(
+                                        onPressed: () {
+                                          _onRefresh(context);
+                                        },
+                                        backgroundColor: context.surfaceContainer,
+                                        text: "اعادة المحاولة",
+                                        textStyle: TextStyle(color: context.primaryColor),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                              return SizedBox.shrink();
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );

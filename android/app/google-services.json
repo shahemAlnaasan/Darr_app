@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "395359887583",
+    "project_id": "exchangehouse-852f7",
+    "storage_bucket": "exchangehouse-852f7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:395359887583:android:30df1e28bf0508adef496a",
+        "android_client_info": {
+          "package_name": "com.example.exchange_darr"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsXp_beljXgffLz8_lq7yk459iwcD1gxM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

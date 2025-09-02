@@ -82,6 +82,8 @@ class _AddCurrencyBottomSheetState extends State<AddCurrencyBottomSheet> {
                   hintText: "اختر العملة الاولى",
                   valueFontSize: 16,
                   itemAsString: (cur) => cur.name,
+                  fillColor: context.primaryColor,
+                  color: context.onPrimaryColor,
                   onChanged: (cur) {
                     firstSelectedCur = cur;
                   },
@@ -94,6 +96,9 @@ class _AddCurrencyBottomSheetState extends State<AddCurrencyBottomSheet> {
                   labelText: "اختر العملة الثانية",
                   hintText: "اختر العملة الثانية",
                   valueFontSize: 16,
+                  fillColor: context.primaryColor,
+                  color: context.onPrimaryColor,
+
                   itemAsString: (cur) => cur.name,
                   onChanged: (cur) {
                     secondSelectedCur = cur;
@@ -124,7 +129,7 @@ class _AddCurrencyBottomSheetState extends State<AddCurrencyBottomSheet> {
                               }
                             },
                       text: "اضافة",
-                      backgroundColor: context.onTertiary,
+                      backgroundColor: context.primaryContainer,
                       circularRadius: 12,
                       child: state.addExchangeStatus == Status.loading ? CustomProgressIndecator() : null,
                     );

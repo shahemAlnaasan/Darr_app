@@ -99,17 +99,17 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
 
               AppText.titleMedium(
                 buyCurName,
-                color: context.primaryColor,
+                color: Colors.white,
                 fontWeight: FontWeight.w600,
                 height: 2,
                 style: TextStyle(fontSize: 19),
               ),
               Skeleton.ignore(
-                child: AppText.titleMedium("-", color: context.primaryColor, fontWeight: FontWeight.w600, height: 2),
+                child: AppText.titleMedium("-", color: Colors.white, fontWeight: FontWeight.w600, height: 2),
               ),
               AppText.titleMedium(
                 sellCurName,
-                color: context.primaryColor,
+                color: Colors.white,
                 fontWeight: FontWeight.w600,
                 height: 2,
                 style: TextStyle(fontSize: 19),
@@ -142,10 +142,10 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Expanded(
-                    child: AppText.bodyLarge("شراء", color: context.onPrimaryColor, fontWeight: FontWeight.w600),
+                    child: AppText.bodyLarge("شراء", color: Colors.white, fontWeight: FontWeight.w600),
                   ),
                   Expanded(
-                    child: AppText.bodyLarge("مبيع", color: context.onPrimaryColor, fontWeight: FontWeight.w600),
+                    child: AppText.bodyLarge("مبيع", color: Colors.white, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),

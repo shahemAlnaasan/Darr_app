@@ -17,6 +17,8 @@ class GetCursEvent extends HomeEvent {}
 
 class GetAdsEvent extends HomeEvent {}
 
+class GetCompanyInfoEvent extends HomeEvent {}
+
 class GetAtmInfoEvent extends HomeEvent {
   final String id;
 

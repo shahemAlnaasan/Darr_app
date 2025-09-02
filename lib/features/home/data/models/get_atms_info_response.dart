@@ -25,11 +25,17 @@ class Info {
   String address;
   String phone;
   String img;
+  String location;
 
-  Info({required this.name, required this.address, required this.phone, required this.img});
+  Info({required this.name, required this.address, required this.phone, required this.img, required this.location});
 
-  factory Info.fromJson(Map<String, dynamic> json) =>
-      Info(name: json["name"], address: json["address"], phone: json["phone"], img: json["img"] ?? "");
+  factory Info.fromJson(Map<String, dynamic> json) => Info(
+    name: json["name"],
+    address: json["address"],
+    phone: json["phone"],
+    img: json["img"] ?? "",
+    location: json["location"],
+  );
 
   Map<String, dynamic> toJson() => {"name": name, "address": address, "phone": phone};
 }

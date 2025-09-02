@@ -22,23 +22,35 @@ class AdContainer extends StatelessWidget {
       child: Column(
         children: [
           // SizedBox(height: 10),
-          SizedBox(
-            width: double.infinity,
-            // height: 200,
-            child: ClipRRect(
-              borderRadius: BorderRadiusGeometry.only(topLeft: Radius.circular(8), topRight: Radius.circular(8)),
-              child: Image.network(
-                ad.img,
-                fit: BoxFit.contain,
-                filterQuality: FilterQuality.high,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-                    padding: EdgeInsets.all(10),
-                    height: 200,
-                    child: Icon(Icons.image, size: 50),
-                  );
-                },
+          GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (_) => Dialog(
+                  insetPadding: EdgeInsets.all(1),
+                  backgroundColor: Colors.black,
+                  child: InteractiveViewer(
+                    panEnabled: false,
+                    minScale: 1,
+                    maxScale: 5,
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: Image.network(ad.img, fit: BoxFit.contain, filterQuality: FilterQuality.high),
+                    ),
+                  ),
+                ),
+              );
+            },
+            child: SizedBox(
+              width: double.infinity,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  ad.img,
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.high,
+                  errorBuilder: (context, error, stackTrace) => Icon(Icons.image, size: 50),
+                ),
               ),
             ),
           ),
@@ -60,21 +72,25 @@ class AdContainer extends StatelessWidget {
                     color: context.onPrimaryColor,
                   ),
                 ),
-                GestureDetector(
-                  onTap: () async => await UrlLaucncheHelper.launchWebUrl(ad.map),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: context.primaryContainer,
-                      borderRadius: BorderRadius.circular(8),
-                      // boxShadow: const [BoxShadow(color: Color(0x20000000), blurRadius: 5, offset: Offset(0, 4))],
-                    ),
-                    padding: EdgeInsets.all(10),
+                if (ad.map != "" && ad.map.isNotEmpty)
+                  GestureDetector(
+                    onTap: () async {
+                      final result = await MapsLinkHelper.normalizeGoogleMapsLink(ad.map);
+                      await UrlLaucncheHelper.launchWebUrl(result);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: context.tertiary,
+                        borderRadius: BorderRadius.circular(8),
+                        // boxShadow: const [BoxShadow(color: Color(0x20000000), blurRadius: 5, offset: Offset(0, 4))],
+                      ),
+                      padding: EdgeInsets.all(10),
 
-                    width: 50,
-                    height: 50,
-                    child: Skeleton.ignore(child: Image.asset(Assets.images.location.path)),
+                      width: 50,
+                      height: 50,
+                      child: Skeleton.ignore(child: Image.asset(Assets.images.location.path, color: Colors.white)),
+                    ),
                   ),
-                ),
               ],
             ),
           ),

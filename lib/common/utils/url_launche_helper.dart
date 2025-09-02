@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -36,6 +37,43 @@ class UrlLaucncheHelper {
 
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       return;
+    }
+  }
+}
+
+class MapsLinkHelper {
+  static final Dio _dio = Dio(
+    BaseOptions(
+      followRedirects: false, // don't auto-follow, so we can read headers
+      validateStatus: (status) => status != null && status < 400,
+    ),
+  );
+
+  static Future<String> normalizeGoogleMapsLink(String shortUrl) async {
+    try {
+      final response = await _dio.get(shortUrl);
+
+      final resolvedUrl = response.headers['location']?.first ?? response.realUri.toString();
+
+      final regex = RegExp(r'@(-?\d+\.\d+),(-?\d+\.\d+)');
+      final match = regex.firstMatch(resolvedUrl);
+
+      if (match != null) {
+        final lat = match.group(1);
+        final lng = match.group(2);
+        return "https://www.google.com/maps/search/?api=1&query=$lat,$lng";
+      }
+
+      final placeIdRegex = RegExp(r'placeid=([^&]+)');
+      final placeMatch = placeIdRegex.firstMatch(resolvedUrl);
+      if (placeMatch != null) {
+        final placeId = placeMatch.group(1);
+        return "https://www.google.com/maps/search/?api=1&query=place_id:$placeId";
+      }
+
+      return resolvedUrl;
+    } catch (e) {
+      return shortUrl;
     }
   }
 }

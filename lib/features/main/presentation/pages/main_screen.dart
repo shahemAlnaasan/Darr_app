@@ -1,4 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:exchange_darr/common/state_managment/bloc_state.dart';
+import 'package:exchange_darr/common/utils/url_launche_helper.dart';
+import 'package:exchange_darr/core/di/injection.dart';
+import 'package:exchange_darr/features/home/data/models/get_company_info_response.dart';
+import 'package:exchange_darr/features/home/presentation/bloc/home_bloc.dart';
 import 'package:exchange_darr/features/home/presentation/pages/ads_screen.dart';
 import 'package:exchange_darr/features/home/presentation/pages/home_screen.dart';
 import 'package:exchange_darr/features/prices/presentation/pages/best_prices_screen.dart';
@@ -9,6 +14,7 @@ import 'package:exchange_darr/generated/assets.gen.dart';
 import 'package:exchange_darr/generated/locale_keys.g.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../common/extentions/colors_extension.dart';
 import '../../../../common/widgets/app_text.dart';
 import '../widgets/main_appbar.dart';
@@ -20,7 +26,7 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _MainScreenContent(initialIndex: selectedIndex ?? 0);
+    return _MainScreenContent(initialIndex: selectedIndex ?? 2);
   }
 }
 
@@ -36,6 +42,9 @@ class _MainScreenContent extends StatefulWidget {
 class _MainScreenContentState extends State<_MainScreenContent> {
   late int _selectedIndex;
   final List<int> _tabHistory = [];
+  GetCompanyInfoResponse? getCompanyInfoResponse;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     super.initState();
@@ -48,14 +57,15 @@ class _MainScreenContentState extends State<_MainScreenContent> {
     1: GlobalKey<NavigatorState>(),
     2: GlobalKey<NavigatorState>(),
     3: GlobalKey<NavigatorState>(),
+    4: GlobalKey<NavigatorState>(),
   };
 
   final List<Widget> _rootScreens = [
-    const HomeScreen(),
     const BestPricesScreen(),
     const DollarPricesScreen(),
+    const HomeScreen(),
     const WorldPricesScreen(),
-    // const DollarPricesScreen(),
+    const AdsScreen(),
   ];
 
   void _onTabTapped(int index) {
@@ -99,23 +109,39 @@ class _MainScreenContentState extends State<_MainScreenContent> {
           SystemNavigator.pop();
         }
       },
-      child: Scaffold(
-        appBar: mainAppbar(
-          context,
-          onTap: () {},
-          onLoginPress: () {
-            final currentNavigator = _navigatorKeys[_selectedIndex]!.currentState!;
-            currentNavigator.push(MaterialPageRoute(builder: (_) => PageDecider()));
+      child: BlocProvider(
+        create: (context) => getIt<HomeBloc>()..add(GetCompanyInfoEvent()),
+        child: BlocListener<HomeBloc, HomeState>(
+          listener: (context, state) {
+            if (state.getCompanyInfoStatus == Status.success || state.getCompanyInfoResponse != null) {
+              setState(() {
+                getCompanyInfoResponse = state.getCompanyInfoResponse!;
+              });
+            }
           },
-          onNewPress: () {
-            final currentNavigator = _navigatorKeys[_selectedIndex]!.currentState!;
-            currentNavigator.push(MaterialPageRoute(builder: (_) => AdsScreen()));
-          },
+          child: Scaffold(
+            key: _scaffoldKey,
+            appBar: mainAppbar(
+              context,
+              onTap: () {
+                _scaffoldKey.currentState?.openDrawer();
+              },
+              onLoginPress: () {
+                final currentNavigator = _navigatorKeys[_selectedIndex]!.currentState!;
+                currentNavigator.push(MaterialPageRoute(builder: (_) => PageDecider()));
+              },
+              onNewPress: () {
+                final currentNavigator = _navigatorKeys[_selectedIndex]!.currentState!;
+                currentNavigator.push(MaterialPageRoute(builder: (_) => AdsScreen()));
+              },
+            ),
+            drawer: _buildDrawer(context, onTabTapped: _onTabTapped, getCompanyInfoResponse: getCompanyInfoResponse),
+            extendBody: true,
+            backgroundColor: context.tertiary,
+            body: _buildTabNavigator(_selectedIndex),
+            bottomNavigationBar: _buildBottomBar(),
+          ),
         ),
-        extendBody: true,
-        backgroundColor: context.tertiary,
-        body: _buildTabNavigator(_selectedIndex),
-        bottomNavigationBar: _buildBottomBar(),
       ),
     );
   }
@@ -123,27 +149,25 @@ class _MainScreenContentState extends State<_MainScreenContent> {
   Widget _buildBottomBar() {
     return Container(
       decoration: BoxDecoration(
-        color: context.tertiary,
+        color: context.background,
         border: Border(top: BorderSide(color: context.onPrimaryColor, width: 2)),
       ),
       child: BottomAppBar(
         notchMargin: 16,
         padding: const EdgeInsets.only(bottom: 2, top: 1),
         height: 75,
-        color: context.onTertiary,
+        color: context.background,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: List.generate(4, (index) {
+          children: List.generate(5, (index) {
             final icons = [
-              Assets.images.navbar.home.path,
               Assets.images.bestPrice.path,
               Assets.images.dollar.path,
+              Assets.images.navbar.home.path,
               Assets.images.world.path,
-              // Assets.images.news.path,
+              Assets.images.news.path,
             ];
-            return Expanded(
-              child: _buildNavItem(icon: icons[index], index: index),
-            );
+            return _buildNavItem(icon: icons[index], index: index);
           }),
         ),
       ),
@@ -167,7 +191,7 @@ class _MainScreenContentState extends State<_MainScreenContent> {
               child: Image.asset(
                 icon,
                 scale: isSelected ? 5.5 : 6,
-                color: isSelected ? context.primaryContainer : context.primaryColor,
+                color: isSelected ? context.onTertiary : context.onPrimaryColor,
                 alignment: Alignment.bottomCenter,
               ),
             ),
@@ -177,15 +201,9 @@ class _MainScreenContentState extends State<_MainScreenContent> {
               child: Align(
                 alignment: Alignment.topCenter,
                 child: AppText.bodyMedium(
-                  [
-                    LocaleKeys.navbar_home.tr(),
-                    "افضل الاسعار",
-                    "اسعار الدولار",
-                    "الاسعار العالمية",
-                    // "الاخبار",
-                  ][index],
+                  ["افضل الاسعار", "اسعار الدولار", LocaleKeys.navbar_home.tr(), "اسعار عالمية", "الاعلانات"][index],
                   style: context.textTheme.labelMedium!.copyWith(
-                    color: isSelected ? context.primaryContainer : context.primaryColor,
+                    color: isSelected ? context.onTertiary : context.onPrimaryColor,
                     fontWeight: FontWeight.w900,
                     fontSize: 13,
                   ),
@@ -195,6 +213,114 @@ class _MainScreenContentState extends State<_MainScreenContent> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildDrawer(
+    BuildContext context, {
+    required void Function(int) onTabTapped,
+    required GetCompanyInfoResponse? getCompanyInfoResponse,
+  }) {
+    return Drawer(
+      backgroundColor: context.background,
+      child: Column(
+        children: [
+          SizedBox(height: 50),
+          Image.asset(Assets.images.logo.companyLogo.path, scale: 9, filterQuality: FilterQuality.high),
+          ListTile(
+            leading: Image.asset(Assets.images.user.path, scale: 5.5, color: context.onPrimaryColor),
+            title: Text("تسجيل الدخول"),
+            onTap: () {
+              Navigator.pop(context);
+              final currentNavigator = _navigatorKeys[_selectedIndex]!.currentState!;
+              currentNavigator.push(MaterialPageRoute(builder: (_) => PageDecider()));
+            },
+          ),
+          ListTile(
+            leading: Image.asset(Assets.images.navbar.home.path, scale: 5.5, color: context.onPrimaryColor),
+            title: Text("الرئيسية"),
+            onTap: () {
+              Navigator.pop(context); // close drawer
+              onTabTapped(2); // select Home tab
+            },
+          ),
+          ListTile(
+            leading: Image.asset(Assets.images.bestPrice.path, scale: 5.5, color: context.onPrimaryColor),
+            title: Text("أفضل الأسعار"),
+            onTap: () {
+              Navigator.pop(context);
+              onTabTapped(0);
+            },
+          ),
+          ListTile(
+            leading: Image.asset(Assets.images.dollar.path, scale: 5.5, color: context.onPrimaryColor),
+            title: Text("أسعار الدولار"),
+            onTap: () {
+              Navigator.pop(context);
+              onTabTapped(1);
+            },
+          ),
+          ListTile(
+            leading: Image.asset(Assets.images.world.path, scale: 5.5, color: context.onPrimaryColor),
+            title: Text("الأسعار العالمية"),
+            onTap: () {
+              Navigator.pop(context);
+              onTabTapped(3);
+            },
+          ),
+          ListTile(
+            leading: Image.asset(Assets.images.news.path, scale: 5.5, color: context.onPrimaryColor),
+            title: Text("الاعلانات"),
+            onTap: () {
+              Navigator.pop(context);
+              onTabTapped(4);
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Divider(color: context.onPrimaryColor, height: 2, thickness: 1),
+          ),
+          SizedBox(height: 10),
+          AppText.bodyLarge("تابعنا على صفحاتنا", fontWeight: FontWeight.bold),
+          SizedBox(height: 20),
+          Row(
+            spacing: 10,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              GestureDetector(
+                onTap: () async => await UrlLaucncheHelper.launchWebUrl(getCompanyInfoResponse!.info.facebook),
+                child: Image.asset(Assets.images.facebook.path, scale: 4, color: context.onPrimaryColor),
+              ),
+              GestureDetector(
+                onTap: () async => await UrlLaucncheHelper.launchWebUrl(getCompanyInfoResponse!.info.whatsapp),
+                child: Image.asset(Assets.images.whatsapp.path, scale: 4, color: context.onPrimaryColor),
+              ),
+              GestureDetector(
+                onTap: () async => await UrlLaucncheHelper.launchWebUrl(getCompanyInfoResponse!.info.telegram),
+                child: Image.asset(Assets.images.telegram.path, scale: 4, color: context.onPrimaryColor),
+              ),
+            ],
+          ),
+          SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Divider(color: context.onPrimaryColor, height: 2, thickness: 1),
+          ),
+
+          ListTile(
+            leading: Image.asset(Assets.images.info.path, scale: 5.5, color: context.onPrimaryColor),
+            title: Text("من نحن"),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: Image.asset(Assets.images.share.path, scale: 5.5, color: context.onPrimaryColor),
+            title: Text("شارك التطبيق"),
+            onTap: () async => await UrlLaucncheHelper.launchWebUrl(getCompanyInfoResponse!.info.share),
+          ),
+        ],
       ),
     );
   }

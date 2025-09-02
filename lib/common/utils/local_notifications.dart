@@ -20,13 +20,14 @@ class LocalNotificationService {
 
       const NotificationDetails notificationDetails = NotificationDetails(
         android: AndroidNotificationDetails(
-          "test",
-          "test channel",
-          channelDescription: "this is our channel",
+          "general",
+          "General Notifications",
+          channelDescription: "Notifications about general updates and alerts",
           importance: Importance.max,
+          priority: Priority.high,
           playSound: true,
-          priority: Priority.max,
         ),
+
         iOS: DarwinNotificationDetails(),
       );
       await _notificationsPlugin.show(id, message.notification!.title, message.notification!.body, notificationDetails);

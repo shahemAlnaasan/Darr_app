@@ -53,98 +53,102 @@ class _WorldPricesScreenState extends State<WorldPricesScreen> {
                   color: context.onPrimaryColor,
                   child: SingleChildScrollView(
                     physics: AlwaysScrollableScrollPhysics(),
-                    child: Column(
-                      spacing: 10,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 5),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: AppText.titleLarge(
-                              "الاسعار العالمية:",
-                              textAlign: TextAlign.right,
-                              fontWeight: FontWeight.bold,
-                              color: context.onPrimaryColor,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height),
+                      child: Column(
+                        spacing: 10,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 5),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: AppText.titleLarge(
+                                "الاسعار العالمية:",
+                                textAlign: TextAlign.right,
+                                fontWeight: FontWeight.bold,
+                                color: context.onPrimaryColor,
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(height: 15),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: BlocBuilder<PricesBloc, PricesState>(
-                            builder: (context, state) {
-                              if (state.getUniPricesStatus == Status.loading ||
-                                  state.getUniPricesStatus == Status.initial ||
-                                  state.getCursStatus == Status.loading) {
-                                return ListView.builder(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: 4,
-                                  itemBuilder: (context, index) => Skeletonizer(
-                                    enabled: true,
-                                    containersColor: const Color.fromARGB(99, 158, 158, 158),
-                                    enableSwitchAnimation: true,
-                                    child: ExchangePriceContainer(
-                                      parms: PriceContainerParms(
-                                        buyCur: "price",
-                                        buyPrice: "price",
-                                        sellCur: "price",
-                                        sellPrice: "price",
-                                        curs: [],
+                          SizedBox(height: 15),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            child: BlocBuilder<PricesBloc, PricesState>(
+                              builder: (context, state) {
+                                if (state.getUniPricesStatus == Status.loading ||
+                                    state.getUniPricesStatus == Status.initial ||
+                                    state.getCursStatus == Status.loading) {
+                                  return ListView.builder(
+                                    physics: NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount: 4,
+                                    itemBuilder: (context, index) => Skeletonizer(
+                                      enabled: true,
+                                      containersColor: const Color.fromARGB(99, 158, 158, 158),
+                                      enableSwitchAnimation: true,
+                                      child: ExchangePriceContainer(
+                                        parms: PriceContainerParms(
+                                          buyCur: "price",
+                                          buyPrice: "price",
+                                          sellCur: "price",
+                                          sellPrice: "price",
+                                          curs: [],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              }
-                              if (state.getUniPricesStatus == Status.success && state.getPricesUniResponse != null) {
-                                final List<GetPricesUniResponse> prices = state.getPricesUniResponse!;
+                                  );
+                                }
+                                if (state.getUniPricesStatus == Status.success && state.getPricesUniResponse != null) {
+                                  final List<GetPricesUniResponse> prices = state.getPricesUniResponse!;
 
-                                return ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount: prices.length,
-                                  itemBuilder: (context, index) {
-                                    final price = prices[index];
+                                  return ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount: prices.length,
+                                    itemBuilder: (context, index) {
+                                      final price = prices[index];
 
-                                    return ExchangePriceContainer(
-                                      parms: PriceContainerParms(
-                                        buyCur: price.cur1Id,
-                                        buyPrice: price.buy.toString(),
-                                        sellCur: price.cur2Id,
-                                        sellPrice: price.sell.toString(),
-                                        curs: curs,
-                                      ),
-                                    );
-                                  },
-                                );
-                              }
+                                      return ExchangePriceContainer(
+                                        parms: PriceContainerParms(
+                                          buyCur: price.cur1Id,
+                                          buyPrice: price.buy.toString(),
+                                          sellCur: price.cur2Id,
+                                          sellPrice: price.sell.toString(),
+                                          curs: curs,
+                                        ),
+                                      );
+                                    },
+                                  );
+                                }
 
-                              if (state.getUsdPricesStatus == Status.failure) {
-                                return Center(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      AppText.bodyLarge("لايوجد نشرة اسعار لعرضها", fontWeight: FontWeight.w400),
-                                      SizedBox(height: 10),
-                                      LargeButton(
-                                        onPressed: () {
-                                          context.read<PricesBloc>().add(GetUsdPricesEvent(isRefreshScreen: true));
-                                        },
-                                        backgroundColor: context.surfaceContainer,
-                                        text: "اعادة المحاولة",
-                                        textStyle: TextStyle(color: context.primaryColor),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }
-                              return SizedBox.shrink();
-                            },
+                                if (state.getUsdPricesStatus == Status.failure ||
+                                    state.getCursStatus == Status.failure) {
+                                  return Center(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        AppText.bodyLarge("لايوجد نشرة اسعار لعرضها", fontWeight: FontWeight.w400),
+                                        SizedBox(height: 10),
+                                        LargeButton(
+                                          onPressed: () {
+                                            _onRefresh(context);
+                                          },
+                                          backgroundColor: context.surfaceContainer,
+                                          text: "اعادة المحاولة",
+                                          textStyle: TextStyle(color: context.primaryColor),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                                return SizedBox.shrink();
+                              },
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 );

@@ -3,8 +3,10 @@ import 'package:equatable/equatable.dart';
 import 'package:exchange_darr/common/state_managment/bloc_state.dart';
 import 'package:exchange_darr/features/home/data/models/get_ads_response.dart';
 import 'package:exchange_darr/features/home/data/models/get_atms_info_response.dart';
+import 'package:exchange_darr/features/home/data/models/get_company_info_response.dart';
 import 'package:exchange_darr/features/home/domain/use_cases/get_ads_usecase.dart';
 import 'package:exchange_darr/features/home/domain/use_cases/get_atms_info_usecase.dart';
+import 'package:exchange_darr/features/home/domain/use_cases/get_company_info_usecase.dart';
 import 'package:exchange_darr/features/prices/data/models/avg_prices_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart';
@@ -23,14 +25,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetAdsUsecase getAdsUsecase;
   final GetAtmsInfoUsecase getAtmsInfoUsecase;
   final GetPricesUsecase getPricesUsecase;
+  final GetCompanyInfoUsecase getCompanyInfoUsecase;
   HomeBloc({
     required this.avgPricesUsecase,
     required this.getCursUsecase,
     required this.getPricesUsecase,
     required this.getAdsUsecase,
     required this.getAtmsInfoUsecase,
+    required this.getCompanyInfoUsecase,
   }) : super(HomeState()) {
     on<GetAvgPrices>(_onGetAvgPrice);
+    on<GetCompanyInfoEvent>(_onGetCompanyInfoEvent);
     on<GetCursEvent>(_onGetCursEvent);
     on<GetPricesEvent>(_onGetPricesEvent);
     on<GetAdsEvent>(_onGetAdsEvent);
@@ -78,6 +83,21 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       },
       (right) {
         emit(state.copyWith(getAtmInfoStatus: Status.success, getAtmsInfoResponse: right));
+      },
+    );
+  }
+
+  Future<void> _onGetCompanyInfoEvent(GetCompanyInfoEvent event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(getCompanyInfoStatus: Status.loading));
+
+    final result = await getCompanyInfoUsecase();
+
+    result.fold(
+      (left) {
+        emit(state.copyWith(getCompanyInfoStatus: Status.failure, errorMessage: left.message));
+      },
+      (right) {
+        emit(state.copyWith(getCompanyInfoStatus: Status.success, getCompanyInfoResponse: right));
       },
     );
   }

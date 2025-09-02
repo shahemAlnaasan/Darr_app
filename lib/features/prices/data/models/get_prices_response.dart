@@ -56,16 +56,22 @@ class CityPrices {
 class Center {
   final String id;
   final String centerName;
+  final String centerImg;
   final List<Currency> currencies;
 
-  Center({required this.id, required this.centerName, required this.currencies});
+  Center({required this.id, required this.centerName, required this.currencies, required this.centerImg});
 
   factory Center.fromJson(String id, Map<String, dynamic> json) {
     List<Currency> currencyList = [];
     json['currencies'].forEach((currencyCode, currencyData) {
       currencyList.add(Currency.fromJson(currencyCode, currencyData));
     });
-    return Center(id: id, centerName: json['merkez_name'] ?? "", currencies: currencyList);
+    return Center(
+      id: id,
+      centerName: json['merkez_name'] ?? "",
+      centerImg: json['merkez_logo'],
+      currencies: currencyList,
+    );
   }
 
   Map<String, dynamic> toJson() {

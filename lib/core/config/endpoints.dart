@@ -17,4 +17,5 @@ class AppEndPoint {
   static const updateExchangeUsd = "update_usd";
   static const getAds = "ads";
   static const getAtmsInfo = "info";
+  static const getCompanyInfo = "comp_info";
 }
