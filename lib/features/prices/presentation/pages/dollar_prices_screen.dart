@@ -118,6 +118,7 @@ class _DollarPricesScreenState extends State<DollarPricesScreen> {
                                       }
 
                                       if (state.getUsdPricesStatus == Status.success &&
+                                          state.getCursStatus == Status.success &&
                                           state.getUsdPricesResponse != null) {
                                         // Original cities from API
                                         final List<CityPrices> cities = state.getUsdPricesResponse!.cities;
@@ -203,7 +204,9 @@ class _DollarPricesScreenState extends State<DollarPricesScreen> {
                                     ),
                                   );
                                 }
-                                if (state.getUsdPricesStatus == Status.success && state.getUsdPricesResponse != null) {
+                                if (state.getUsdPricesStatus == Status.success &&
+                                    state.getCursStatus == Status.success &&
+                                    state.getUsdPricesResponse != null) {
                                   final List<CityPrices> cities = state.getUsdPricesResponse!.cities;
 
                                   final prioritized = <CityPrices>[];

@@ -6,6 +6,7 @@ import 'package:exchange_darr/features/home/data/models/get_company_info_respons
 import 'package:exchange_darr/features/home/presentation/bloc/home_bloc.dart';
 import 'package:exchange_darr/features/home/presentation/pages/ads_screen.dart';
 import 'package:exchange_darr/features/home/presentation/pages/home_screen.dart';
+import 'package:exchange_darr/features/main/presentation/pages/about_us_screen.dart';
 import 'package:exchange_darr/features/prices/presentation/pages/best_prices_screen.dart';
 import 'package:exchange_darr/features/prices/presentation/pages/my_prices_screen.dart';
 import 'package:exchange_darr/features/prices/presentation/pages/dollar_prices_screen.dart';
@@ -137,7 +138,7 @@ class _MainScreenContentState extends State<_MainScreenContent> {
             ),
             drawer: _buildDrawer(context, onTabTapped: _onTabTapped, getCompanyInfoResponse: getCompanyInfoResponse),
             extendBody: true,
-            backgroundColor: context.tertiary,
+            backgroundColor: context.primaryColor,
             body: _buildTabNavigator(_selectedIndex),
             bottomNavigationBar: _buildBottomBar(),
           ),
@@ -195,7 +196,6 @@ class _MainScreenContentState extends State<_MainScreenContent> {
                 alignment: Alignment.bottomCenter,
               ),
             ),
-            // const SizedBox(height: 1),
             Expanded(
               flex: 2,
               child: Align(
@@ -241,8 +241,8 @@ class _MainScreenContentState extends State<_MainScreenContent> {
             leading: Image.asset(Assets.images.navbar.home.path, scale: 5.5, color: context.onPrimaryColor),
             title: Text("الرئيسية"),
             onTap: () {
-              Navigator.pop(context); // close drawer
-              onTabTapped(2); // select Home tab
+              Navigator.pop(context);
+              onTabTapped(2);
             },
           ),
           ListTile(
@@ -313,6 +313,10 @@ class _MainScreenContentState extends State<_MainScreenContent> {
             title: Text("من نحن"),
             onTap: () {
               Navigator.pop(context);
+              final currentNavigator = _navigatorKeys[_selectedIndex]!.currentState!;
+              currentNavigator.push(
+                MaterialPageRoute(builder: (_) => AboutUsScreen(title: getCompanyInfoResponse!.info.aboutus)),
+              );
             },
           ),
           ListTile(

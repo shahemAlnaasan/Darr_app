@@ -117,7 +117,9 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
                                         );
                                       }
 
-                                      if (state.getPricesStatus == Status.success && state.getPricesResponse != null) {
+                                      if (state.getPricesStatus == Status.success &&
+                                          state.getCursStatus == Status.success &&
+                                          state.getPricesResponse != null) {
                                         citiesList = state.getPricesResponse!.cities;
 
                                         final prioritized = <CityPrices>[];
@@ -128,7 +130,6 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
                                           }
                                         }
 
-                                        // Keep the rest (excluding ones already added)
                                         final remaining = citiesList
                                             .where((c) => !priorityOrder.contains(c.cityName))
                                             .toList();
@@ -202,7 +203,9 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
                                     ),
                                   );
                                 }
-                                if (state.getPricesStatus == Status.success && state.getPricesResponse != null) {
+                                if (state.getPricesStatus == Status.success &&
+                                    state.getCursStatus == Status.success &&
+                                    state.getPricesResponse != null) {
                                   final List<CityPrices> cities = state.getPricesResponse!.cities;
 
                                   final prioritized = <CityPrices>[];
@@ -231,11 +234,7 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
                                       }).toList();
 
                                       if (filteredCurrencies.isEmpty) {
-                                        return AppText.bodyLarge(
-                                          "لايوجد نشرة اسعار لعرضها",
-                                          fontWeight: FontWeight.w400,
-                                          color: context.onPrimaryColor,
-                                        );
+                                        return SizedBox.shrink();
                                       }
 
                                       final initCur = filteredCurrencies[0];

@@ -18,4 +18,9 @@ class AppEndPoint {
   static const getAds = "ads";
   static const getAtmsInfo = "info";
   static const getCompanyInfo = "comp_info";
+  static const addMsg = "msg_add";
+  static const showMsg = "msg_show";
+  static const deleteMsg = "msg_delete";
+  static const changeActivation = "change_active";
+  static const checkActivationStatus = "get_status";
 }

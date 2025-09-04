@@ -1,18 +1,25 @@
 import 'package:exchange_darr/common/consts/app_keys.dart';
 import 'package:exchange_darr/common/state_managment/bloc_state.dart';
 import 'package:exchange_darr/core/datasources/hive_helper.dart';
+import 'package:exchange_darr/features/prices/data/models/check_activation_status_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_exchage_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_prices_uni_response.dart';
+import 'package:exchange_darr/features/prices/data/models/show_msg_response.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/add_exchange_syp_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/add_exchange_usd_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/add_msg_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/change_activation_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/check_activation_status_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/delete_msg_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_curs_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_syp_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_usd_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_prices_uni_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_prices_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_usd_prices_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/show_msg_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/update_exchange_syp_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/update_exchange_usd_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,6 +41,12 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
   final AddExchangeUsdUsecase addExchangeUsdUsecase;
   final UpdateExchangeSypUsecase updateExchangeSypUsecase;
   final UpdateExchangeUsdUsecase updateExchangeUsdUsecase;
+  final AddMsgUsecase addMsgUsecase;
+  final ShowMsgUsecase showMsgUsecase;
+  final DeleteMsgUsecase deleteMsgUsecase;
+  final ChangeActivationUsecase changeActivationUsecase;
+  final CheckActivationStatusUsecase checkActivationStatusUsecase;
+
   PricesBloc({
     required this.getPricesUsecase,
     required this.getUsdPricesUsecase,
@@ -45,6 +58,11 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
     required this.updateExchangeSypUsecase,
     required this.updateExchangeUsdUsecase,
     required this.getPricesUniUsecase,
+    required this.addMsgUsecase,
+    required this.showMsgUsecase,
+    required this.deleteMsgUsecase,
+    required this.changeActivationUsecase,
+    required this.checkActivationStatusUsecase,
   }) : super(PricesState()) {
     on<GetPricesEvent>(_onGetPricesEvent);
     on<GetUsdPricesEvent>(_onGetUsdPricesEvent);
@@ -54,6 +72,11 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
     on<AddExchangeEvent>(_onAddExchangeEvent);
     on<UpdateExchangeEvent>(_onUpdateExchangeEvent);
     on<GetUniPricesEvent>(_onGetUniPricesEvent);
+    on<AddMsgEvent>(_onAddMsgEvent);
+    on<ShowMsgEvent>(_onShowMsgEvent);
+    on<DeleteMsgEvent>(_onDeleteMsgEvent);
+    on<ChangeActivationEvent>(_onChangeActivationEvent);
+    on<CheckActivationStatusEvent>(_onCheckActivationStatusEvent);
   }
   Future<void> _onGetPricesEvent(GetPricesEvent event, Emitter<PricesState> emit) async {
     if (state.getPricesResponse != null && !event.isRefreshScreen) {
@@ -215,6 +238,84 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
       },
       (right) {
         emit(state.copyWith(updateExchangeStatus: Status.success));
+      },
+    );
+  }
+
+  Future<void> _onAddMsgEvent(AddMsgEvent event, Emitter<PricesState> emit) async {
+    emit(state.copyWith(addMsgStatus: Status.loading));
+
+    final result = await addMsgUsecase(params: event.params);
+
+    result.fold(
+      (left) {
+        emit(state.copyWith(addMsgStatus: Status.failure, errorMessage: left.message));
+      },
+      (right) {
+        emit(state.copyWith(addMsgStatus: Status.success));
+      },
+    );
+  }
+
+  Future<void> _onShowMsgEvent(ShowMsgEvent event, Emitter<PricesState> emit) async {
+    emit(state.copyWith(showMsgStatus: Status.loading));
+    final int? id = await HiveHelper.getFromHive(boxName: AppKeys.userBox, key: AppKeys.userId) ?? 0;
+
+    final result = await showMsgUsecase(params: ShowMsgParams(id: id!));
+
+    result.fold(
+      (left) {
+        emit(state.copyWith(showMsgStatus: Status.failure, errorMessage: left.message));
+      },
+      (right) {
+        emit(state.copyWith(showMsgStatus: Status.success, showMsgResponse: right));
+      },
+    );
+  }
+
+  Future<void> _onDeleteMsgEvent(DeleteMsgEvent event, Emitter<PricesState> emit) async {
+    emit(state.copyWith(deleteMsgStatus: Status.loading));
+
+    final result = await deleteMsgUsecase(params: event.params);
+
+    result.fold(
+      (left) {
+        emit(state.copyWith(deleteMsgStatus: Status.failure, errorMessage: left.message));
+      },
+      (right) {
+        emit(state.copyWith(deleteMsgStatus: Status.success));
+      },
+    );
+  }
+
+  Future<void> _onChangeActivationEvent(ChangeActivationEvent event, Emitter<PricesState> emit) async {
+    emit(state.copyWith(changeActivationStatus: Status.loading));
+
+    final result = await changeActivationUsecase(params: event.params);
+
+    result.fold(
+      (left) {
+        emit(state.copyWith(changeActivationStatus: Status.failure, errorMessage: left.message));
+      },
+      (right) {
+        emit(state.copyWith(changeActivationStatus: Status.success));
+      },
+    );
+  }
+
+  Future<void> _onCheckActivationStatusEvent(CheckActivationStatusEvent event, Emitter<PricesState> emit) async {
+    emit(state.copyWith(checkActivationStatus: Status.loading));
+    final int? id = await HiveHelper.getFromHive(boxName: AppKeys.userBox, key: AppKeys.userId) ?? 0;
+
+    CheckActivationStatusParams params = CheckActivationStatusParams(id: id!);
+    final result = await checkActivationStatusUsecase(params: params);
+
+    result.fold(
+      (left) {
+        emit(state.copyWith(checkActivationStatus: Status.failure, errorMessage: left.message));
+      },
+      (right) {
+        emit(state.copyWith(checkActivationStatus: Status.success, checkActivationStatusResponse: right));
       },
     );
   }

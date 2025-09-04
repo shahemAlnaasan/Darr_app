@@ -4,13 +4,20 @@ import 'package:exchange_darr/core/models/status_response_model.dart';
 import 'package:exchange_darr/core/network/api_handler.dart';
 import 'package:exchange_darr/core/network/exceptions.dart';
 import 'package:exchange_darr/core/network/http_client.dart';
+import 'package:exchange_darr/features/prices/data/models/check_activation_status_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_exchage_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_prices_uni_response.dart';
+import 'package:exchange_darr/features/prices/data/models/show_msg_response.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/add_exchange_syp_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/add_msg_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/change_activation_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/check_activation_status_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/delete_msg_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_syp_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_usd_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/show_msg_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/update_exchange_syp_usecase.dart';
 import 'package:injectable/injectable.dart';
 import '../models/avg_prices_response.dart';
@@ -99,6 +106,43 @@ class PricesRemoteDataSource with ApiHandler {
       apiCall: () => httpClient.post(AppEndPoint.getPricesUni),
       fromJson: (json) => (json as List).map((e) => GetPricesUniResponse.fromJson(e)).toList(),
       validateApi: false,
+    );
+  }
+
+  Future<Either<Failure, StatusResponseModel>> changeActivation({required ChangeActivationParams params}) async {
+    return handleApiCall(
+      apiCall: () => httpClient.post(AppEndPoint.changeActivation, data: params.getBody()),
+      fromJson: (json) => StatusResponseModel.fromJson(json),
+    );
+  }
+
+  Future<Either<Failure, StatusResponseModel>> addMsg({required AddMsgParams params}) async {
+    return handleApiCall(
+      apiCall: () => httpClient.post(AppEndPoint.addMsg, data: params.getBody()),
+      fromJson: (json) => StatusResponseModel.fromJson(json),
+    );
+  }
+
+  Future<Either<Failure, ShowMsgResponse>> showMsg({required ShowMsgParams params}) async {
+    return handleApiCall(
+      apiCall: () => httpClient.post(AppEndPoint.showMsg, data: params.getBody()),
+      fromJson: (json) => ShowMsgResponse.fromJson(json),
+    );
+  }
+
+  Future<Either<Failure, StatusResponseModel>> deleteMsg({required DeleteMsgParams params}) async {
+    return handleApiCall(
+      apiCall: () => httpClient.post(AppEndPoint.deleteMsg, data: params.getBody()),
+      fromJson: (json) => StatusResponseModel.fromJson(json),
+    );
+  }
+
+  Future<Either<Failure, CheckActivationStatusResponse>> checkActivationStatus({
+    required CheckActivationStatusParams params,
+  }) async {
+    return handleApiCall(
+      apiCall: () => httpClient.post(AppEndPoint.checkActivationStatus, data: params.getBody()),
+      fromJson: (json) => CheckActivationStatusResponse.fromJson(json),
     );
   }
 }

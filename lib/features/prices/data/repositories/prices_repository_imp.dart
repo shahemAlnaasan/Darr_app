@@ -1,12 +1,19 @@
 import 'package:exchange_darr/common/consts/typedef.dart';
 import 'package:exchange_darr/core/models/status_response_model.dart';
+import 'package:exchange_darr/features/prices/data/models/check_activation_status_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_exchage_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart';
 import 'package:exchange_darr/features/prices/data/models/get_prices_uni_response.dart';
+import 'package:exchange_darr/features/prices/data/models/show_msg_response.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/add_exchange_syp_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/add_msg_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/change_activation_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/check_activation_status_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/delete_msg_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_syp_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/get_exchange_usd_usecase.dart';
+import 'package:exchange_darr/features/prices/domain/use_cases/show_msg_usecase.dart';
 import 'package:exchange_darr/features/prices/domain/use_cases/update_exchange_syp_usecase.dart';
 import 'package:injectable/injectable.dart';
 import '../../domain/repositories/prices_repository.dart';
@@ -72,5 +79,30 @@ class PricesRepositoryImp implements PricesRepository {
   @override
   DataResponse<List<GetPricesUniResponse>> getPricesUni() {
     return pricesRemoteDataSource.getPricesUni();
+  }
+
+  @override
+  DataResponse<StatusResponseModel> changeActivation({required ChangeActivationParams params}) {
+    return pricesRemoteDataSource.changeActivation(params: params);
+  }
+
+  @override
+  DataResponse<StatusResponseModel> addMsg({required AddMsgParams params}) {
+    return pricesRemoteDataSource.addMsg(params: params);
+  }
+
+  @override
+  DataResponse<ShowMsgResponse> showMsg({required ShowMsgParams params}) {
+    return pricesRemoteDataSource.showMsg(params: params);
+  }
+
+  @override
+  DataResponse<StatusResponseModel> deleteMsg({required DeleteMsgParams params}) {
+    return pricesRemoteDataSource.deleteMsg(params: params);
+  }
+
+  @override
+  DataResponse<CheckActivationStatusResponse> checkActivationStatus({required CheckActivationStatusParams params}) {
+    return pricesRemoteDataSource.checkActivationStatus(params: params);
   }
 }

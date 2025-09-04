@@ -40,7 +40,9 @@ class _AddCurrencyBottomSheetState extends State<AddCurrencyBottomSheet> {
   void initState() {
     firstCurs = widget.curs.where((cur) => cur.id == "usd" || cur.id == "syp").toList();
     final existingCurIds = widget.prices.map((p) => p.cur).toSet();
-    secondCurs = widget.curs.where((cur) => !existingCurIds.contains(cur.id)).toList();
+    secondCurs = widget.curs
+        .where((cur) => !existingCurIds.contains(cur.id) && cur.id != "usd" && cur.id != "syp")
+        .toList();
     super.initState();
   }
 

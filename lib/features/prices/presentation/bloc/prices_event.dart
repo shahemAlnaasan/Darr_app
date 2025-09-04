@@ -43,3 +43,25 @@ class UpdateExchangeEvent extends PricesEvent {
 
   const UpdateExchangeEvent({this.isSyp = true, required this.params});
 }
+
+class AddMsgEvent extends PricesEvent {
+  final AddMsgParams params;
+
+  const AddMsgEvent({required this.params});
+}
+
+class ShowMsgEvent extends PricesEvent {}
+
+class DeleteMsgEvent extends PricesEvent {
+  final DeleteMsgParams params;
+
+  const DeleteMsgEvent({required this.params});
+}
+
+class ChangeActivationEvent extends PricesEvent {
+  final ChangeActivationParams params;
+
+  const ChangeActivationEvent({required this.params});
+}
+
+class CheckActivationStatusEvent extends PricesEvent {}

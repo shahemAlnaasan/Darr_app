@@ -41,8 +41,15 @@ import '../../features/prices/domain/use_cases/add_exchange_syp_usecase.dart'
     as _i349;
 import '../../features/prices/domain/use_cases/add_exchange_usd_usecase.dart'
     as _i554;
+import '../../features/prices/domain/use_cases/add_msg_usecase.dart' as _i481;
 import '../../features/prices/domain/use_cases/avg_prices_usecase.dart'
     as _i419;
+import '../../features/prices/domain/use_cases/change_activation_usecase.dart'
+    as _i610;
+import '../../features/prices/domain/use_cases/check_activation_status_usecase.dart'
+    as _i283;
+import '../../features/prices/domain/use_cases/delete_msg_usecase.dart'
+    as _i505;
 import '../../features/prices/domain/use_cases/get_curs_usecase.dart' as _i508;
 import '../../features/prices/domain/use_cases/get_exchange_syp_usecase.dart'
     as _i480;
@@ -54,6 +61,7 @@ import '../../features/prices/domain/use_cases/get_prices_usecase.dart'
     as _i960;
 import '../../features/prices/domain/use_cases/get_usd_prices_usecase.dart'
     as _i913;
+import '../../features/prices/domain/use_cases/show_msg_usecase.dart' as _i266;
 import '../../features/prices/domain/use_cases/update_exchange_syp_usecase.dart'
     as _i1071;
 import '../../features/prices/domain/use_cases/update_exchange_usd_usecase.dart'
@@ -116,8 +124,26 @@ extension GetItInjectableX on _i174.GetIt {
         pricesRepository: gh<_i535.PricesRepository>(),
       ),
     );
+    gh.factory<_i481.AddMsgUsecase>(
+      () => _i481.AddMsgUsecase(pricesRepository: gh<_i535.PricesRepository>()),
+    );
     gh.factory<_i419.AvgPricesUsecase>(
       () => _i419.AvgPricesUsecase(
+        pricesRepository: gh<_i535.PricesRepository>(),
+      ),
+    );
+    gh.factory<_i610.ChangeActivationUsecase>(
+      () => _i610.ChangeActivationUsecase(
+        pricesRepository: gh<_i535.PricesRepository>(),
+      ),
+    );
+    gh.factory<_i283.CheckActivationStatusUsecase>(
+      () => _i283.CheckActivationStatusUsecase(
+        pricesRepository: gh<_i535.PricesRepository>(),
+      ),
+    );
+    gh.factory<_i505.DeleteMsgUsecase>(
+      () => _i505.DeleteMsgUsecase(
         pricesRepository: gh<_i535.PricesRepository>(),
       ),
     );
@@ -150,6 +176,10 @@ extension GetItInjectableX on _i174.GetIt {
         pricesRepository: gh<_i535.PricesRepository>(),
       ),
     );
+    gh.factory<_i266.ShowMsgUsecase>(
+      () =>
+          _i266.ShowMsgUsecase(pricesRepository: gh<_i535.PricesRepository>()),
+    );
     gh.factory<_i1071.UpdateExchangeSypUsecase>(
       () => _i1071.UpdateExchangeSypUsecase(
         pricesRepository: gh<_i535.PricesRepository>(),
@@ -158,6 +188,25 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i151.UpdateExchangeUsdUsecase>(
       () => _i151.UpdateExchangeUsdUsecase(
         pricesRepository: gh<_i535.PricesRepository>(),
+      ),
+    );
+    gh.factory<_i191.PricesBloc>(
+      () => _i191.PricesBloc(
+        getPricesUsecase: gh<_i960.GetPricesUsecase>(),
+        getUsdPricesUsecase: gh<_i913.GetUsdPricesUsecase>(),
+        getExchangeSypUsecase: gh<_i480.GetExchangeSypUsecase>(),
+        getExchangeUsdUsecase: gh<_i605.GetExchangeUsdUsecase>(),
+        getCursUsecase: gh<_i508.GetCursUsecase>(),
+        addExchangeSypUsecase: gh<_i349.AddExchangeSypUsecase>(),
+        addExchangeUsdUsecase: gh<_i554.AddExchangeUsdUsecase>(),
+        updateExchangeSypUsecase: gh<_i1071.UpdateExchangeSypUsecase>(),
+        updateExchangeUsdUsecase: gh<_i151.UpdateExchangeUsdUsecase>(),
+        getPricesUniUsecase: gh<_i899.GetPricesUniUsecase>(),
+        addMsgUsecase: gh<_i481.AddMsgUsecase>(),
+        showMsgUsecase: gh<_i266.ShowMsgUsecase>(),
+        deleteMsgUsecase: gh<_i505.DeleteMsgUsecase>(),
+        changeActivationUsecase: gh<_i610.ChangeActivationUsecase>(),
+        checkActivationStatusUsecase: gh<_i283.CheckActivationStatusUsecase>(),
       ),
     );
     gh.factory<_i1012.LoginUsecase>(
@@ -174,20 +223,6 @@ extension GetItInjectableX on _i174.GetIt {
         getAdsUsecase: gh<_i793.GetAdsUsecase>(),
         getAtmsInfoUsecase: gh<_i494.GetAtmsInfoUsecase>(),
         getCompanyInfoUsecase: gh<_i996.GetCompanyInfoUsecase>(),
-      ),
-    );
-    gh.factory<_i191.PricesBloc>(
-      () => _i191.PricesBloc(
-        getPricesUsecase: gh<_i960.GetPricesUsecase>(),
-        getUsdPricesUsecase: gh<_i913.GetUsdPricesUsecase>(),
-        getExchangeSypUsecase: gh<_i480.GetExchangeSypUsecase>(),
-        getExchangeUsdUsecase: gh<_i605.GetExchangeUsdUsecase>(),
-        getCursUsecase: gh<_i508.GetCursUsecase>(),
-        addExchangeSypUsecase: gh<_i349.AddExchangeSypUsecase>(),
-        addExchangeUsdUsecase: gh<_i554.AddExchangeUsdUsecase>(),
-        updateExchangeSypUsecase: gh<_i1071.UpdateExchangeSypUsecase>(),
-        updateExchangeUsdUsecase: gh<_i151.UpdateExchangeUsdUsecase>(),
-        getPricesUniUsecase: gh<_i899.GetPricesUniUsecase>(),
       ),
     );
     return this;
