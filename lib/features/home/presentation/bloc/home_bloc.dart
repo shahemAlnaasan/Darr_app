@@ -43,6 +43,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Future<void> _onGetCursEvent(GetCursEvent event, Emitter<HomeState> emit) async {
+    // if (state.getCursResponse == null) {
+    // } else {
+    //   emit(state.copyWith(isRefreshingCurs: true));
+    //   log("isRefreshingCurs ${state.isRefreshingCurs}");
+    // }
     emit(state.copyWith(getCursStatus: Status.loading));
 
     final result = await getCursUsecase();
@@ -52,7 +57,23 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         emit(state.copyWith(getCursStatus: Status.failure, errorMessage: left.message));
       },
       (right) {
-        emit(state.copyWith(getCursResponse: right));
+        emit(state.copyWith(getCursResponse: right, getCursStatus: Status.success));
+      },
+    );
+  }
+
+  Future<void> _onGetAvgPrice(GetAvgPrices event, Emitter<HomeState> emit) async {
+    if (state.getAvgPricesStatus == null) {
+      emit(state.copyWith(getAvgPricesStatus: Status.loading));
+    }
+    final result = await avgPricesUsecase();
+
+    result.fold(
+      (left) {
+        emit(state.copyWith(getAvgPricesStatus: Status.failure, errorMessage: left.message));
+      },
+      (right) {
+        emit(state.copyWith(getAvgPricesStatus: Status.success, avgPricesResponse: right));
       },
     );
   }
@@ -103,11 +124,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Future<void> _onGetPricesEvent(GetPricesEvent event, Emitter<HomeState> emit) async {
-    if (state.getPricesResponse != null && !event.isRefreshScreen) {
-      emit(state.copyWith(isRefreshPrices: true));
-    } else {
+    if (state.getPricesResponse == null) {
       emit(state.copyWith(getPricesStatus: Status.loading));
+    } else {
+      emit(state.copyWith(isRefreshPrices: true));
     }
+
     final result = await getPricesUsecase();
 
     result.fold(
@@ -115,27 +137,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         emit(state.copyWith(getPricesStatus: Status.failure, errorMessage: left.message));
       },
       (right) {
-        emit(state.copyWith(getPricesStatus: Status.success, getCursStatus: Status.success, getPricesResponse: right));
-      },
-    );
-  }
-
-  Future<void> _onGetAvgPrice(GetAvgPrices event, Emitter<HomeState> emit) async {
-    if (state.getAvgPricesStatus != null && !event.isRefreshScreen) {
-      emit(state.copyWith(isRefreshingAvgPrices: true));
-    } else {
-      emit(state.copyWith(getAvgPricesStatus: Status.loading));
-    }
-    final result = await avgPricesUsecase();
-
-    result.fold(
-      (left) {
-        emit(state.copyWith(getAvgPricesStatus: Status.failure, errorMessage: left.message));
-      },
-      (right) {
-        emit(
-          state.copyWith(getAvgPricesStatus: Status.success, getCursStatus: Status.success, avgPricesResponse: right),
-        );
+        emit(state.copyWith(getPricesStatus: Status.success, getPricesResponse: right));
       },
     );
   }

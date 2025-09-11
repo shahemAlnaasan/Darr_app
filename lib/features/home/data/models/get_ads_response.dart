@@ -14,8 +14,10 @@ class GetAdsResponse {
 
   GetAdsResponse({required this.status, required this.ads});
 
-  factory GetAdsResponse.fromJson(Map<String, dynamic> json) =>
-      GetAdsResponse(status: json["status"], ads: List<Ad>.from(json["ads"].map((x) => Ad.fromJson(x))));
+  factory GetAdsResponse.fromJson(Map<String, dynamic> json) => GetAdsResponse(
+    status: json["status"] ?? "",
+    ads: json["ads"] == null ? [] : List<Ad>.from(json["ads"].map((x) => Ad.fromJson(x))),
+  );
 
   Map<String, dynamic> toJson() => {"status": status, "ads": List<dynamic>.from(ads.map((x) => x.toJson()))};
 }

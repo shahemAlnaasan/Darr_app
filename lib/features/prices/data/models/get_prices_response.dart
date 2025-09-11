@@ -32,15 +32,23 @@ class GetPricesResponse {
 
 class CityPrices {
   final String cityName;
-  final List<Center> centers;
+  final List<CenterData> centers;
 
   CityPrices({required this.cityName, required this.centers});
 
-  factory CityPrices.fromJson(String name, Map<String, dynamic> json) {
-    List<Center> merkezList = [];
-    json.forEach((merkezId, merkezData) {
-      merkezList.add(Center.fromJson(merkezId, merkezData));
-    });
+  factory CityPrices.fromJson(String name, dynamic json) {
+    List<CenterData> merkezList = [];
+
+    if (json is Map<String, dynamic>) {
+      // Normal case: city has centers
+      json.forEach((merkezId, merkezData) {
+        merkezList.add(CenterData.fromJson(merkezId, merkezData));
+      });
+    } else if (json is List) {
+      // Empty or unexpected array → treat as no centers
+      merkezList = [];
+    }
+
     return CityPrices(cityName: name, centers: merkezList);
   }
 
@@ -53,20 +61,20 @@ class CityPrices {
   }
 }
 
-class Center {
+class CenterData {
   final String id;
   final String centerName;
   final String centerImg;
   final List<Currency> currencies;
 
-  Center({required this.id, required this.centerName, required this.currencies, required this.centerImg});
+  CenterData({required this.id, required this.centerName, required this.currencies, required this.centerImg});
 
-  factory Center.fromJson(String id, Map<String, dynamic> json) {
+  factory CenterData.fromJson(String id, Map<String, dynamic> json) {
     List<Currency> currencyList = [];
     json['currencies'].forEach((currencyCode, currencyData) {
       currencyList.add(Currency.fromJson(currencyCode, currencyData));
     });
-    return Center(
+    return CenterData(
       id: id,
       centerName: json['merkez_name'] ?? "",
       centerImg: json['merkez_logo'],

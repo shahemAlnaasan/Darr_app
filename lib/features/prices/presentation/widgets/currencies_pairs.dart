@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:exchange_darr/common/consts/app_keys.dart';
 import 'package:exchange_darr/common/extentions/colors_extension.dart';
 import 'package:exchange_darr/common/widgets/app_text.dart';
@@ -57,11 +59,19 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
     super.initState();
   }
 
-  void updatePrice() async {
-    final int? id = await HiveHelper.getFromHive(boxName: AppKeys.userBox, key: AppKeys.userId);
-    final isSyp = widget.price.isSyp;
+  Timer? _debounce;
 
-    UpdateExchangeParams params = UpdateExchangeParams(
+  void _onPriceChanged(String value, bool isSyp) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    _debounce = Timer(const Duration(seconds: 1, milliseconds: 500), () {
+      updatePrice(isSyp);
+    });
+  }
+
+  void updatePrice(bool isSyp) async {
+    final int? id = await HiveHelper.getFromHive(boxName: AppKeys.userBox, key: AppKeys.userId);
+    final params = UpdateExchangeParams(
       id: id.toString(),
       cur: widget.price.cur,
       buy: firstAmountController.text,
@@ -157,9 +167,7 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
                       hint: "المبلغ",
                       controller: firstAmountController,
                       keyboardType: TextInputType.number,
-                      onChanged: (p0) async {
-                        updatePrice();
-                      },
+                      onChanged: (val) => _onPriceChanged(val, widget.price.isSyp),
                     ),
                   ),
                   SizedBox(width: 20),
@@ -168,9 +176,7 @@ class _CurrenciesPairsState extends State<CurrenciesPairs> {
                       hint: "المبلغ",
                       controller: secondAmountController,
                       keyboardType: TextInputType.number,
-                      onChanged: (p0) async {
-                        updatePrice();
-                      },
+                      onChanged: (val) => _onPriceChanged(val, widget.price.isSyp),
                     ),
                   ),
                 ],

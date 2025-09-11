@@ -15,6 +15,7 @@ class HomeState extends Equatable {
   final GetAtmsInfoResponse? getAtmsInfoResponse;
   final GetCompanyInfoResponse? getCompanyInfoResponse;
   final bool isRefreshPrices;
+  final bool isRefreshingCurs;
   final bool isRefreshingAvgPrices;
   const HomeState({
     this.errorMessage,
@@ -26,6 +27,7 @@ class HomeState extends Equatable {
     this.getAdsResponse,
     this.avgPricesResponse,
     this.isRefreshPrices = false,
+    this.isRefreshingCurs = false,
     this.isRefreshingAvgPrices = false,
     this.getCursStatus,
     this.getCursResponse,
@@ -49,6 +51,7 @@ class HomeState extends Equatable {
     GetAtmsInfoResponse? getAtmsInfoResponse,
     GetCompanyInfoResponse? getCompanyInfoResponse,
     bool? isRefreshingAvgPrices,
+    bool? isRefreshingCurs,
     bool? isRefreshPrices,
   }) {
     return HomeState(
@@ -66,6 +69,7 @@ class HomeState extends Equatable {
       getAtmsInfoResponse: getAtmsInfoResponse ?? this.getAtmsInfoResponse,
       getCompanyInfoResponse: getCompanyInfoResponse ?? this.getCompanyInfoResponse,
       isRefreshPrices: isRefreshPrices ?? this.isRefreshPrices,
+      isRefreshingCurs: isRefreshingCurs ?? this.isRefreshingCurs,
       isRefreshingAvgPrices: isRefreshingAvgPrices ?? this.isRefreshingAvgPrices,
     );
   }
@@ -81,6 +85,7 @@ class HomeState extends Equatable {
     getCompanyInfoStatus,
     avgPricesResponse,
     isRefreshingAvgPrices,
+    isRefreshingCurs,
     getCursResponse,
     getPricesResponse,
     getAdsResponse,

@@ -81,6 +81,25 @@ class _AdsScreenState extends State<AdsScreen> {
                             }
                             if (state.getAdsStatus == Status.success && state.getAdsResponse != null) {
                               getAdsResponse = state.getAdsResponse!;
+                              if (getAdsResponse!.ads.isEmpty) {
+                                return Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      AppText.bodyLarge("لايوجد اعلانات", fontWeight: FontWeight.w400),
+                                      SizedBox(height: 10),
+                                      LargeButton(
+                                        onPressed: () {
+                                          _onRefresh(context);
+                                        },
+                                        backgroundColor: context.surfaceContainer,
+                                        text: "اعادة المحاولة",
+                                        textStyle: TextStyle(color: context.primaryColor),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
                               return ListView.builder(
                                 physics: NeverScrollableScrollPhysics(),
                                 shrinkWrap: true,
@@ -99,7 +118,7 @@ class _AdsScreenState extends State<AdsScreen> {
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    AppText.bodyLarge("لايوجد نشرة اسعار لعرضها", fontWeight: FontWeight.w400),
+                                    AppText.bodyLarge("لايوجد اعلانات", fontWeight: FontWeight.w400),
                                     SizedBox(height: 10),
                                     LargeButton(
                                       onPressed: () {

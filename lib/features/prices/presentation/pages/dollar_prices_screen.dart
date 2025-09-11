@@ -1,15 +1,18 @@
+import 'dart:developer';
+
 import 'package:exchange_darr/common/extentions/colors_extension.dart';
 import 'package:exchange_darr/common/extentions/navigation_extensions.dart';
 import 'package:exchange_darr/common/extentions/size_extension.dart';
 import 'package:exchange_darr/common/state_managment/bloc_state.dart';
 import 'package:exchange_darr/common/widgets/app_text.dart';
 import 'package:exchange_darr/common/widgets/custom/exchange_price_container.dart';
+import 'package:exchange_darr/common/widgets/custom_text_field.dart';
 import 'package:exchange_darr/common/widgets/large_button.dart';
 import 'package:exchange_darr/core/di/injection.dart';
 import 'package:exchange_darr/features/home/presentation/pages/atm_details_screen.dart';
 import 'package:exchange_darr/features/home/presentation/widgets/sos_drop_down.dart';
 import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
-import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart' hide Center;
+import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart';
 import 'package:exchange_darr/features/prices/presentation/bloc/prices_bloc.dart';
 import 'package:exchange_darr/features/prices/presentation/widgets/filter_option.dart';
 import 'package:flutter/material.dart';
@@ -23,14 +26,68 @@ class DollarPricesScreen extends StatefulWidget {
   State<DollarPricesScreen> createState() => _DollarPricesScreenState();
 }
 
-class _DollarPricesScreenState extends State<DollarPricesScreen> {
+class _DollarPricesScreenState extends State<DollarPricesScreen> with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController searchController = TextEditingController();
+
   int selectedIndex = 0;
   List<CityPrices> citiesList = [];
   List<Cur> curs = [];
   final List<String> priorityOrder = ["دمشق", "حلب", "حمص", "حماه", "اللاذقية", "طرطوس", "ادلب"];
+  CityPrices selectedCity = CityPrices(cityName: "", centers: []);
+  List<CenterData> allCenters = [];
+  List<CenterData> filterdCenters = [];
+  String searchQuery = "";
+
   Future<void> _onRefresh(BuildContext context) async {
     context.read<PricesBloc>().add(GetCursEvent());
+  }
+
+  bool isAutoRefreshing = false;
+  bool _shouldKeepRefreshing = false;
+  void _onSearchChanged() {
+    final query = searchController.text.toLowerCase();
+    log("query $query");
+    setState(() {
+      if (query.isEmpty) {
+        filterdCenters = allCenters;
+      } else {
+        filterdCenters = allCenters
+            .where((center) => center.centerName.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _shouldKeepRefreshing = false;
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void _startAutoRefresh(BuildContext context) {
+    final blocContext = context;
+    if (isAutoRefreshing) return;
+    isAutoRefreshing = true;
+    _shouldKeepRefreshing = true;
+
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(seconds: 5));
+      if (!mounted || !_shouldKeepRefreshing) return false;
+
+      blocContext.read<PricesBloc>().add(GetUsdPricesEvent(isRefreshScreen: true));
+      log("reach refresh");
+      return true;
+    });
   }
 
   @override
@@ -38,14 +95,26 @@ class _DollarPricesScreenState extends State<DollarPricesScreen> {
     return BlocProvider(
       lazy: false,
       create: (context) => getIt<PricesBloc>()..add(GetCursEvent()),
-      child: BlocListener<PricesBloc, PricesState>(
-        listenWhen: (previous, current) => previous.getCursResponse != current.getCursResponse,
-        listener: (context, state) {
-          if (state.getCursResponse != null) {
-            curs = state.getCursResponse!.curs;
-            context.read<PricesBloc>().add(GetUsdPricesEvent(isRefreshScreen: true));
-          }
-        },
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<PricesBloc, PricesState>(
+            listenWhen: (previous, current) => previous.getCursResponse != current.getCursResponse,
+            listener: (context, state) {
+              if (state.getCursResponse != null) {
+                curs = state.getCursResponse!.curs;
+                context.read<PricesBloc>().add(GetUsdPricesEvent());
+              }
+            },
+          ),
+          BlocListener<PricesBloc, PricesState>(
+            listenWhen: (previous, current) => previous.getUsdPricesStatus != current.getUsdPricesStatus,
+            listener: (context, state) {
+              if (state.getUsdPricesResponse != null && state.getUsdPricesStatus == Status.success) {
+                _startAutoRefresh(context);
+              }
+            },
+          ),
+        ],
         child: Scaffold(
           backgroundColor: context.background,
           body: SizedBox(
@@ -86,7 +155,7 @@ class _DollarPricesScreenState extends State<DollarPricesScreen> {
                               padding: const EdgeInsets.only(right: 10, top: 10, bottom: 20),
                               margin: const EdgeInsets.only(right: 10),
                               child: Row(
-                                mainAxisSize: MainAxisSize.min, // ✅ prevent Row from filling all width
+                                mainAxisSize: MainAxisSize.min,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 spacing: 10,
@@ -120,12 +189,8 @@ class _DollarPricesScreenState extends State<DollarPricesScreen> {
                                       if (state.getUsdPricesStatus == Status.success &&
                                           state.getCursStatus == Status.success &&
                                           state.getUsdPricesResponse != null) {
-                                        // Original cities from API
                                         final List<CityPrices> cities = state.getUsdPricesResponse!.cities;
 
-                                        // 🔎 Desired priority order
-
-                                        // Reorder citiesList according to the priority
                                         final prioritized = <CityPrices>[];
                                         for (var name in priorityOrder) {
                                           final match = cities.where((c) => c.cityName == name).toList();
@@ -148,12 +213,9 @@ class _DollarPricesScreenState extends State<DollarPricesScreen> {
                                               onTap: () {
                                                 setState(() {
                                                   selectedIndex = i;
+                                                  selectedCity = citiesList[selectedIndex];
+                                                  _onSearchChanged();
                                                 });
-                                                _scrollController.animateTo(
-                                                  0,
-                                                  duration: const Duration(milliseconds: 300),
-                                                  curve: Curves.easeOut,
-                                                );
                                               },
                                               child: FilterOption(
                                                 title: citiesList[i].cityName,
@@ -172,6 +234,11 @@ class _DollarPricesScreenState extends State<DollarPricesScreen> {
                               ),
                             ),
                           ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            child: buildTextField(hint: "بحث", controller: searchController),
+                          ),
+                          SizedBox(height: 5),
 
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 20),
@@ -208,6 +275,7 @@ class _DollarPricesScreenState extends State<DollarPricesScreen> {
                                     state.getCursStatus == Status.success &&
                                     state.getUsdPricesResponse != null) {
                                   final List<CityPrices> cities = state.getUsdPricesResponse!.cities;
+                                  log("updated");
 
                                   final prioritized = <CityPrices>[];
                                   for (var name in priorityOrder) {
@@ -219,14 +287,31 @@ class _DollarPricesScreenState extends State<DollarPricesScreen> {
 
                                   citiesList = [...prioritized, ...remaining];
 
-                                  final selectedCity = citiesList[selectedIndex];
+                                  if (selectedIndex >= citiesList.length) {
+                                    selectedIndex = 0;
+                                  }
+
+                                  selectedCity = citiesList[selectedIndex];
+                                  allCenters = selectedCity.centers;
+
+                                  if (searchController.text.isNotEmpty) {
+                                    filterdCenters = allCenters
+                                        .where(
+                                          (center) => center.centerName.toLowerCase().contains(
+                                            searchController.text.toLowerCase(),
+                                          ),
+                                        )
+                                        .toList();
+                                  } else {
+                                    filterdCenters = allCenters;
+                                  }
 
                                   return ListView.builder(
                                     physics: NeverScrollableScrollPhysics(),
                                     shrinkWrap: true,
-                                    itemCount: selectedCity.centers.length,
+                                    itemCount: filterdCenters.length,
                                     itemBuilder: (context, centerIndex) {
-                                      final center = selectedCity.centers[centerIndex];
+                                      final center = filterdCenters[centerIndex];
 
                                       // Filter invalid currencies
                                       final filteredCurrencies = center.currencies.where((cur) {
@@ -310,6 +395,48 @@ class _DollarPricesScreenState extends State<DollarPricesScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildTextField({
+    required String hint,
+    required TextEditingController controller,
+    void Function(String)? onChanged,
+    String validatorTitle = "",
+    int mxLine = 1,
+    Widget? sufIcon,
+    bool? readOnly,
+    dynamic Function()? onTap,
+    TextInputType? keyboardType,
+    bool needValidation = true,
+    FocusNode? focusNode,
+    FocusNode? focusOn,
+    Widget? preIcon,
+    bool? obSecure,
+  }) {
+    return CustomTextField(
+      textAlign: TextAlign.start,
+      onTap: onTap,
+      readOnly: readOnly,
+      preIcon: preIcon,
+      obSecure: obSecure,
+      onChanged: onChanged,
+      keyboardType: keyboardType,
+      mxLine: mxLine,
+      controller: controller,
+      hint: hint,
+      focusNode: focusNode,
+      focusOn: focusOn,
+      filledColor: context.primaryColor,
+      validator: needValidation
+          ? (value) {
+              if (value == null || value.isEmpty) {
+                return validatorTitle.isNotEmpty ? validatorTitle : "لا يمكن للحقل ان يكون فارعاً";
+              }
+              return null;
+            }
+          : null,
+      sufIcon: sufIcon,
     );
   }
 }

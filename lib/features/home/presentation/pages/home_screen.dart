@@ -12,6 +12,7 @@ import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'dart:developer';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,12 +21,42 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   List<Cur> curs = [];
-  final List<String> priorityOrder = ["دمشق", "حلب", "حمص"];
+  final List<String> priorityOrder = ["دمشق", "حلب", "حمص", "حماه", "اللاذقية", "طرطوس", "ادلب"];
 
   Future<void> _onRefresh(BuildContext context) async {
     context.read<HomeBloc>().add(GetCursEvent());
+  }
+
+  bool isAutoRefreshing = false;
+  bool _shouldKeepRefreshing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _shouldKeepRefreshing = false;
+    super.dispose();
+  }
+
+  void _startAutoRefresh(BuildContext context) {
+    final blocContext = context;
+    if (isAutoRefreshing) return;
+    isAutoRefreshing = true;
+    _shouldKeepRefreshing = true;
+
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(seconds: 5));
+      if (!mounted || !_shouldKeepRefreshing) return false;
+      blocContext.read<HomeBloc>().add(GetAvgPrices(isRefreshScreen: true));
+      return true;
+    });
   }
 
   @override
@@ -36,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: MultiBlocListener(
         listeners: [
           BlocListener<HomeBloc, HomeState>(
-            listenWhen: (previous, current) => previous.getCursResponse != current.getCursResponse,
+            listenWhen: (previous, current) => previous.getCursStatus != current.getCursStatus,
             listener: (context, state) {
               if (state.getCursResponse != null) {
                 curs = state.getCursResponse!.curs;
@@ -44,14 +75,14 @@ class _HomeScreenState extends State<HomeScreen> {
               }
             },
           ),
-          // BlocListener<HomeBloc, HomeState>(
-          //   listenWhen: (previous, current) => previous.getCursStatus != current.getCursStatus,
-          //   listener: (context, state) {
-          //     if (state.getAvgPricesStatus == Status.success && state.avgPricesResponse != null) {
-          //       curs = state.getCursResponse!.curs;
-          //     }
-          //   },
-          // ),
+          BlocListener<HomeBloc, HomeState>(
+            listenWhen: (previous, current) => previous.getAvgPricesStatus != current.getAvgPricesStatus,
+            listener: (context, state) {
+              if (state.avgPricesResponse != null && state.getAvgPricesStatus == Status.success) {
+                _startAutoRefresh(context);
+              }
+            },
+          ),
         ],
         child: Scaffold(
           backgroundColor: context.background,
@@ -105,6 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               }
                               if (state.getAvgPricesStatus == Status.success && state.avgPricesResponse != null) {
                                 List<CityPrices> cities = state.avgPricesResponse!.cities;
+                                log("updated");
                                 final prioritized = <CityPrices>[];
                                 for (var name in priorityOrder) {
                                   final match = cities.where((c) => c.cityName == name).toList();

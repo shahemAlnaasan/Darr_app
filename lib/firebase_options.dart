@@ -58,7 +58,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBsXp_beljXgffLz8_lq7yk459iwcD1gxM',
-    appId: '1:395359887583:android:30df1e28bf0508adef496a',
+    appId: '1:395359887583:android:ef07c25548755f69ef496a',
     messagingSenderId: '395359887583',
     projectId: 'exchangehouse-852f7',
     storageBucket: 'exchangehouse-852f7.firebasestorage.app',
@@ -72,4 +72,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'exchangehouse-852f7.firebasestorage.app',
     iosBundleId: 'com.example.exchangeDarr',
   );
+
 }

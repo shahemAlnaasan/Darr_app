@@ -1,9 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:exchange_darr/common/utils/local_notifications.dart';
-import 'package:exchange_darr/common/utils/notifications%20copy.dart';
+import 'package:exchange_darr/common/utils/notifications.dart';
 import 'package:exchange_darr/features/main/bloc/main_bloc.dart';
 import 'package:exchange_darr/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,7 +18,9 @@ class Initialization {
   static Future<void> initMain() async {
     WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-    await initNotifications();
+    if (!kIsWeb) {
+      await initNotifications();
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       SystemChrome.setSystemUIOverlayStyle(

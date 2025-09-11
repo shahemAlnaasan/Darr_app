@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:395359887583:android:30df1e28bf0508adef496a",
+        "mobilesdk_app_id": "1:395359887583:android:ef07c25548755f69ef496a",
         "android_client_info": {
-          "package_name": "com.example.exchange_darr"
+          "package_name": "com.orangefer.exchange_darr"
         }
       },
       "oauth_client": [],

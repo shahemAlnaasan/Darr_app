@@ -1,16 +1,20 @@
+import 'dart:developer';
+
 import 'package:exchange_darr/common/extentions/colors_extension.dart';
 import 'package:exchange_darr/common/extentions/navigation_extensions.dart';
 import 'package:exchange_darr/common/extentions/size_extension.dart';
 import 'package:exchange_darr/common/state_managment/bloc_state.dart';
 import 'package:exchange_darr/common/widgets/app_text.dart';
 import 'package:exchange_darr/common/widgets/custom/exchange_price_container.dart';
+import 'package:exchange_darr/common/widgets/custom_text_field.dart';
 import 'package:exchange_darr/common/widgets/large_button.dart';
 import 'package:exchange_darr/core/di/injection.dart';
 import 'package:exchange_darr/features/home/presentation/bloc/home_bloc.dart';
 import 'package:exchange_darr/features/home/presentation/pages/atm_details_screen.dart';
 import 'package:exchange_darr/features/home/presentation/widgets/sos_drop_down.dart';
 import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
-import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart' hide Center;
+import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart';
+// import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart' hide Center;
 import 'package:exchange_darr/features/prices/presentation/widgets/filter_option.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,16 +27,68 @@ class BestPricesScreen extends StatefulWidget {
   State<BestPricesScreen> createState() => _BestPricesScreenState();
 }
 
-class _BestPricesScreenState extends State<BestPricesScreen> {
+class _BestPricesScreenState extends State<BestPricesScreen> with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController searchController = TextEditingController();
+
   int selectedIndex = 0;
   List<CityPrices> citiesList = [];
   String? selectedCityName;
   final List<String> priorityOrder = ["دمشق", "حلب", "حمص", "حماه", "اللاذقية", "طرطوس", "ادلب"];
   List<Cur> curs = [];
-  CityPrices? selectedCity;
+  CityPrices selectedCity = CityPrices(cityName: "", centers: []);
+  List<CenterData> allCenters = [];
+  List<CenterData> filterdCenters = [];
+  String searchQuery = "";
+
   Future<void> _onRefresh(BuildContext context) async {
     context.read<HomeBloc>().add(GetCursEvent());
+  }
+
+  bool isAutoRefreshing = false;
+  bool _shouldKeepRefreshing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    searchController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    final query = searchController.text.toLowerCase();
+    log("query $query");
+    setState(() {
+      if (query.isEmpty) {
+        filterdCenters = allCenters;
+      } else {
+        filterdCenters = allCenters
+            .where((center) => center.centerName.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _shouldKeepRefreshing = false;
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void _startAutoRefresh(BuildContext context) {
+    final blocContext = context;
+    if (isAutoRefreshing) return;
+    isAutoRefreshing = true;
+    _shouldKeepRefreshing = true;
+
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(seconds: 5));
+      if (!mounted || !_shouldKeepRefreshing) return false;
+      blocContext.read<HomeBloc>().add(GetPricesEvent(isRefreshScreen: true));
+      return true;
+    });
   }
 
   @override
@@ -40,14 +96,26 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
     return BlocProvider(
       lazy: false,
       create: (context) => getIt<HomeBloc>()..add(GetCursEvent()),
-      child: BlocListener<HomeBloc, HomeState>(
-        listenWhen: (previous, current) => previous.getCursResponse != current.getCursResponse,
-        listener: (context, state) {
-          if (state.getCursResponse != null) {
-            curs = state.getCursResponse!.curs;
-            context.read<HomeBloc>().add(GetPricesEvent(isRefreshScreen: true));
-          }
-        },
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<HomeBloc, HomeState>(
+            listenWhen: (previous, current) => previous.getCursResponse != current.getCursResponse,
+            listener: (context, state) {
+              if (state.getCursResponse != null) {
+                curs = state.getCursResponse!.curs;
+                context.read<HomeBloc>().add(GetPricesEvent(isRefreshScreen: true));
+              }
+            },
+          ),
+          BlocListener<HomeBloc, HomeState>(
+            listenWhen: (previous, current) => previous.getPricesStatus != current.getPricesStatus,
+            listener: (context, state) {
+              if (state.getPricesStatus != null && state.getPricesStatus == Status.success) {
+                _startAutoRefresh(context);
+              }
+            },
+          ),
+        ],
         child: Scaffold(
           backgroundColor: context.background,
           body: SizedBox(
@@ -147,12 +215,9 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
                                                 setState(() {
                                                   selectedIndex = i;
                                                   selectedCityName = citiesList[i].cityName;
+                                                  selectedCity = citiesList[selectedIndex];
+                                                  _onSearchChanged();
                                                 });
-                                                _scrollController.animateTo(
-                                                  0,
-                                                  duration: const Duration(milliseconds: 300),
-                                                  curve: Curves.easeOut,
-                                                );
                                               },
                                               child: FilterOption(
                                                 title: citiesList[i].cityName,
@@ -171,6 +236,11 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
                               ),
                             ),
                           ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            child: buildTextField(hint: "بحث", controller: searchController),
+                          ),
+                          SizedBox(height: 5),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 20),
                             child: BlocBuilder<HomeBloc, HomeState>(
@@ -207,6 +277,7 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
                                     state.getCursStatus == Status.success &&
                                     state.getPricesResponse != null) {
                                   final List<CityPrices> cities = state.getPricesResponse!.cities;
+                                  log("updated");
 
                                   final prioritized = <CityPrices>[];
                                   for (var name in priorityOrder) {
@@ -218,14 +289,30 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
 
                                   citiesList = [...prioritized, ...remaining];
 
-                                  final selectedCity = citiesList[selectedIndex];
+                                  if (selectedIndex >= citiesList.length) {
+                                    selectedIndex = 0;
+                                  }
 
+                                  selectedCity = citiesList[selectedIndex];
+                                  allCenters = selectedCity.centers;
+
+                                  if (searchController.text.isNotEmpty) {
+                                    filterdCenters = allCenters
+                                        .where(
+                                          (center) => center.centerName.toLowerCase().contains(
+                                            searchController.text.toLowerCase(),
+                                          ),
+                                        )
+                                        .toList();
+                                  } else {
+                                    filterdCenters = allCenters;
+                                  }
                                   return ListView.builder(
                                     physics: NeverScrollableScrollPhysics(),
                                     shrinkWrap: true,
-                                    itemCount: selectedCity.centers.length,
+                                    itemCount: filterdCenters.length,
                                     itemBuilder: (context, centerIndex) {
-                                      final center = selectedCity.centers[centerIndex];
+                                      final center = filterdCenters[centerIndex];
 
                                       final filteredCurrencies = center.currencies.where((cur) {
                                         final buy = double.tryParse(cur.buy) ?? 0;
@@ -308,6 +395,48 @@ class _BestPricesScreenState extends State<BestPricesScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildTextField({
+    required String hint,
+    required TextEditingController controller,
+    void Function(String)? onChanged,
+    String validatorTitle = "",
+    int mxLine = 1,
+    Widget? sufIcon,
+    bool? readOnly,
+    dynamic Function()? onTap,
+    TextInputType? keyboardType,
+    bool needValidation = true,
+    FocusNode? focusNode,
+    FocusNode? focusOn,
+    Widget? preIcon,
+    bool? obSecure,
+  }) {
+    return CustomTextField(
+      textAlign: TextAlign.start,
+      onTap: onTap,
+      readOnly: readOnly,
+      preIcon: preIcon,
+      obSecure: obSecure,
+      onChanged: onChanged,
+      keyboardType: keyboardType,
+      mxLine: mxLine,
+      controller: controller,
+      hint: hint,
+      focusNode: focusNode,
+      focusOn: focusOn,
+      filledColor: context.primaryColor,
+      validator: needValidation
+          ? (value) {
+              if (value == null || value.isEmpty) {
+                return validatorTitle.isNotEmpty ? validatorTitle : "لا يمكن للحقل ان يكون فارعاً";
+              }
+              return null;
+            }
+          : null,
+      sufIcon: sufIcon,
     );
   }
 }

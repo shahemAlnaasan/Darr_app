@@ -96,10 +96,23 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
     );
   }
 
+  Future<void> _onGetCursEvent(GetCursEvent event, Emitter<PricesState> emit) async {
+    emit(state.copyWith(getCursStatus: Status.loading));
+
+    final result = await getCursUsecase();
+
+    result.fold(
+      (left) {
+        emit(state.copyWith(getCursStatus: Status.failure, errorMessage: left.message));
+      },
+      (right) {
+        emit(state.copyWith(getCursResponse: right, getCursStatus: Status.success));
+      },
+    );
+  }
+
   Future<void> _onGetUsdPricesEvent(GetUsdPricesEvent event, Emitter<PricesState> emit) async {
-    if (state.getUsdPricesResponse != null && !event.isRefreshScreen) {
-      emit(state.copyWith(isRefreshUsdPrices: true));
-    } else {
+    if (state.getUsdPricesResponse == null) {
       emit(state.copyWith(getUsdPricesStatus: Status.loading));
     }
     final result = await getUsdPricesUsecase();
@@ -121,9 +134,7 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
   }
 
   Future<void> _onGetUniPricesEvent(GetUniPricesEvent event, Emitter<PricesState> emit) async {
-    if (state.getUniPricesStatus != null && !event.isRefreshScreen) {
-      emit(state.copyWith(isRefreshUsdPrices: true));
-    } else {
+    if (state.getUniPricesStatus == null) {
       emit(state.copyWith(getUniPricesStatus: Status.loading));
     }
     final result = await getPricesUniUsecase();
@@ -140,21 +151,6 @@ class PricesBloc extends Bloc<PricesEvent, PricesState> {
             getPricesUniResponse: right,
           ),
         );
-      },
-    );
-  }
-
-  Future<void> _onGetCursEvent(GetCursEvent event, Emitter<PricesState> emit) async {
-    emit(state.copyWith(getCursStatus: Status.loading));
-
-    final result = await getCursUsecase();
-
-    result.fold(
-      (left) {
-        emit(state.copyWith(getCursStatus: Status.failure, errorMessage: left.message));
-      },
-      (right) {
-        emit(state.copyWith(getCursResponse: right));
       },
     );
   }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:exchange_darr/common/extentions/colors_extension.dart';
 import 'package:exchange_darr/common/extentions/size_extension.dart';
 import 'package:exchange_darr/common/state_managment/bloc_state.dart';
@@ -6,7 +8,7 @@ import 'package:exchange_darr/common/widgets/custom/exchange_price_container.dar
 import 'package:exchange_darr/common/widgets/large_button.dart';
 import 'package:exchange_darr/core/di/injection.dart';
 import 'package:exchange_darr/features/prices/data/models/get_curs_response.dart';
-import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart' hide Center;
+import 'package:exchange_darr/features/prices/data/models/get_prices_response.dart' hide CenterData;
 import 'package:exchange_darr/features/prices/data/models/get_prices_uni_response.dart';
 import 'package:exchange_darr/features/prices/presentation/bloc/prices_bloc.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +22,7 @@ class WorldPricesScreen extends StatefulWidget {
   State<WorldPricesScreen> createState() => _WorldPricesScreenState();
 }
 
-class _WorldPricesScreenState extends State<WorldPricesScreen> {
+class _WorldPricesScreenState extends State<WorldPricesScreen> with WidgetsBindingObserver {
   int selectedIndex = 0;
   List<CityPrices> citiesList = [];
   List<Cur> curs = [];
@@ -28,19 +30,62 @@ class _WorldPricesScreenState extends State<WorldPricesScreen> {
     context.read<PricesBloc>().add(GetCursEvent());
   }
 
+  bool isAutoRefreshing = false;
+  bool _shouldKeepRefreshing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _shouldKeepRefreshing = false;
+    super.dispose();
+  }
+
+  void _startAutoRefresh(BuildContext context) {
+    final blocContext = context;
+    if (isAutoRefreshing) return;
+    isAutoRefreshing = true;
+    _shouldKeepRefreshing = true;
+
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(seconds: 5));
+      if (!mounted || !_shouldKeepRefreshing) return false;
+
+      blocContext.read<PricesBloc>().add(GetUniPricesEvent(isRefreshScreen: true));
+      return true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       lazy: false,
       create: (context) => getIt<PricesBloc>()..add(GetCursEvent()),
-      child: BlocListener<PricesBloc, PricesState>(
-        listenWhen: (previous, current) => previous.getCursResponse != current.getCursResponse,
-        listener: (context, state) {
-          if (state.getCursResponse != null) {
-            curs = state.getCursResponse!.curs;
-            context.read<PricesBloc>().add(GetUniPricesEvent(isRefreshScreen: true));
-          }
-        },
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<PricesBloc, PricesState>(
+            listenWhen: (previous, current) => previous.getUniPricesStatus != current.getUniPricesStatus,
+            listener: (context, state) {
+              if (state.getUniPricesStatus != null && state.getUniPricesStatus == Status.success) {
+                _startAutoRefresh(context);
+              }
+            },
+          ),
+          BlocListener<PricesBloc, PricesState>(
+            listenWhen: (previous, current) => previous.getCursResponse != current.getCursResponse,
+            listener: (context, state) {
+              if (state.getCursResponse != null) {
+                curs = state.getCursResponse!.curs;
+                context.read<PricesBloc>().add(GetUniPricesEvent(isRefreshScreen: true));
+              }
+            },
+          ),
+        ],
         child: Scaffold(
           backgroundColor: context.background,
           body: SizedBox(
@@ -102,6 +147,7 @@ class _WorldPricesScreenState extends State<WorldPricesScreen> {
                                 }
                                 if (state.getUniPricesStatus == Status.success && state.getPricesUniResponse != null) {
                                   final List<GetPricesUniResponse> prices = state.getPricesUniResponse!;
+                                  log("updated");
 
                                   return ListView.builder(
                                     shrinkWrap: true,
