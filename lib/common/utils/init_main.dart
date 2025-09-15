@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:exchange_darr/common/utils/local_notifications.dart';
 import 'package:exchange_darr/common/utils/notifications.dart';
@@ -18,7 +20,7 @@ class Initialization {
   static Future<void> initMain() async {
     WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-    if (!kIsWeb) {
+    if (!kIsWeb && !Platform.isIOS) {
       await initNotifications();
     }
 
