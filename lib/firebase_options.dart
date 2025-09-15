@@ -17,13 +17,19 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -46,16 +52,6 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDsVMPbUTCuXJSM32SCgphVUiqjkvXaZjI',
-    appId: '1:395359887583:web:11ad21bca5255851ef496a',
-    messagingSenderId: '395359887583',
-    projectId: 'exchangehouse-852f7',
-    authDomain: 'exchangehouse-852f7.firebaseapp.com',
-    storageBucket: 'exchangehouse-852f7.firebasestorage.app',
-    measurementId: 'G-Q9PKY2TN3J',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBsXp_beljXgffLz8_lq7yk459iwcD1gxM',
     appId: '1:395359887583:android:ef07c25548755f69ef496a',
@@ -63,14 +59,4 @@ class DefaultFirebaseOptions {
     projectId: 'exchangehouse-852f7',
     storageBucket: 'exchangehouse-852f7.firebasestorage.app',
   );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCp7nYBaA32I1x5KgbY-m05H-e7N3vRDxw',
-    appId: '1:395359887583:ios:a2531cbb04739f9aef496a',
-    messagingSenderId: '395359887583',
-    projectId: 'exchangehouse-852f7',
-    storageBucket: 'exchangehouse-852f7.firebasestorage.app',
-    iosBundleId: 'com.example.exchangeDarr',
-  );
-
 }
